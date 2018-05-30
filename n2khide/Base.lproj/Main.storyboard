@@ -145,7 +145,9 @@
                         <outlet property="dropZone" destination="8n7-vd-joa" id="Cid-fb-z6m"/>
                         <outlet property="hideView" destination="ddt-Qx-MRh" id="Nf5-fu-lTm"/>
                         <outlet property="mapView" destination="sLL-BY-qSg" id="Y0F-Zx-rsl"/>
-                        <segue destination="89x-Hb-n98" kind="presentation" identifier="Edit Waypoint" modalPresentationStyle="formSheet" id="X81-f0-gtF"/>
+                        <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="sLL-BY-qSg" id="RQi-Wn-jN8">
+                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                        </segue>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tGh-Ta-aAu" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -57,7 +57,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destination = segue.destination.contents
         print("destination \(destination)")
-        
+        // need to fix the code for the popover presentation!!
     }
     
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
