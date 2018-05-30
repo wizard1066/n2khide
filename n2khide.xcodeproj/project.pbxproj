@@ -8,20 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF56461720BD9A4C00F500F6 /* AppDelegate.swift */; };
-		EF56461A20BD9A4C00F500F6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF56461920BD9A4C00F500F6 /* ViewController.swift */; };
 		EF56461D20BD9A4C00F500F6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF56461B20BD9A4C00F500F6 /* Main.storyboard */; };
 		EF56461F20BD9A4E00F500F6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF56461E20BD9A4E00F500F6 /* Assets.xcassets */; };
 		EF56462220BD9A4E00F500F6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF56462020BD9A4E00F500F6 /* LaunchScreen.storyboard */; };
+		EF85869620BE845100A21777 /* HideTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF85869520BE845100A21777 /* HideTableViewController.swift */; };
+		EF85869820BE847300A21777 /* HideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF85869720BE847300A21777 /* HideView.swift */; };
+		EF85869C20BE84A300A21777 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF85869B20BE84A300A21777 /* Utilities.swift */; };
+		EF85869E20BE880800A21777 /* HiddingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF85869D20BE880800A21777 /* HiddingViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		EF56461420BD9A4C00F500F6 /* n2khide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = n2khide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF56461720BD9A4C00F500F6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		EF56461920BD9A4C00F500F6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		EF56461C20BD9A4C00F500F6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EF56461E20BD9A4E00F500F6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EF56462120BD9A4E00F500F6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EF56462320BD9A4E00F500F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF85869520BE845100A21777 /* HideTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideTableViewController.swift; sourceTree = "<group>"; };
+		EF85869720BE847300A21777 /* HideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideView.swift; sourceTree = "<group>"; };
+		EF85869B20BE84A300A21777 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		EF85869D20BE880800A21777 /* HiddingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddingViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,9 +60,12 @@
 		EF56461620BD9A4C00F500F6 /* n2khide */ = {
 			isa = PBXGroup;
 			children = (
+				EF85869520BE845100A21777 /* HideTableViewController.swift */,
 				EF56461720BD9A4C00F500F6 /* AppDelegate.swift */,
-				EF56461920BD9A4C00F500F6 /* ViewController.swift */,
 				EF56461B20BD9A4C00F500F6 /* Main.storyboard */,
+				EF85869720BE847300A21777 /* HideView.swift */,
+				EF85869D20BE880800A21777 /* HiddingViewController.swift */,
+				EF85869B20BE84A300A21777 /* Utilities.swift */,
 				EF56461E20BD9A4E00F500F6 /* Assets.xcassets */,
 				EF56462020BD9A4E00F500F6 /* LaunchScreen.storyboard */,
 				EF56462320BD9A4E00F500F6 /* Info.plist */,
@@ -135,7 +144,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF56461A20BD9A4C00F500F6 /* ViewController.swift in Sources */,
+				EF85869E20BE880800A21777 /* HiddingViewController.swift in Sources */,
+				EF85869C20BE84A300A21777 /* Utilities.swift in Sources */,
+				EF85869620BE845100A21777 /* HideTableViewController.swift in Sources */,
+				EF85869820BE847300A21777 /* HideView.swift in Sources */,
 				EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
