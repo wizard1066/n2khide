@@ -7,8 +7,62 @@
 //
 
 import UIKit
+import MapKit
 
-class HiddingViewController: UIViewController, UIDropInteractionDelegate {
+class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate {
+    
+    // MARK: MapView
+    
+    private func clearWaypoints() {
+        mapView?.removeAnnotation(mapView.annotations as! MKAnnotation)
+    }
+    
+    @IBOutlet weak var mapView: MKMapView! {
+        didSet {
+            mapView.mapType = .standard
+            mapView.delegate = self
+        }
+    }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        var view: MKAnnotationView! = mapView.dequeueReusableAnnotationView(withIdentifier: Constants.AnnotationViewReuseIdentifier)
+        if view == nil {
+            view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: Constants.AnnotationViewReuseIdentifier)
+            view.canShowCallout = true
+        } else {
+            view.annotation = annotation
+        }
+        view.leftCalloutAccessoryView = nil
+        view.isDraggable = true
+        return view
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        print("annotation selected")
+    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if control == view.leftCalloutAccessoryView {
+            print("you tapped left callout")
+        }
+    }
+    
+    // MARK: Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destination = segue.destination.contents
+        print("destination \(destination)")
+        
+    }
+    
+    @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
+        if sender.state == .began {
+            let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
+            let waypoint = MapPin(coordinate: coordinate, title: "Blah", subtitle: "BlahBlah")
+            mapView.addAnnotation(waypoint)
+        }
+    }
+    // MARK: DropZone
     
     @IBOutlet var dropZone: UIView! {
         didSet {
@@ -67,5 +121,15 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    // MARK: Constants
+    
+    private struct Constants {
+        static let LeftCalloutFrame = CGRect(x: 0, y: 0, width: 59, height: 59)
+        static let AnnotationViewReuseIdentifier = "waypoint"
+        static let ShowImageSegue = "Show Image"
+        static let EditUserWaypoint = "Edit Waypoint"
+    }
+    
 
 }
