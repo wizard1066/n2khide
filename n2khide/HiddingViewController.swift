@@ -32,7 +32,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         } else {
             view.annotation = annotation
         }
-        view.leftCalloutAccessoryView = nil
+//        view.leftCalloutAccessoryView = nil
+//        view.rightCalloutAccessoryView  = nil
+        view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+        view.leftCalloutAccessoryView  = UIButton(frame: Constants.LeftCalloutFrame)
         view.isDraggable = true
         return view
     }
@@ -44,6 +47,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == view.leftCalloutAccessoryView {
             print("you tapped left callout")
+        } else if control == view.rightCalloutAccessoryView {
+            performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
         }
     }
     

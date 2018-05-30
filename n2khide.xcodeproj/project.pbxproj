@@ -15,6 +15,7 @@
 		EF85869820BE847300A21777 /* HideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF85869720BE847300A21777 /* HideView.swift */; };
 		EF85869C20BE84A300A21777 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF85869B20BE84A300A21777 /* Utilities.swift */; };
 		EF85869E20BE880800A21777 /* HiddingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF85869D20BE880800A21777 /* HiddingViewController.swift */; };
+		EF8586A220BEE09C00A21777 /* EditWaypointController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8586A120BEE09C00A21777 /* EditWaypointController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		EF85869720BE847300A21777 /* HideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideView.swift; sourceTree = "<group>"; };
 		EF85869B20BE84A300A21777 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		EF85869D20BE880800A21777 /* HiddingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddingViewController.swift; sourceTree = "<group>"; };
+		EF8586A120BEE09C00A21777 /* EditWaypointController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWaypointController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				EF85869520BE845100A21777 /* HideTableViewController.swift */,
 				EF56461720BD9A4C00F500F6 /* AppDelegate.swift */,
 				EF56461B20BD9A4C00F500F6 /* Main.storyboard */,
+				EF8586A120BEE09C00A21777 /* EditWaypointController.swift */,
 				EF85869720BE847300A21777 /* HideView.swift */,
 				EF85869D20BE880800A21777 /* HiddingViewController.swift */,
 				EF85869B20BE84A300A21777 /* Utilities.swift */,
@@ -148,6 +151,7 @@
 				EF85869C20BE84A300A21777 /* Utilities.swift in Sources */,
 				EF85869620BE845100A21777 /* HideTableViewController.swift in Sources */,
 				EF85869820BE847300A21777 /* HideView.swift in Sources */,
+				EF8586A220BEE09C00A21777 /* EditWaypointController.swift in Sources */,
 				EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
