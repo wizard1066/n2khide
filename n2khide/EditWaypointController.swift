@@ -8,10 +8,12 @@
 
 import UIKit
 
-class EditWaypointController: UIViewController, UITextFieldDelegate {
+class EditWaypointController: UIViewController {
 
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var hintTextField: UITextField!
+    
+    // MARK: View Methods
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,9 +27,16 @@ class EditWaypointController: UIViewController, UITextFieldDelegate {
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        super.viewDidDisappear(animated)
         stopListeningToTextFields()
     }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        preferredContentSize = view.systemLayoutSizeFitting(UILayoutFittingCompressedSize)
+    }
+    
+    // MARK: Observers
     
     private var namedObserver: NSObjectProtocol?
     private var hintObserver: NSObjectProtocol?
@@ -35,17 +44,19 @@ class EditWaypointController: UIViewController, UITextFieldDelegate {
     private func listenToTextFields() {
         let center = NotificationCenter.default
         let queue = OperationQueue.main
-        namedObserver = center.addObserver(forName: NSNotification.Name.UITextViewTextDidChange, object: nameTextField, queue: queue) { (notification) in
-            print("You edited \(self.nameTextField.text)")
+        let alert2Monitor = NSNotification.Name.UITextViewTextDidChange
+        namedObserver = center.addObserver(forName: nil, object: nameTextField, queue: queue) { (notification) in
+            if notification.name.rawValue == "UITextFieldTextDidChangeNotification" {
+                print("You edited text \(self.nameTextField.text) \(notification.name)")
+            }
         }
-        hintObserver = center.addObserver(forName: NSNotification.Name.UITextViewTextDidChange, object: hintTextField, queue: queue) { (notification) in
-            print("You edited \(self.hintTextField.text)")
+        hintObserver = center.addObserver(forName: nil, object: hintTextField, queue: queue) { (notification) in
+            print("You edited hint \(self.hintTextField.text)")
         }
     }
     
     private func stopListeningToTextFields() {
         let center = NotificationCenter.default
-        let queue = OperationQueue.main
         if namedObserver != nil {
             center.removeObserver(namedObserver)
         }
@@ -66,15 +77,4 @@ class EditWaypointController: UIViewController, UITextFieldDelegate {
         return true
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

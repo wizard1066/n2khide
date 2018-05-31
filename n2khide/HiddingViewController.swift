@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate {
+class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate {
     
     // MARK: MapView
     
@@ -32,22 +32,24 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         } else {
             view.annotation = annotation
         }
-//        view.leftCalloutAccessoryView = nil
-//        view.rightCalloutAccessoryView  = nil
         view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
         view.leftCalloutAccessoryView  = UIButton(frame: Constants.LeftCalloutFrame)
         view.isDraggable = true
         return view
     }
     
+    private var pinSelected: MKAnnotation?
+    
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         print("annotation selected")
+        pinSelected = view.annotation
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == view.leftCalloutAccessoryView {
             print("you tapped left callout")
         } else if control == view.rightCalloutAccessoryView {
+            mapView.deselectAnnotation(view.annotation, animated: false)
             performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
         }
     }
@@ -56,8 +58,15 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destination = segue.destination.contents
+        let annotationView = sender as? MKAnnotationView
         print("destination \(destination)")
-        // need to fix the code for the popover presentation!!
+        if segue.identifier == Constants.EditUserWaypoint {
+            let ewvc = destination as? EditWaypointController
+                if let ppc = ewvc?.popoverPresentationController {
+                    ppc.sourceRect = (annotationView?.frame)!
+                    ppc.delegate = self
+                }
+        }
     }
     
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
@@ -67,6 +76,15 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             mapView.addAnnotation(waypoint)
         }
     }
+    
+    // MARK: Popover Delegate
+    
+    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+        if pinSelected != nil {
+            mapView.selectAnnotation(pinSelected!, animated: true)
+        }
+    }
+    
     // MARK: DropZone
     
     @IBOutlet var dropZone: UIView! {
