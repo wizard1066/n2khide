@@ -13,10 +13,15 @@ class EditWaypointController: UIViewController {
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var hintTextField: UITextField!
     
+    var nameText: String?
+    var hintText: String?
+    
     // MARK: View Methods
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        nameTextField.text = nameText
+        hintTextField.text = hintText
         nameTextField.becomeFirstResponder()
         // Do any additional setup after loading the view.
     }

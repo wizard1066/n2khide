@@ -38,11 +38,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         return view
     }
     
-    private var pinSelected: MKAnnotation?
+    private var pinViewSelected: MKAnnotation?
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         print("annotation selected")
-        pinSelected = view.annotation
+        pinViewSelected = view.annotation
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -62,6 +62,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         print("destination \(destination)")
         if segue.identifier == Constants.EditUserWaypoint {
             let ewvc = destination as? EditWaypointController
+            ewvc?.nameText = wayPoints["Name"]?.name
+            ewvc?.hintText = wayPoints["Name"]?.hint
                 if let ppc = ewvc?.popoverPresentationController {
                     ppc.sourceRect = (annotationView?.frame)!
                     ppc.delegate = self
@@ -72,16 +74,18 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
-            let waypoint = MapPin(coordinate: coordinate, title: "Blah", subtitle: "BlahBlah")
+            let waypoint = MapPin(coordinate: coordinate, title: "Name", subtitle: "Hint")
             mapView.addAnnotation(waypoint)
+            let newWayPoint = wayPoint(coordinates: coordinate, name: "Gold", hint: "Mine", image: nil)
+            wayPoints["Name"] = newWayPoint
         }
     }
     
     // MARK: Popover Delegate
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-        if pinSelected != nil {
-            mapView.selectAnnotation(pinSelected!, animated: true)
+        if pinViewSelected != nil {
+            mapView.selectAnnotation(pinViewSelected!, animated: true)
         }
     }
     
