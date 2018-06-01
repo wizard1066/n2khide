@@ -15,13 +15,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         if pinViewSelected != nil, name != nil, hint != nil  {
             let cords2U = pinViewSelected?.coordinate
             mapView.removeAnnotation(pinViewSelected!)
-        
-            print("setWayPoint \(name) \(hint)")
             let waypoint = MapPin(coordinate: cords2U!, title: name!,subtitle: hint!)
             mapView.addAnnotation(waypoint)
             mapView.selectAnnotation(waypoint, animated: true)
-        } else {
-            print("you gota nil in there")
+            let newWayPoint = wayPoint(coordinates: waypoint.coordinate, name: waypoint.title, hint: waypoint.subtitle, image: nil)
+            wayPoints[name!] = newWayPoint
         }
     }
     
@@ -77,6 +75,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         print("destination \(destination)")
         if segue.identifier == Constants.EditUserWaypoint {
             let ewvc = destination as? EditWaypointController
+            wayPoints.removeValue(forKey: ((pinViewSelected?.title)!)!)
+           
             ewvc?.nameText = (pinViewSelected?.title)!
             ewvc?.hintText = (pinViewSelected?.subtitle)!
             ewvc?.setWayPoint = self
@@ -90,17 +90,19 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
-            let waypoint = MapPin(coordinate: coordinate, title: "Gold", subtitle: "Mine")
+            let wayNames = Array(wayPoints.keys)
+            let uniqueName = "Clue".madeUnique(withRespectTo: wayNames)
+            let waypoint = MapPin(coordinate: coordinate, title: uniqueName, subtitle: "Hint")
             mapView.addAnnotation(waypoint)
-            let newWayPoint = wayPoint(coordinates: coordinate, name: "Gold", hint: "Mine", image: nil)
-            wayPoints["Name"] = newWayPoint
+            let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil)
+            wayPoints[uniqueName] = newWayPoint
         }
     }
     
     // MARK: Popover Delegate
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-        
+        print("popoverPresentationControllerDidDismissPopover")
     }
     
     // MARK: DropZone

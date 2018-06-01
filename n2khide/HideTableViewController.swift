@@ -10,7 +10,7 @@ import UIKit
 
 class HideTableViewController: UITableViewController {
     
-    var listOfPoint2Seek = ["Rule1","Rule2","Rule3"]
+    var listOfPoint2Seek:[wayPoint] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +21,10 @@ class HideTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
     }
 
     override func didReceiveMemoryWarning() {
@@ -37,7 +41,7 @@ class HideTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-          return listOfPoint2Seek.count
+         return wayPoints.count
     }
 
     
@@ -45,12 +49,17 @@ class HideTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RuleCell", for: indexPath)
 
         // Configure the cell...
-        cell.textLabel? .text = listOfPoint2Seek[indexPath.row]
-        return cell
+        if listOfPoint2Seek.count > 0 {
+            let waypoint = listOfPoint2Seek[indexPath.row]
+            cell.detailTextLabel?.text = waypoint.hint
+            cell.textLabel? .text = waypoint.name
+            return cell
+        } else {
+            return cell
+        }
     }
  
     @IBAction func newRule(_ sender: Any) {
-        listOfPoint2Seek += ["Untitled".madeUnique(withRespectTo: listOfPoint2Seek)]
         tableView.reloadData()
     }
 
