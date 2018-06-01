@@ -19,7 +19,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             print("setWayPoint \(name) \(hint)")
             let waypoint = MapPin(coordinate: cords2U!, title: name!,subtitle: hint!)
             mapView.addAnnotation(waypoint)
-//            mapView.selectAnnotation(pinViewSelected!, animated: true)
+            mapView.selectAnnotation(waypoint, animated: true)
         } else {
             print("you gota nil in there")
         }
