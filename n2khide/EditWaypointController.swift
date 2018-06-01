@@ -8,7 +8,13 @@
 
 import UIKit
 
+protocol  setWayPoint  {
+    func didSetVariable(image: UIImage?, name: String?, hint: String?)
+}
+
 class EditWaypointController: UIViewController {
+    
+    var setWayPoint: setWayPoint!
 
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var hintTextField: UITextField!
@@ -47,16 +53,21 @@ class EditWaypointController: UIViewController {
     private var hintObserver: NSObjectProtocol?
     
     private func listenToTextFields() {
+        weak var presentingController = self.presentingViewController as? HiddingViewController
         let center = NotificationCenter.default
         let queue = OperationQueue.main
         let alert2Monitor = NSNotification.Name.UITextViewTextDidChange
         namedObserver = center.addObserver(forName: nil, object: nameTextField, queue: queue) { (notification) in
             if notification.name.rawValue == "UITextFieldTextDidChangeNotification" {
                 print("You edited text \(self.nameTextField.text) \(notification.name)")
+//                presentingController?.Text2Pass = self.nameTextField.text
+                self.setWayPoint.didSetVariable(image: nil, name: self.nameTextField.text, hint: self.hintTextField.text)
             }
         }
         hintObserver = center.addObserver(forName: nil, object: hintTextField, queue: queue) { (notification) in
             print("You edited hint \(self.hintTextField.text)")
+            self.setWayPoint.didSetVariable(image: nil, name: self.nameTextField.text, hint: self.hintTextField.text)
+//            presentingController?.Text2Pass = self.nameTextField.text
         }
     }
     

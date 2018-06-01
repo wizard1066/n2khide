@@ -9,7 +9,22 @@
 import UIKit
 import MapKit
 
-class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate {
+class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint  {
+    
+    func didSetVariable(image: UIImage?, name: String?, hint: String?) {
+        if pinViewSelected != nil, name != nil, hint != nil  {
+            let cords2U = pinViewSelected?.coordinate
+            mapView.removeAnnotation(pinViewSelected!)
+        
+            print("setWayPoint \(name) \(hint)")
+            let waypoint = MapPin(coordinate: cords2U!, title: name!,subtitle: hint!)
+            mapView.addAnnotation(waypoint)
+//            mapView.selectAnnotation(pinViewSelected!, animated: true)
+        } else {
+            print("you gota nil in there")
+        }
+    }
+    
     
     // MARK: MapView
     
@@ -62,8 +77,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         print("destination \(destination)")
         if segue.identifier == Constants.EditUserWaypoint {
             let ewvc = destination as? EditWaypointController
-            ewvc?.nameText = wayPoints["Name"]?.name
-            ewvc?.hintText = wayPoints["Name"]?.hint
+            ewvc?.nameText = (pinViewSelected?.title)!
+            ewvc?.hintText = (pinViewSelected?.subtitle)!
+            ewvc?.setWayPoint = self
                 if let ppc = ewvc?.popoverPresentationController {
                     ppc.sourceRect = (annotationView?.frame)!
                     ppc.delegate = self
@@ -74,7 +90,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
-            let waypoint = MapPin(coordinate: coordinate, title: "Name", subtitle: "Hint")
+            let waypoint = MapPin(coordinate: coordinate, title: "Gold", subtitle: "Mine")
             mapView.addAnnotation(waypoint)
             let newWayPoint = wayPoint(coordinates: coordinate, name: "Gold", hint: "Mine", image: nil)
             wayPoints["Name"] = newWayPoint
@@ -84,9 +100,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     // MARK: Popover Delegate
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-        if pinViewSelected != nil {
-            mapView.selectAnnotation(pinViewSelected!, animated: true)
-        }
+        
     }
     
     // MARK: DropZone
