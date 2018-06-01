@@ -80,6 +80,7 @@
                         <viewLayoutGuide key="safeArea" id="fwG-HK-XNU"/>
                     </view>
                     <connections>
+                        <outlet property="dropZone" destination="z5D-0U-KQ1" id="oYk-Gv-Ysg"/>
                         <outlet property="hintTextField" destination="QMz-gr-6IX" id="91G-CM-vW2"/>
                         <outlet property="nameTextField" destination="NPw-2x-d5g" id="XrF-qu-trc"/>
                     </connections>

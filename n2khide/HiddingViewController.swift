@@ -17,8 +17,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             mapView.removeAnnotation(pinViewSelected!)
             let waypoint = MapPin(coordinate: cords2U!, title: name!,subtitle: hint!)
             mapView.addAnnotation(waypoint)
-            mapView.selectAnnotation(waypoint, animated: true)
-            let newWayPoint = wayPoint(coordinates: waypoint.coordinate, name: waypoint.title, hint: waypoint.subtitle, image: nil)
+//            mapView.selectAnnotation(waypoint, animated: true)
+            let newWayPoint = wayPoint(coordinates: waypoint.coordinate, name: waypoint.title, hint: waypoint.subtitle, image: image)
             wayPoints[name!] = newWayPoint
         }
     }
@@ -56,6 +56,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         print("annotation selected")
         pinViewSelected = view.annotation
+        if wayPoints[((pinViewSelected?.title)!)!] != nil, wayPoints[(pinViewSelected?.title)!!]?.image != nil {
+            if let thumbButton = view.leftCalloutAccessoryView as? UIButton {
+                thumbButton.setImage(wayPoints[(pinViewSelected?.title)!!]?.image, for: .normal)
+            }
+        }
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
