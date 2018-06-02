@@ -227,3 +227,35 @@ class MapPin : NSObject, MKAnnotation {
         self.subtitle = subtitle
     }
 }
+
+class eMapPin: MapPin {
+    override var coordinate: CLLocationCoordinate2D {
+        get {
+            return super.coordinate
+        }
+        set {
+            super.coordinate.latitude = newValue.latitude
+            super.coordinate.longitude = newValue.longitude
+        }
+    }
+    override var title: String? {
+        get {
+            return super.title
+        }
+        set {
+            self.title = newValue
+        }
+    }
+    override var subtitle: String? {
+        get {
+            return super.subtitle
+        }
+        set {
+            self.subtitle = newValue
+        }
+    }
+    
+}
+
+
+

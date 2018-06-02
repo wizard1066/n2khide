@@ -9,11 +9,13 @@
 import Foundation
 import MapKit
 
-struct wayPoint {
-    var coordinates: CLLocationCoordinate2D?
-    var name: String?
-    var hint: String?
-    var image: UIImage?
-}
+    struct wayPoint {
+        var coordinates: CLLocationCoordinate2D?
+        var name: String?
+        var hint: String?
+        var image: UIImage?
+    }
 
-var wayPoints:[String:wayPoint] = [:]
+    var wayPoints:[String:wayPoint] = [:]
+    
+

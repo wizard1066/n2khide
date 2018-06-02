@@ -13,12 +13,15 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     func didSetVariable(image: UIImage?, name: String?, hint: String?) {
         if pinViewSelected != nil, name != nil, hint != nil  {
-            let cords2U = pinViewSelected?.coordinate
-            mapView.removeAnnotation(pinViewSelected!)
-            let waypoint = MapPin(coordinate: cords2U!, title: name!,subtitle: hint!)
-            mapView.addAnnotation(waypoint)
+            pinViewSelected?.title = name
+            pinViewSelected?.subtitle = hint
+            mapView.selectAnnotation(pinViewSelected!, animated: true)
+//            let cords2U = pinViewSelected?.coordinate
+//            mapView.removeAnnotation(pinViewSelected!)
+//            let waypoint = MapPin(coordinate: cords2U!, title: name!,subtitle: hint!)
+//            mapView.addAnnotation(waypoint)
 //            mapView.selectAnnotation(waypoint, animated: true)
-            let newWayPoint = wayPoint(coordinates: waypoint.coordinate, name: waypoint.title, hint: waypoint.subtitle, image: image)
+//            let newWayPoint = wayPoint(coordinates: waypoint.coordinate, name: waypoint.title, hint: waypoint.subtitle, image: image)
             wayPoints[name!] = newWayPoint
         }
     }
@@ -51,11 +54,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         return view
     }
     
-    private var pinViewSelected: MKAnnotation?
+//    private var pinViewSelected: MKAnnotation?
+    private var pinViewSelected: MKPointAnnotation?
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         print("annotation selected")
-        pinViewSelected = view.annotation
+        pinViewSelected = view.annotation as? MKPointAnnotation
         if wayPoints[((pinViewSelected?.title)!)!] != nil, wayPoints[(pinViewSelected?.title)!!]?.image != nil {
             if let thumbButton = view.leftCalloutAccessoryView as? UIButton {
                 thumbButton.setImage(wayPoints[(pinViewSelected?.title)!!]?.image, for: .normal)
@@ -97,8 +101,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
             let wayNames = Array(wayPoints.keys)
             let uniqueName = "Clue".madeUnique(withRespectTo: wayNames)
-            let waypoint = MapPin(coordinate: coordinate, title: uniqueName, subtitle: "Hint")
-            mapView.addAnnotation(waypoint)
+            let waypoint = eMapPin(coordinate: coordinate, title: uniqueName, subtitle: "Hint")
+            let waypoint2 = MKPointAnnotation()
+            waypoint2.coordinate  = coordinate
+            waypoint2.title = uniqueName
+            waypoint2.subtitle = "Hint"
+            mapView.addAnnotation(waypoint2)
             let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil)
             wayPoints[uniqueName] = newWayPoint
         }
