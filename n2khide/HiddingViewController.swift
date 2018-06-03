@@ -22,7 +22,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //            mapView.addAnnotation(waypoint)
 //            mapView.selectAnnotation(waypoint, animated: true)
 //            let newWayPoint = wayPoint(coordinates: waypoint.coordinate, name: waypoint.title, hint: waypoint.subtitle, image: image)
-            wayPoints[name!] = newWayPoint
+//            wayPoints[name!] = newWayPoint
         }
     }
     
@@ -56,10 +56,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
 //    private var pinViewSelected: MKAnnotation?
     private var pinViewSelected: MKPointAnnotation?
+//    var pinViewSelected: eMapPin?
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         print("annotation selected")
         pinViewSelected = view.annotation as? MKPointAnnotation
+//        pinViewSelected =  view.annotation as? eMapPin
         if wayPoints[((pinViewSelected?.title)!)!] != nil, wayPoints[(pinViewSelected?.title)!!]?.image != nil {
             if let thumbButton = view.leftCalloutAccessoryView as? UIButton {
                 thumbButton.setImage(wayPoints[(pinViewSelected?.title)!!]?.image, for: .normal)
@@ -102,10 +104,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let wayNames = Array(wayPoints.keys)
             let uniqueName = "Clue".madeUnique(withRespectTo: wayNames)
             let waypoint = eMapPin(coordinate: coordinate, title: uniqueName, subtitle: "Hint")
-            let waypoint2 = MKPointAnnotation()
-            waypoint2.coordinate  = coordinate
-            waypoint2.title = uniqueName
-            waypoint2.subtitle = "Hint"
+           let waypoint2 = MKPointAnnotation()
+//            let waypoint2 =  eMapPin(coordinate: coordinate, title: uniqueName, subtitle: "Hint")
+          waypoint2.coordinate  = coordinate
+          waypoint2.title = uniqueName
+          waypoint2.subtitle = "Hint"
             mapView.addAnnotation(waypoint2)
             let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil)
             wayPoints[uniqueName] = newWayPoint

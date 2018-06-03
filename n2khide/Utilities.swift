@@ -243,7 +243,7 @@ class eMapPin: MapPin {
             return super.title
         }
         set {
-            self.title = newValue
+            super.title = newValue
         }
     }
     override var subtitle: String? {
@@ -251,7 +251,7 @@ class eMapPin: MapPin {
             return super.subtitle
         }
         set {
-            self.subtitle = newValue
+            super.subtitle = newValue
         }
     }
     
