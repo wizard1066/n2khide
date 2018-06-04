@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MobileCoreServices
 
 protocol  setWayPoint  {
     func didSetName(name: String?)
@@ -14,14 +15,51 @@ protocol  setWayPoint  {
     func didSetImage(image: UIImage?)
 }
 
-class EditWaypointController: UIViewController, UIDropInteractionDelegate {
+class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var setWayPoint: setWayPoint!
+    
+    //MARK: Camera and Library routines
 
+    @IBOutlet weak var CameraButton: UIButton! {
+        didSet {
+            CameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
+        }
+    }
     @IBAction func Camera(_ sender: Any) {
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.mediaTypes = [kUTTypeImage as String]
+        picker.allowsEditing = true
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.presentingViewController?.dismiss(animated: true, completion: {
+            // nothing
+        })
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let image = (info[UIImagePickerControllerEditedImage] as? UIImage ?? info[UIImagePickerControllerOriginalImage] as? UIImage) {
+            DispatchQueue.main.async {
+                self.updateImage(image2U: image)
+                self.setWayPoint.didSetImage(image: image)
+            }
+        }
+        picker.presentingViewController?.dismiss(animated: true, completion: {
+            // nothing
+        })
     }
     
     @IBAction func Library(_ sender: Any) {
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.mediaTypes = [kUTTypeImage as String]
+        picker.allowsEditing = true
+        picker.delegate = self
+        present(picker, animated: true)
     }
     
     @IBOutlet weak var nameTextField: UITextField!
@@ -113,17 +151,21 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate {
     
     var imageFetcher: ImageFetcher!
     
+    private func updateImage(image2U: UIImage) {
+        let image2D = UIImageView(frame: self.dropZone.frame)
+        image2D.image = image2U
+        self.dropZone.addSubview(image2D)
+        image2D.translatesAutoresizingMaskIntoConstraints  = false
+        image2D.widthAnchor.constraint(equalToConstant: 64).isActive = true
+        image2D.heightAnchor.constraint(equalToConstant: 64).isActive = true
+        image2D.centerXAnchor.constraint(equalTo: self.dropZone.centerXAnchor).isActive = true
+        image2D.centerYAnchor.constraint(equalTo: self.dropZone.centerYAnchor).isActive = true
+    }
+    
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
         imageFetcher = ImageFetcher() { (url, image) in
             DispatchQueue.main.async {
-                let image2D = UIImageView(frame: self.dropZone.frame)
-                image2D.image = image
-                 self.dropZone.addSubview(image2D)
-                image2D.translatesAutoresizingMaskIntoConstraints  = false
-                image2D.widthAnchor.constraint(equalToConstant: 64).isActive = true
-                image2D.heightAnchor.constraint(equalToConstant: 64).isActive = true
-                image2D.centerXAnchor.constraint(equalTo: self.dropZone.centerXAnchor).isActive = true
-                image2D.centerYAnchor.constraint(equalTo: self.dropZone.centerYAnchor).isActive = true
+               self.updateImage(image2U: image)
                 self.setWayPoint.didSetImage(image: image)
             }
         }

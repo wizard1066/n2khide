@@ -15,6 +15,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
          if pinViewSelected != nil, name != nil {
             pinViewSelected?.title = name
             mapView.selectAnnotation(pinViewSelected!, animated: true)
+            updateWayname(waypoint2U: pinViewSelected, image2U: nil)
         }
     }
     
@@ -22,6 +23,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         if pinViewSelected != nil, hint != nil {
             pinViewSelected?.subtitle = hint
             mapView.selectAnnotation(pinViewSelected!, animated: true)
+            updateWayname(waypoint2U: pinViewSelected, image2U: nil)
         }
     }
     
@@ -30,6 +32,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             if let thumbButton = pinView.leftCalloutAccessoryView as? UIButton {
                 thumbButton.setImage(image, for: .normal)
                 mapView.selectAnnotation(pinViewSelected!, animated: true)
+                updateWayname(waypoint2U: pinViewSelected, image2U: image)
             }
         }
     }
@@ -101,17 +104,21 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
+    private func updateWayname(waypoint2U: MKPointAnnotation, image2U: UIImage?) {
+        let waypoint2A = wayPoint(coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U)
+        wayPoints[waypoint2U.title!] = waypoint2A
+    }
+    
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
             let wayNames = Array(wayPoints.keys)
             let uniqueName = "Clue".madeUnique(withRespectTo: wayNames)
-            let waypoint = eMapPin(coordinate: coordinate, title: uniqueName, subtitle: "Hint")
            let waypoint2 = MKPointAnnotation()
-//            let waypoint2 =  eMapPin(coordinate: coordinate, title: uniqueName, subtitle: "Hint")
           waypoint2.coordinate  = coordinate
           waypoint2.title = uniqueName
           waypoint2.subtitle = "Hint"
+            updateWayname(waypoint2U: waypoint2, image2U: nil)
             mapView.addAnnotation(waypoint2)
             let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil)
             wayPoints[uniqueName] = newWayPoint
