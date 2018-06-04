@@ -11,21 +11,28 @@ import MapKit
 
 class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint  {
     
-    func didSetVariable(image: UIImage?, name: String?, hint: String?) {
-        if pinViewSelected != nil, name != nil, hint != nil  {
+    func didSetName(name: String?) {
+         if pinViewSelected != nil, name != nil {
             pinViewSelected?.title = name
-            pinViewSelected?.subtitle = hint
             mapView.selectAnnotation(pinViewSelected!, animated: true)
-//            let cords2U = pinViewSelected?.coordinate
-//            mapView.removeAnnotation(pinViewSelected!)
-//            let waypoint = MapPin(coordinate: cords2U!, title: name!,subtitle: hint!)
-//            mapView.addAnnotation(waypoint)
-//            mapView.selectAnnotation(waypoint, animated: true)
-//            let newWayPoint = wayPoint(coordinates: waypoint.coordinate, name: waypoint.title, hint: waypoint.subtitle, image: image)
-//            wayPoints[name!] = newWayPoint
         }
     }
     
+    func didSetHint(hint: String?) {
+        if pinViewSelected != nil, hint != nil {
+            pinViewSelected?.subtitle = hint
+            mapView.selectAnnotation(pinViewSelected!, animated: true)
+        }
+    }
+    
+    func didSetImage(image: UIImage?) {
+        if pinViewSelected != nil, image != nil {
+            if let thumbButton = pinView.leftCalloutAccessoryView as? UIButton {
+                thumbButton.setImage(image, for: .normal)
+                mapView.selectAnnotation(pinViewSelected!, animated: true)
+            }
+        }
+    }
     
     // MARK: MapView
     
@@ -55,18 +62,14 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
     
 //    private var pinViewSelected: MKAnnotation?
-    private var pinViewSelected: MKPointAnnotation?
+    private var pinViewSelected: MKPointAnnotation!
+    private var pinView: MKAnnotationView!
 //    var pinViewSelected: eMapPin?
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        print("annotation selected")
+        print("annotation selected \(pinViewSelected?.title)")
         pinViewSelected = view.annotation as? MKPointAnnotation
-//        pinViewSelected =  view.annotation as? eMapPin
-        if wayPoints[((pinViewSelected?.title)!)!] != nil, wayPoints[(pinViewSelected?.title)!!]?.image != nil {
-            if let thumbButton = view.leftCalloutAccessoryView as? UIButton {
-                thumbButton.setImage(wayPoints[(pinViewSelected?.title)!!]?.image, for: .normal)
-            }
-        }
+        pinView = view
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
@@ -123,39 +126,41 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     // MARK: DropZone
     
-    @IBOutlet var dropZone: UIView! {
-        didSet {
-            dropZone.addInteraction(UIDropInteraction(delegate:  self))
-        }
-    }
-    
-    func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
-        return  session.canLoadObjects(ofClass: NSURL.self) && session.canLoadObjects(ofClass: UIImage.self)
-    }
-    
-    func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
-        return UIDropProposal(operation: .copy)
-    }
-    
-    var imageFetcher: ImageFetcher!
-    
-    func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
-        imageFetcher = ImageFetcher() { (url, image) in
-            DispatchQueue.main.async {
-                self.hideView.backgroundImage = image
-            }
-        }
-        session.loadObjects(ofClass: NSURL.self) { nsurl in
-            if let url = nsurl.first as? URL {
-                self.imageFetcher.fetch(url)
-            }
-        }
-        session.loadObjects(ofClass: UIImage.self) { images in
-            if let image = images.first as? UIImage {
-                self.imageFetcher.backup = image
-            }
-        }
-    }
+//    @IBOutlet var dropZone: UIView! {
+//        didSet {
+//            dropZone.addInteraction(UIDropInteraction(delegate:  self))
+//        }
+//    }
+//
+//    func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
+//        return  session.canLoadObjects(ofClass: NSURL.self) && session.canLoadObjects(ofClass: UIImage.self)
+//    }
+//
+//    func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
+//        return UIDropProposal(operation: .copy)
+//    }
+//
+//    var imageFetcher: ImageFetcher!
+//
+//    func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
+//        print("dropInteraction")
+//        imageFetcher = ImageFetcher() { (url, image) in
+//            DispatchQueue.main.async {
+//                self.hideView.backgroundImage = image
+//            }
+//        }
+//        session.loadObjects(ofClass: NSURL.self) { nsurl in
+//            if let url = nsurl.first as? URL {
+//                self.imageFetcher.fetch(url)
+//            }
+//        }
+//        session.loadObjects(ofClass: UIImage.self) { images in
+//            if let image = images.first as? UIImage {
+//                self.imageFetcher.backup = image
+//
+//            }
+//        }
+//    }
     
      @IBOutlet weak var hideView: HideView!
 

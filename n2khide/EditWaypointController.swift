@@ -9,13 +9,21 @@
 import UIKit
 
 protocol  setWayPoint  {
-    func didSetVariable(image: UIImage?, name: String?, hint: String?)
+    func didSetName(name: String?)
+    func didSetHint(hint: String?)
+    func didSetImage(image: UIImage?)
 }
 
 class EditWaypointController: UIViewController, UIDropInteractionDelegate {
     
     var setWayPoint: setWayPoint!
 
+    @IBAction func Camera(_ sender: Any) {
+    }
+    
+    @IBAction func Library(_ sender: Any) {
+    }
+    
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var hintTextField: UITextField!
     
@@ -58,10 +66,10 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate {
         let queue = OperationQueue.main
         let alert2Monitor = NSNotification.Name.UITextFieldTextDidEndEditing
         namedObserver = center.addObserver(forName: alert2Monitor, object: nameTextField, queue: queue) { (notification) in
-                self.setWayPoint.didSetVariable(image: nil, name: self.nameTextField.text, hint: self.hintTextField.text)
+                self.setWayPoint.didSetName(name: self.nameTextField.text)
         }
         hintObserver = center.addObserver(forName: alert2Monitor, object: hintTextField, queue: queue) { (notification) in
-            self.setWayPoint.didSetVariable(image: nil, name: self.nameTextField.text, hint: self.hintTextField.text)
+            self.setWayPoint.didSetHint(hint: self.hintTextField.text)
         }
     }
     
@@ -110,15 +118,22 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate {
             DispatchQueue.main.async {
                 let image2D = UIImageView(frame: self.dropZone.frame)
                 image2D.image = image
-                self.dropZone.addSubview(image2D)
-                self.setWayPoint.didSetVariable(image: image, name: self.nameTextField.text, hint: self.hintTextField.text)
+                 self.dropZone.addSubview(image2D)
+                image2D.translatesAutoresizingMaskIntoConstraints  = false
+                image2D.widthAnchor.constraint(equalToConstant: 64).isActive = true
+                image2D.heightAnchor.constraint(equalToConstant: 64).isActive = true
+                image2D.centerXAnchor.constraint(equalTo: self.dropZone.centerXAnchor).isActive = true
+                image2D.centerYAnchor.constraint(equalTo: self.dropZone.centerYAnchor).isActive = true
+                self.setWayPoint.didSetImage(image: image)
             }
         }
+        
         session.loadObjects(ofClass: NSURL.self) { nsurl in
             if let url = nsurl.first as? URL {
                 self.imageFetcher.fetch(url)
             }
         }
+        
         session.loadObjects(ofClass: UIImage.self) { images in
             if let image = images.first as? UIImage {
                 self.imageFetcher.backup = image
