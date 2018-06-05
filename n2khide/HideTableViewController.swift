@@ -8,7 +8,13 @@
 
 import UIKit
 
+protocol zap  {
+    func wayPoint2G(wayPoint2G: String)
+}
+
 class HideTableViewController: UITableViewController {
+    
+    var zapperDelegate: zap!
     
     var listOfPoint2Seek:[wayPoint] = []
 
@@ -16,6 +22,7 @@ class HideTableViewController: UITableViewController {
         super.viewDidLoad()
         self.tableView.dataSource = self
         self.tableView.delegate = self
+       
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -25,6 +32,7 @@ class HideTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
+        self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,7 +49,7 @@ class HideTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-         return wayPoints.count
+         return listOfPoint2Seek.count
     }
 
     
@@ -73,14 +81,56 @@ class HideTableViewController: UITableViewController {
 
     
     // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            listOfPoint2Seek.remove(at: indexPath.row)
+//    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+//
+//    }
+    
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        return .none
+    }
+    
+    override func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+    
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let movedObject = self.listOfPoint2Seek[sourceIndexPath.row]
+        listOfPoint2Seek.remove(at: sourceIndexPath.row)
+        listOfPoint2Seek.insert(movedObject, at: destinationIndexPath.row)
+
+        // To check for correctness enable: self.tableView.reloadData()
+    }
+
+    
+    override func tableView(_ tableView: UITableView,
+                   leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+    {
+        let closeAction = UIContextualAction(style: .normal, title:  "Show", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
+            print("OK, marked as Closed")
+            success(true)
+        })
+        closeAction.image = UIImage(named: "tick")
+        closeAction.backgroundColor = .blue
+        
+        return UISwipeActionsConfiguration(actions: [closeAction])
+        
+    }
+    
+    override func tableView(_ tableView: UITableView,
+                   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+    {
+        let modifyAction = UIContextualAction(style: .normal, title:  "Delete", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
+            let index2Zap = self.listOfPoint2Seek[indexPath.row].name
+            self.zapperDelegate.wayPoint2G(wayPoint2G: index2Zap!)
+            wayPoints.removeValue(forKey: index2Zap!)
+            self.listOfPoint2Seek.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+            success(true)
+        })
+        modifyAction.image = UIImage(named: "hammer")
+        modifyAction.backgroundColor = .red
+        
+        return UISwipeActionsConfiguration(actions: [modifyAction])
     }
     
 

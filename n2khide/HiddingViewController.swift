@@ -9,7 +9,21 @@
 import UIKit
 import MapKit
 
-class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint  {
+
+
+class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap  {
+    
+    // MARK: delete waypoints by name
+    
+    func wayPoint2G(wayPoint2G: String) {
+        for wayP in mapView.annotations {
+            if wayP.title == wayPoint2G {
+                mapView.removeAnnotation(wayP)
+            }
+        }
+    }
+    
+    // MARK: setWayPoint protocl implementation
     
     func didSetName(name: String?) {
          if pinViewSelected != nil, name != nil {
@@ -64,13 +78,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         return view
     }
     
-//    private var pinViewSelected: MKAnnotation?
     private var pinViewSelected: MKPointAnnotation!
     private var pinView: MKAnnotationView!
-//    var pinViewSelected: eMapPin?
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        print("annotation selected \(pinViewSelected?.title)")
         pinViewSelected = view.annotation as? MKPointAnnotation
         pinView = view
     }
@@ -86,14 +97,29 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     // MARK: Navigation
     
+    @IBAction func ShareButton2(_ sender: UIBarButtonItem) {
+        
+        var w2GA:[way2G] = []
+        for ways in wayPoints {
+            let w2G = way2G(longitude: (ways.value.coordinates?.longitude)!, latitude: (ways.value.coordinates?.latitude)!, name: ways.value.name!,hint: ways.value.hint!, imageURL: URL(string: "http://")!)
+            w2GA.append(w2G)
+        }
+        
+        let encoder = JSONEncoder()
+        if let jsonData = try? encoder.encode(w2GA) {
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                print(jsonString)
+            }
+        }
+    }
+    
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destination = segue.destination.contents
         let annotationView = sender as? MKAnnotationView
-        print("destination \(destination)")
         if segue.identifier == Constants.EditUserWaypoint {
             let ewvc = destination as? EditWaypointController
             wayPoints.removeValue(forKey: ((pinViewSelected?.title)!)!)
-           
             ewvc?.nameText = (pinViewSelected?.title)!
             ewvc?.hintText = (pinViewSelected?.subtitle)!
             ewvc?.setWayPoint = self
@@ -101,6 +127,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     ppc.sourceRect = (annotationView?.frame)!
                     ppc.delegate = self
                 }
+        }
+        if segue.identifier == Constants.TableWaypoint {
+            let tbvc = destination as?  HideTableViewController
+            tbvc?.zapperDelegate = self
         }
     }
     
@@ -131,49 +161,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         print("popoverPresentationControllerDidDismissPopover")
     }
     
-    // MARK: DropZone
-    
-//    @IBOutlet var dropZone: UIView! {
-//        didSet {
-//            dropZone.addInteraction(UIDropInteraction(delegate:  self))
-//        }
-//    }
-//
-//    func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
-//        return  session.canLoadObjects(ofClass: NSURL.self) && session.canLoadObjects(ofClass: UIImage.self)
-//    }
-//
-//    func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
-//        return UIDropProposal(operation: .copy)
-//    }
-//
-//    var imageFetcher: ImageFetcher!
-//
-//    func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
-//        print("dropInteraction")
-//        imageFetcher = ImageFetcher() { (url, image) in
-//            DispatchQueue.main.async {
-//                self.hideView.backgroundImage = image
-//            }
-//        }
-//        session.loadObjects(ofClass: NSURL.self) { nsurl in
-//            if let url = nsurl.first as? URL {
-//                self.imageFetcher.fetch(url)
-//            }
-//        }
-//        session.loadObjects(ofClass: UIImage.self) { images in
-//            if let image = images.first as? UIImage {
-//                self.imageFetcher.backup = image
-//
-//            }
-//        }
-//    }
-    
      @IBOutlet weak var hideView: HideView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
     }
 
@@ -182,16 +174,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
     
     // MARK: Constants
     
@@ -200,6 +182,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         static let AnnotationViewReuseIdentifier = "waypoint"
         static let ShowImageSegue = "Show Image"
         static let EditUserWaypoint = "Edit Waypoint"
+        static let TableWaypoint = "Table Waypoint"
     }
     
 
