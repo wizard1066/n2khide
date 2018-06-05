@@ -106,27 +106,33 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let w2G = way2G(longitude: (ways.coordinates?.longitude)!, latitude: (ways.coordinates?.latitude)!, name: ways.name!, hint: ways.hint!, imageURL: URL(string: "http://")!)
             w2GA.append(w2G)
         }
-        
-        let encoder = JSONEncoder()
-        if let jsonData = try? encoder.encode(w2GA) {
-            if let jsonString = String(data: jsonData, encoding: .utf8) {
-                let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-                let file2ShareURL = documentsDirectoryURL.appendingPathComponent("blah.json")
-                print(jsonString)
-                do {
-                    let encodedData = try? JSONEncoder().encode(jsonString)
-                    try encodedData?.write(to: file2ShareURL)
-
-                        let activityViewController = UIActivityViewController(activityItems: [jsonString], applicationActivities: nil)
+        DispatchQueue.main.async {
+            let encoder = JSONEncoder()
+            if let jsonData = try? encoder.encode(w2GA) {
+                if let jsonString = String(data: jsonData, encoding: .utf8) {
+                    var documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                    let file2ShareURL = documentsDirectoryURL.appendingPathComponent("config.n2khunt")
+                    do {
+                        try jsonString.write(to: file2ShareURL, atomically: false, encoding: .utf8)
+                    } catch {
+                        print(error)
+                    }
+                    
+                    do {
+                        let _ = try Data(contentsOf: file2ShareURL)
+                        let activityViewController = UIActivityViewController(activityItems: [file2ShareURL], applicationActivities: nil)
                         activityViewController.popoverPresentationController?.sourceView = self.view
                         self.present(activityViewController, animated: true, completion: nil)
+                    } catch {
+                        print("unable to read")
+                    }
                     
-                } catch {
-                    print(error)
-                }
+                    
+                    
             }
         }
     }
+}
 
     
     @IBAction func ShareButton2(_ sender: UIBarButtonItem) {
@@ -219,3 +225,5 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
 
 }
+
+

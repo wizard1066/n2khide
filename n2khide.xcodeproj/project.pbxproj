@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF40AAB620C6F83100CF6B3E /* CustomItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF40AAB520C6F83100CF6B3E /* CustomItem.swift */; };
 		EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF56461720BD9A4C00F500F6 /* AppDelegate.swift */; };
 		EF56461D20BD9A4C00F500F6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF56461B20BD9A4C00F500F6 /* Main.storyboard */; };
 		EF56461F20BD9A4E00F500F6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF56461E20BD9A4E00F500F6 /* Assets.xcassets */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EF40AAB520C6F83100CF6B3E /* CustomItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomItem.swift; sourceTree = "<group>"; };
 		EF56461420BD9A4C00F500F6 /* n2khide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = n2khide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF56461720BD9A4C00F500F6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EF56461C20BD9A4C00F500F6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -71,6 +73,7 @@
 				EF8586A120BEE09C00A21777 /* EditWaypointController.swift */,
 				EF85869720BE847300A21777 /* HideView.swift */,
 				EF85869D20BE880800A21777 /* HiddingViewController.swift */,
+				EF40AAB520C6F83100CF6B3E /* CustomItem.swift */,
 				EF85869B20BE84A300A21777 /* Utilities.swift */,
 				EF56461E20BD9A4E00F500F6 /* Assets.xcassets */,
 				EF56462020BD9A4E00F500F6 /* LaunchScreen.storyboard */,
@@ -155,6 +158,7 @@
 				EF85869620BE845100A21777 /* HideTableViewController.swift in Sources */,
 				EF85869820BE847300A21777 /* HideView.swift in Sources */,
 				EF8586A220BEE09C00A21777 /* EditWaypointController.swift in Sources */,
+				EF40AAB620C6F83100CF6B3E /* CustomItem.swift in Sources */,
 				EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */,
 				EFF07FB020C03B160018C8C7 /* Common.swift in Sources */,
 			);
