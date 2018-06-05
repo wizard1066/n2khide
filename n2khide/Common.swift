@@ -19,6 +19,7 @@ struct wayPoint {
     }
 
 var wayPoints:[String:wayPoint] = [:]
+var listOfPoint2Seek:[wayPoint] = []
 
 struct way2G: Codable
 {

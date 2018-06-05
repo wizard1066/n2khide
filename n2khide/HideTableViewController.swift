@@ -16,7 +16,6 @@ class HideTableViewController: UITableViewController {
     
     var zapperDelegate: zap!
     
-    var listOfPoint2Seek:[wayPoint] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -94,7 +93,7 @@ class HideTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let movedObject = self.listOfPoint2Seek[sourceIndexPath.row]
+        let movedObject = listOfPoint2Seek[sourceIndexPath.row]
         listOfPoint2Seek.remove(at: sourceIndexPath.row)
         listOfPoint2Seek.insert(movedObject, at: destinationIndexPath.row)
 
@@ -120,10 +119,10 @@ class HideTableViewController: UITableViewController {
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
         let modifyAction = UIContextualAction(style: .normal, title:  "Delete", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
-            let index2Zap = self.listOfPoint2Seek[indexPath.row].name
+            let index2Zap = listOfPoint2Seek[indexPath.row].name
             self.zapperDelegate.wayPoint2G(wayPoint2G: index2Zap!)
             wayPoints.removeValue(forKey: index2Zap!)
-            self.listOfPoint2Seek.remove(at: indexPath.row)
+            listOfPoint2Seek.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
             success(true)
         })

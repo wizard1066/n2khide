@@ -97,21 +97,53 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     // MARK: Navigation
     
-    @IBAction func ShareButton2(_ sender: UIBarButtonItem) {
-        
+    func saveImage() {
+        if listOfPoint2Seek.count != wayPoints.count {
+            listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
+        }
         var w2GA:[way2G] = []
-        for ways in wayPoints {
-            let w2G = way2G(longitude: (ways.value.coordinates?.longitude)!, latitude: (ways.value.coordinates?.latitude)!, name: ways.value.name!,hint: ways.value.hint!, imageURL: URL(string: "http://")!)
+        for ways in listOfPoint2Seek {
+            let w2G = way2G(longitude: (ways.coordinates?.longitude)!, latitude: (ways.coordinates?.latitude)!, name: ways.name!, hint: ways.hint!, imageURL: URL(string: "http://")!)
             w2GA.append(w2G)
         }
         
         let encoder = JSONEncoder()
         if let jsonData = try? encoder.encode(w2GA) {
             if let jsonString = String(data: jsonData, encoding: .utf8) {
+                let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                let file2ShareURL = documentsDirectoryURL.appendingPathComponent("blah.json")
                 print(jsonString)
+                do {
+                    let encodedData = try? JSONEncoder().encode(jsonString)
+                    try encodedData?.write(to: file2ShareURL)
+
+                        let activityViewController = UIActivityViewController(activityItems: [jsonString], applicationActivities: nil)
+                        activityViewController.popoverPresentationController?.sourceView = self.view
+                        self.present(activityViewController, animated: true, completion: nil)
+                    
+                } catch {
+                    print(error)
+                }
             }
         }
     }
+
+    
+    @IBAction func ShareButton2(_ sender: UIBarButtonItem) {
+
+        saveImage()
+//        let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+//        // create a name for your image
+//        let file2ShareURL = documentsDirectoryURL.appendingPathComponent("config.n2kHunt")
+//
+//        let when = DispatchTime.now() + Double(2.0)
+//        DispatchQueue.main.asyncAfter(deadline: when){
+//            let activityViewController = UIActivityViewController(activityItems: [file2ShareURL], applicationActivities: nil)
+//            activityViewController.popoverPresentationController?.sourceView = self.view
+//            self.present(activityViewController, animated: true, completion: nil)
+//        }
+    }
+     
     
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
