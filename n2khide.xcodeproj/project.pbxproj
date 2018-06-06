@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF258B8D20C7D1D10089EB4D /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF258B8C20C7D1D10089EB4D /* CloudKit.framework */; };
 		EF40AAB620C6F83100CF6B3E /* CustomItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF40AAB520C6F83100CF6B3E /* CustomItem.swift */; };
 		EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF56461720BD9A4C00F500F6 /* AppDelegate.swift */; };
 		EF56461D20BD9A4C00F500F6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF56461B20BD9A4C00F500F6 /* Main.storyboard */; };
@@ -21,6 +22,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EF258B8A20C7D1CD0089EB4D /* n2khide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = n2khide.entitlements; sourceTree = "<group>"; };
+		EF258B8C20C7D1D10089EB4D /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		EF40AAB520C6F83100CF6B3E /* CustomItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomItem.swift; sourceTree = "<group>"; };
 		EF56461420BD9A4C00F500F6 /* n2khide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = n2khide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF56461720BD9A4C00F500F6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -41,17 +44,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF258B8D20C7D1D10089EB4D /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EF258B8B20C7D1D10089EB4D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EF258B8C20C7D1D10089EB4D /* CloudKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		EF56460B20BD9A4C00F500F6 = {
 			isa = PBXGroup;
 			children = (
 				EF56461620BD9A4C00F500F6 /* n2khide */,
 				EF56461520BD9A4C00F500F6 /* Products */,
+				EF258B8B20C7D1D10089EB4D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -66,6 +79,7 @@
 		EF56461620BD9A4C00F500F6 /* n2khide */ = {
 			isa = PBXGroup;
 			children = (
+				EF258B8A20C7D1CD0089EB4D /* n2khide.entitlements */,
 				EF85869520BE845100A21777 /* HideTableViewController.swift */,
 				EFF07FAF20C03B160018C8C7 /* Common.swift */,
 				EF56461720BD9A4C00F500F6 /* AppDelegate.swift */,
@@ -114,6 +128,14 @@
 				TargetAttributes = {
 					EF56461320BD9A4C00F500F6 = {
 						CreatedOnToolsVersion = 9.3.1;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -304,6 +326,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = n2khide/n2khide.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CWGS87U262;
 				INFOPLIST_FILE = n2khide/Info.plist;
@@ -322,6 +345,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = n2khide/n2khide.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CWGS87U262;
 				INFOPLIST_FILE = n2khide/Info.plist;

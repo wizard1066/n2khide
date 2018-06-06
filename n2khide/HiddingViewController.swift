@@ -8,8 +8,7 @@
 
 import UIKit
 import MapKit
-
-
+import CloudKit
 
 class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap  {
     
@@ -95,12 +94,126 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
-    // MARK: Navigation
+   
     
-    func saveImage() {
+    // MARK: iCloudKit
+    
+    private var _ckWayPointRecord: CKRecord? {
+        didSet {
+            
+        }
+    }
+    
+    var ckWayPointRecord: CKRecord {
+        get {
+            if _ckWayPointRecord == nil {
+                _ckWayPointRecord = CKRecord(recordType: Constants.Entity.wayPoint )
+            }
+            return _ckWayPointRecord!
+        }
+        set {
+            _ckWayPointRecord = newValue
+        }
+    }
+    
+    private let privateDB = CKContainer.default().privateCloudDatabase
+    
+    func save2Cloud() {
+        let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2Save")
         if listOfPoint2Seek.count != wayPoints.count {
             listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
         }
+        let recordZone: CKRecordZone = CKRecordZone(zoneName: "LeZone")
+        CKContainer.default().discoverUserIdentity(withEmailAddress:"mark.lucking@gmail.com") { (id,error ) in
+            print("identities \(id.debugDescription) \(error)")
+            self.userID = id!
+        }
+        
+        for point2Save in listOfPoint2Seek {
+            let ckWayPointRecord = CKRecord(recordType: "Waypoints", zoneID: recordZone.zoneID)
+            ckWayPointRecord.setObject(point2Save.coordinates?.longitude as CKRecordValue?, forKey: Constants.Attribute.longitude)
+            ckWayPointRecord.setObject(point2Save.coordinates?.latitude as CKRecordValue?, forKey: Constants.Attribute.latitude)
+            ckWayPointRecord.setObject(point2Save.name as CKRecordValue?, forKey: Constants.Attribute.name)
+            ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
+            let imageData = UIImageJPEGRepresentation((point2Save.image)!, 1.0)
+            do {
+                try imageData?.write(to: file2ShareURL)
+                ckWayPointRecord.setObject(CKAsset(fileURL: file2ShareURL), forKey: Constants.Attribute.imageData)
+                
+                privateDB.save(ckWayPointRecord) { (savedRecord, error) in
+                    if error != nil {
+                        print("error \(error.debugDescription)")
+                    }
+                    let sharedRecords: CKRecord = CKRecord(recordType: "Waypoints", zoneID: recordZone.zoneID)
+                    let share = CKShare(rootRecord: sharedRecords)
+                    share[CKShareTitleKey] = "My First Share" as CKRecordValue
+                    share.publicPermission = .readOnly
+                    
+                    let fetchParticipantsOperation: CKFetchShareParticipantsOperation = CKFetchShareParticipantsOperation(userIdentityLookupInfos: [self.userID.lookupInfo!])
+                    fetchParticipantsOperation.fetchShareParticipantsCompletionBlock = {error in
+                        
+                        if let error = error {
+                            print("error for completion" + error.localizedDescription)
+                        }
+                    }
+                    
+                    
+                    let modifyOperation: CKModifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: [sharedRecords, share], recordIDsToDelete: nil)
+                    modifyOperation.savePolicy = .ifServerRecordUnchanged
+                    modifyOperation.perRecordCompletionBlock = {record, error in
+                        print("record completion \(record) and \(error.debugDescription)")
+                    }
+                    modifyOperation.modifyRecordsCompletionBlock = {records, recordIDs, error in
+                        
+                        guard let ckrecords: [CKRecord] = records, let record: CKRecord = ckrecords.first, error == nil else {
+                            print("error in modifying the records " + error!.localizedDescription)
+                            return
+                        }
+                        print("share url \(share.url?.debugDescription ?? "")")
+                    }
+                    self.privateDB.add(modifyOperation)
+                }
+            } catch {
+                print(error)
+            }
+        }
+    }
+        
+    @IBAction func FetchShare(_ sender: Any) {
+        getShare()
+    }
+    
+    @IBAction func GetParts(_ sender: Any) {
+        getParticipant()
+    }
+    
+    func getParticipant() {
+        CKContainer.default().discoverAllIdentities { (identities, error) in
+            print("identities \(identities.debugDescription)")
+        }
+        
+    }
+    
+    private var userID: CKUserIdentity!
+    
+    func getShare() {
+        let shareDB = CKContainer.default().sharedCloudDatabase
+        let privateDB = CKContainer.default().privateCloudDatabase
+        let query = CKQuery(recordType: "Waypoints", predicate: NSPredicate(format: "TRUEPREDICATE", argumentArray: nil))
+        let recordZone: CKRecordZone = CKRecordZone(zoneName: "LeZone")
+        shareDB.perform(query, inZoneWith: recordZone.zoneID, completionHandler:{records, error in
+            print("my record \(records.debugDescription) and error \(error.debugDescription)")
+        })
+        privateDB.perform(query, inZoneWith: recordZone.zoneID, completionHandler:{records, error in
+            print("my record \(records.debugDescription) and error \(error.debugDescription)")
+        })
+    }
+    
+    func saveImage() {
+//        if listOfPoint2Seek.count != wayPoints.count {
+//            listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
+//        }
         var w2GA:[way2G] = []
         for ways in listOfPoint2Seek {
             let w2G = way2G(longitude: (ways.coordinates?.longitude)!, latitude: (ways.coordinates?.latitude)!, name: ways.name!, hint: ways.hint!, imageURL: URL(string: "http://")!)
@@ -126,31 +239,17 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     } catch {
                         print("unable to read")
                     }
-                    
-                    
-                    
             }
         }
     }
 }
-
     
     @IBAction func ShareButton2(_ sender: UIBarButtonItem) {
-
+        save2Cloud()
         saveImage()
-//        let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-//        // create a name for your image
-//        let file2ShareURL = documentsDirectoryURL.appendingPathComponent("config.n2kHunt")
-//
-//        let when = DispatchTime.now() + Double(2.0)
-//        DispatchQueue.main.asyncAfter(deadline: when){
-//            let activityViewController = UIActivityViewController(activityItems: [file2ShareURL], applicationActivities: nil)
-//            activityViewController.popoverPresentationController?.sourceView = self.view
-//            self.present(activityViewController, animated: true, completion: nil)
-//        }
     }
      
-    
+     // MARK: Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destination = segue.destination.contents
@@ -203,7 +302,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        CKContainer.default().requestApplicationPermission(.userDiscoverability, completionHandler: {status, error in
+            print("error \(error)")
+        })
         // Do any additional setup after loading the view.
     }
 
@@ -221,9 +322,18 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         static let ShowImageSegue = "Show Image"
         static let EditUserWaypoint = "Edit Waypoint"
         static let TableWaypoint = "Table Waypoint"
+        
+        struct Entity {
+            static let wayPoint = "waypoint"
+        }
+        struct Attribute {
+            static let longitude = "longitude"
+            static let  latitude = "latitude"
+            static let  name = "name"
+            static let hint = "hint"
+            static let  imageData = "image"
+        }
     }
-    
-
 }
 
 

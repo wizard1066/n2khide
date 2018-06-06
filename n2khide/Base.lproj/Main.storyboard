@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -170,11 +171,23 @@
                                 </segue>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Share" id="hBl-mB-9A3">
-                            <connections>
-                                <action selector="ShareButton2:" destination="17o-cH-NIh" id="0Vk-FL-SrB"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem title="Share" id="hBl-mB-9A3">
+                                <connections>
+                                    <action selector="ShareButton2:" destination="17o-cH-NIh" id="0Vk-FL-SrB"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Fetch" id="HSj-4F-8zi">
+                                <connections>
+                                    <action selector="FetchShare:" destination="17o-cH-NIh" id="hGt-zJ-ZlS"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Parts" id="5rp-DO-9vb">
+                                <connections>
+                                    <action selector="GetParts:" destination="17o-cH-NIh" id="fcK-ll-V4P"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
@@ -237,7 +250,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WqC-w5-X9s" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3708" y="-93.103448275862078"/>
+            <point key="canvasLocation" x="3540" y="-124"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="UFo-ba-4Gn">
@@ -273,7 +286,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ASA-lh-Dip" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2768.8000000000002" y="-93.103448275862078"/>
+            <point key="canvasLocation" x="2769" y="-123"/>
         </scene>
     </scenes>
 </document>
