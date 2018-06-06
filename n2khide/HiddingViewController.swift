@@ -155,23 +155,27 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         if let error = error {
                             print("error for completion" + error.localizedDescription)
                         }
-                    
-                    let modifyOperation: CKModifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: [sharedRecords, share], recordIDsToDelete: nil)
-                    modifyOperation.savePolicy = .ifServerRecordUnchanged
-                    modifyOperation.perRecordCompletionBlock = {record, error in
-                        print("record completion \(record) and \(error.debugDescription)")
-                    }
-                    modifyOperation.modifyRecordsCompletionBlock = {records, recordIDs, error in
-                        guard let ckrecords: [CKRecord] = records, let record: CKRecord = ckrecords.first, error == nil else {
-                            print("error in modifying the records " + error!.localizedDescription)
-                            return
+                        fetchParticipantsOperation.shareParticipantFetchedBlock = {participant in
+                            print("participant \(participant)")
+                            participant.permission = .readWrite
+                            share.addParticipant(participant)
+                            let modifyOperation: CKModifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: [sharedRecords, share], recordIDsToDelete: nil)
+                            modifyOperation.savePolicy = .ifServerRecordUnchanged
+//                            modifyOperation.perRecordCompletionBlock = {record, error in
+//                                print("record completion \(record) and \(error.debugDescription)")
+//                            }
+                            modifyOperation.modifyRecordsCompletionBlock = {records, recordIDs, error in
+                                guard let ckrecords: [CKRecord] = records, let record: CKRecord = ckrecords.first, error == nil else {
+                                    print("error in modifying the records " + error!.localizedDescription)
+                                    return
+                                }
+                                print("share url \(share.url?.debugDescription ?? "")")
+                            }
+                            self.privateDB.add(modifyOperation)
                         }
-                        print("share url \(share.url?.debugDescription ?? "")")
                     }
-                    self.privateDB.add(modifyOperation)
-                }
-                CKContainer.default().add(fetchParticipantsOperation)
-                }
+                    CKContainer.default().add(fetchParticipantsOperation)
+            }
             } catch {
                 print(error)
             }
@@ -197,7 +201,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     func getShare() {
         let shareDB = CKContainer.default().sharedCloudDatabase
         let privateDB = CKContainer.default().privateCloudDatabase
-        let query = CKQuery(recordType: "Waypoints", predicate: NSPredicate(format: "TRUEPREDICATE", argumentArray: nil))
+        let query = CKQuery(recordType: "Waypoints", predicate: NSPredicate(value: true))
         let recordZone2U = CKRecordZone(zoneName: "LeZone").zoneID
        
         shareDB.perform(query, inZoneWith: recordZone2U) { (records, error) in
