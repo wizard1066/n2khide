@@ -152,12 +152,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     
                     let fetchParticipantsOperation: CKFetchShareParticipantsOperation = CKFetchShareParticipantsOperation(userIdentityLookupInfos: [self.userID.lookupInfo!])
                     fetchParticipantsOperation.fetchShareParticipantsCompletionBlock = {error in
-                        
                         if let error = error {
                             print("error for completion" + error.localizedDescription)
                         }
-                    }
-                    
                     
                     let modifyOperation: CKModifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: [sharedRecords, share], recordIDsToDelete: nil)
                     modifyOperation.savePolicy = .ifServerRecordUnchanged
@@ -165,7 +162,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         print("record completion \(record) and \(error.debugDescription)")
                     }
                     modifyOperation.modifyRecordsCompletionBlock = {records, recordIDs, error in
-                        
                         guard let ckrecords: [CKRecord] = records, let record: CKRecord = ckrecords.first, error == nil else {
                             print("error in modifying the records " + error!.localizedDescription)
                             return
@@ -173,6 +169,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         print("share url \(share.url?.debugDescription ?? "")")
                     }
                     self.privateDB.add(modifyOperation)
+                }
+                CKContainer.default().add(fetchParticipantsOperation)
                 }
             } catch {
                 print(error)
@@ -192,7 +190,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         CKContainer.default().discoverAllIdentities { (identities, error) in
             print("identities \(identities.debugDescription)")
         }
-        
     }
     
     private var userID: CKUserIdentity!
@@ -201,13 +198,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         let shareDB = CKContainer.default().sharedCloudDatabase
         let privateDB = CKContainer.default().privateCloudDatabase
         let query = CKQuery(recordType: "Waypoints", predicate: NSPredicate(format: "TRUEPREDICATE", argumentArray: nil))
-        let recordZone: CKRecordZone = CKRecordZone(zoneName: "LeZone")
-        shareDB.perform(query, inZoneWith: recordZone.zoneID, completionHandler:{records, error in
-            print("my record \(records.debugDescription) and error \(error.debugDescription)")
-        })
-        privateDB.perform(query, inZoneWith: recordZone.zoneID, completionHandler:{records, error in
-            print("my record \(records.debugDescription) and error \(error.debugDescription)")
-        })
+        let recordZone2U = CKRecordZone(zoneName: "LeZone").zoneID
+       
+        shareDB.perform(query, inZoneWith: recordZone2U) { (records, error) in
+            print("mine record \(records.debugDescription) and error \(error.debugDescription)")
+        }
     }
     
     func saveImage() {
