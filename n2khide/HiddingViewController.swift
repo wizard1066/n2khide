@@ -117,10 +117,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
     
     private let privateDB = CKContainer.default().privateCloudDatabase
+    private let sharedDB = CKContainer.default().sharedCloudDatabase
+    private var operationQueue = OperationQueue()
     
     func save2Cloud() {
         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2Save")
+        let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
         if listOfPoint2Seek.count != wayPoints.count {
             listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
         }
@@ -131,6 +133,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
         
         for point2Save in listOfPoint2Seek {
+            operationQueue.maxConcurrentOperationCount = 1
+            operationQueue.waitUntilAllOperationsAreFinished()
+            
             let ckWayPointRecord = CKRecord(recordType: "Waypoints", zoneID: recordZone.zoneID)
             ckWayPointRecord.setObject(point2Save.coordinates?.longitude as CKRecordValue?, forKey: Constants.Attribute.longitude)
             ckWayPointRecord.setObject(point2Save.coordinates?.latitude as CKRecordValue?, forKey: Constants.Attribute.latitude)
@@ -138,32 +143,41 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
             let imageData = UIImageJPEGRepresentation((point2Save.image)!, 1.0)
             do {
-                try imageData?.write(to: file2ShareURL)
-                ckWayPointRecord.setObject(CKAsset(fileURL: file2ShareURL), forKey: Constants.Attribute.imageData)
+//                try imageData?.write(to: file2ShareURL)
+//                ckWayPointRecord.setObject(CKAsset(fileURL: file2ShareURL), forKey: Constants.Attribute.imageData)
                 
                 privateDB.save(ckWayPointRecord) { (savedRecord, error) in
                     if error != nil {
                         print("error \(error.debugDescription)")
                     }
-                    let sharedRecords: CKRecord = CKRecord(recordType: "Waypoints", zoneID: recordZone.zoneID)
-                    let share = CKShare(rootRecord: sharedRecords)
+
+                    let shareID = CKRecordID(recordName: UUID().uuidString, zoneID: recordZone.zoneID)
+                    let share = CKShare(rootRecord: savedRecord!, shareID: shareID)
                     share[CKShareTitleKey] = "My First Share" as CKRecordValue
                     share.publicPermission = .readOnly
-                    
-                    let fetchParticipantsOperation: CKFetchShareParticipantsOperation = CKFetchShareParticipantsOperation(userIdentityLookupInfos: [self.userID.lookupInfo!])
+                    savedRecord?.parent = nil
+                    print("elf.userID \(self.userID)")
+                    let fetchParticipantsOperation = CKFetchShareParticipantsOperation(userIdentityLookupInfos: [self.userID.lookupInfo!])
                     fetchParticipantsOperation.fetchShareParticipantsCompletionBlock = {error in
                         if let error = error {
                             print("error for completion" + error.localizedDescription)
                         }
-                        fetchParticipantsOperation.shareParticipantFetchedBlock = {participant in
-                            print("participant \(participant)")
-                            participant.permission = .readWrite
-                            share.addParticipant(participant)
-                            let modifyOperation: CKModifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: [sharedRecords, share], recordIDsToDelete: nil)
+                    }
+                    fetchParticipantsOperation.shareParticipantFetchedBlock = {participant in
+                        print("participant \(participant)")
+                        participant.permission = .readWrite
+                        share.addParticipant(participant)
+                        fetchParticipantsOperation.fetchShareParticipantsCompletionBlock = { error in
+                            //                                guard handleCloudKitError(error, operation: .fetchRecords) == nil else { return }
+                            if error != nil {
+                                print("fetchParticipantsOp \(error.debugDescription)")
+                            }
+                            print("fetchParticipantsOperation completed")
+                            let modifyOperation = CKModifyRecordsOperation(recordsToSave: [savedRecord!, share], recordIDsToDelete: nil)
                             modifyOperation.savePolicy = .ifServerRecordUnchanged
-//                            modifyOperation.perRecordCompletionBlock = {record, error in
-//                                print("record completion \(record) and \(error.debugDescription)")
-//                            }
+                            modifyOperation.perRecordCompletionBlock = {record, error in
+                                print("record completion \(record) and \(error.debugDescription)")
+                            }
                             modifyOperation.modifyRecordsCompletionBlock = {records, recordIDs, error in
                                 guard let ckrecords: [CKRecord] = records, let record: CKRecord = ckrecords.first, error == nil else {
                                     print("error in modifying the records " + error!.localizedDescription)
@@ -171,11 +185,16 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                                 }
                                 print("share url \(share.url?.debugDescription ?? "")")
                             }
-                            self.privateDB.add(modifyOperation)
+                            self.operationQueue.addOperation(modifyOperation)
                         }
                     }
-                    CKContainer.default().add(fetchParticipantsOperation)
-            }
+                    self.operationQueue.addOperation(fetchParticipantsOperation)
+                        
+                        
+                    
+                    
+                }
+            
             } catch {
                 print(error)
             }
