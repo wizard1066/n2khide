@@ -380,20 +380,54 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//        let center = NotificationCenter.default
-//        let queue = OperationQueue.main
-//        let alert2Monitor = "showPin"
-//        pinObserver = center.addObserver(forName: NSNotification.Name(rawValue: alert2Monitor), object: nil, queue: queue) { (notification) in
+        let center = NotificationCenter.default
+        let queue = OperationQueue.main
+        let alert2Monitor = "showPin"
+        pinObserver = center.addObserver(forName: NSNotification.Name(rawValue: alert2Monitor), object: nil, queue: queue) { (notification) in
+             let record2O = notification.userInfo!["pin"] as? CKShareMetadata
+            if record2O != nil {
+                self.fetchShare(record2O!)
+            }
 //            self.didSet(record2U: "showPin")
-//        }
+        }
+    }
+    
+    func fetchShare(_ metadata: CKShareMetadata) {
+        let operation = CKFetchRecordsOperation(recordIDs: [metadata.rootRecordID])
+        operation.perRecordCompletionBlock = { record, _, error in
+            if error != nil {
+                print(error?.localizedDescription)
+            }
+            if record != nil {
+                let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
+                let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
+                let name = record?.object(forKey:  Constants.Attribute.name) as? String
+                let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
+                let asset = record?.object(forKey:  Constants.Attribute.imageData) as? Data
+                DispatchQueue.main.async() {
+                    let waypoint = MKPointAnnotation()
+                    waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
+                    waypoint.title = name
+                    waypoint.subtitle = hint
+                    self.mapView.addAnnotation(waypoint)
+                }
+            }
+        }
+        operation.fetchRecordsCompletionBlock = { _, error in
+            if error != nil {
+                print(error?.localizedDescription)
+            }
+        }
+        
+        CKContainer.default().sharedCloudDatabase.add(operation)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//         let center = NotificationCenter.default
-//        if pinObserver != nil {
-//            center.removeObserver(pinObserver)
-//        }
+         let center = NotificationCenter.default
+        if pinObserver != nil {
+            center.removeObserver(pinObserver)
+        }
     }
 
     override func viewDidLoad() {
