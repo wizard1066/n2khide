@@ -7,15 +7,44 @@
 //
 
 import UIKit
+import CloudKit
+
+protocol showPoint {
+    func didSet(record2U: String)
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     var window: UIWindow?
+    var weed = false
 
+    func application(_ application: UIApplication,
+                     userDidAcceptCloudKitShareWith cloudKitShareMetadata:
+        CKShareMetadata) {
+
+        let acceptShareOperation: CKAcceptSharesOperation =
+            CKAcceptSharesOperation(shareMetadatas:
+                [cloudKitShareMetadata])
+        
+        acceptShareOperation.qualityOfService = .userInteractive
+        acceptShareOperation.perShareCompletionBlock = {meta, share,
+            error in
+        }
+        acceptShareOperation.acceptSharesCompletionBlock = {
+            error in
+            
+//            let peru = Notification.Name("showPin")
+//            NotificationCenter.default.post(name: peru, object: nil)
+            /// Send your user to where they need to go in your app
+        }
+        
+            CKContainer(identifier:cloudKitShareMetadata.containerIdentifier).add(acceptShareOperation)
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+  
         return true
     }
 

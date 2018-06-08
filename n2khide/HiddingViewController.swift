@@ -10,7 +10,21 @@ import UIKit
 import MapKit
 import CloudKit
 
-class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap  {
+class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint {
+    
+    //MARK:  observer
+    func didSet(record2U: String) {
+        if !sharingApp {
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "Alert", message: record2U, preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "Click", style: UIAlertActionStyle.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+    
+
+    
     
     // MARK: delete waypoints by name
     
@@ -94,7 +108,19 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
-   
+    // MARK: CloudSharing delegate
+    
+    func cloudSharingController(_ csc: UICloudSharingController, failedToSaveShareWithError error: Error) {
+        print(error)
+    }
+    
+    func itemTitle(for csc: UICloudSharingController) -> String? {
+        return "My First Share"
+    }
+    
+    func itemThumbnailData(for: UICloudSharingController) -> Data? {
+        return nil
+    }
     
     // MARK: iCloudKit
     
@@ -119,14 +145,21 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     private let privateDB = CKContainer.default().privateCloudDatabase
     private let sharedDB = CKContainer.default().sharedCloudDatabase
     private var operationQueue = OperationQueue()
+    private var sharingApp = false
     
     func save2Cloud() {
+        sharingApp = true
         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
         if listOfPoint2Seek.count != wayPoints.count {
             listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
         }
-        let recordZone: CKRecordZone = CKRecordZone(zoneName: "LeZone")
+        
+        let recordZone = CKRecordZone(zoneName: "LeZone")
+        CKContainer.default().discoverAllIdentities { (users, error) in
+            print("identities \(users) \(error)")
+        }
+        
         CKContainer.default().discoverUserIdentity(withEmailAddress:"mark.lucking@gmail.com") { (id,error ) in
             print("identities \(id.debugDescription) \(error)")
             self.userID = id!
@@ -143,20 +176,46 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
             let imageData = UIImageJPEGRepresentation((point2Save.image)!, 1.0)
             do {
-//                try imageData?.write(to: file2ShareURL)
-//                ckWayPointRecord.setObject(CKAsset(fileURL: file2ShareURL), forKey: Constants.Attribute.imageData)
+                try imageData?.write(to: file2ShareURL)
+                ckWayPointRecord.setObject(CKAsset(fileURL: file2ShareURL), forKey: Constants.Attribute.imageData)
+                
+                self.privateDB.save(recordZone, completionHandler: ({returnRecord, error in
+                    if error != nil {
+                        // Zone creation failed
+                        print("Cloud privateDB Error\n\(error?.localizedDescription)")
+                    } else {
+                        // Zone creation succeeded
+                        print("The 'privateDB LeZone' was successfully created in the private database.")
+                    }
+                }))
                 
                 privateDB.save(ckWayPointRecord) { (savedRecord, error) in
                     if error != nil {
                         print("error \(error.debugDescription)")
                     }
-
-                    let shareID = CKRecordID(recordName: UUID().uuidString, zoneID: recordZone.zoneID)
-                    let share = CKShare(rootRecord: savedRecord!, shareID: shareID)
+                    let share = CKShare(rootRecord: savedRecord!)
                     share[CKShareTitleKey] = "My First Share" as CKRecordValue
-                    share.publicPermission = .readOnly
+                    share.publicPermission = .none
                     savedRecord?.parent = nil
                     print("elf.userID \(self.userID)")
+                    
+                    let sharingController = UICloudSharingController(preparationHandler: {(UICloudSharingController, handler:
+                        @escaping (CKShare?, CKContainer?, Error?) -> Void) in
+                        let modifyOp = CKModifyRecordsOperation(recordsToSave:
+                            [savedRecord!, share], recordIDsToDelete: nil)
+                        modifyOp.modifyRecordsCompletionBlock = { (record, recordID,
+                            error) in
+                            handler(share, CKContainer.default(), error)
+                        }
+                        CKContainer.default().privateCloudDatabase.add(modifyOp)
+                    })
+                    sharingController.availablePermissions = [.allowReadWrite,
+                                                              .allowPrivate]
+                    sharingController.delegate = self
+                    sharingController.popoverPresentationController?.sourceView = self.view
+                    self.present(sharingController, animated:true, completion:nil)
+                    
+                    
                     let fetchParticipantsOperation = CKFetchShareParticipantsOperation(userIdentityLookupInfos: [self.userID.lookupInfo!])
                     fetchParticipantsOperation.fetchShareParticipantsCompletionBlock = {error in
                         if let error = error {
@@ -184,17 +243,17 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                                     return
                                 }
                                 print("share url \(share.url?.debugDescription ?? "")")
+                                DispatchQueue.main.async {
+                                    UIApplication.shared.open(share.url!, options: [:], completionHandler: { (status) in
+                                        // do nothing
+                                })
+                                }
                             }
                             self.operationQueue.addOperation(modifyOperation)
                         }
                     }
                     self.operationQueue.addOperation(fetchParticipantsOperation)
-                        
-                        
-                    
-                    
                 }
-            
             } catch {
                 print(error)
             }
@@ -264,7 +323,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     @IBAction func ShareButton2(_ sender: UIBarButtonItem) {
         save2Cloud()
-        saveImage()
+//        saveImage()
     }
      
      // MARK: Navigation
@@ -317,6 +376,25 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
     
      @IBOutlet weak var hideView: HideView!
+    private var pinObserver: NSObjectProtocol!
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+//        let center = NotificationCenter.default
+//        let queue = OperationQueue.main
+//        let alert2Monitor = "showPin"
+//        pinObserver = center.addObserver(forName: NSNotification.Name(rawValue: alert2Monitor), object: nil, queue: queue) { (notification) in
+//            self.didSet(record2U: "showPin")
+//        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+//         let center = NotificationCenter.default
+//        if pinObserver != nil {
+//            center.removeObserver(pinObserver)
+//        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
