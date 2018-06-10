@@ -108,6 +108,38 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
+    // MARK: UIAlertController + iCloud code
+    
+    var linksRecord: CKReference!
+    var mapRecord: CKRecord!
+    
+    @IBAction func newMap(_ sender: UIBarButtonItem) {
+
+         let recordZone = CKRecordZone(zoneName: "LeZone")
+        let alert = UIAlertController(title: "Map Name", message: "", preferredStyle: .alert)
+        alert.addTextField { (textField) in
+            textField.placeholder = "Map Name"
+        }
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+                let textField = alert?.textFields![0]
+            if textField?.text != "" {
+                    self.mapRecord = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: recordZone.zoneID)
+                    self.mapRecord.setObject(textField?.text as CKRecordValue?, forKey: Constants.Attribute.mapName)
+                    self.linksRecord = CKReference(record: self.mapRecord, action: .deleteSelf)
+                    self.privateDB.save(recordZone, completionHandler: ({returnRecord, error in
+                    if error != nil {
+                        // Zone creation failed
+                        print("Cloud privateDB Error\n\(error?.localizedDescription)")
+                    } else {
+                        // Zone creation succeeded
+                        print("The 'privateDB LeZone' was successfully created in the private database.")
+                    }
+                }))
+            }
+            }))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: CloudSharing delegate
     
     func cloudSharingController(_ csc: UICloudSharingController, failedToSaveShareWithError error: Error) {
@@ -174,6 +206,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             ckWayPointRecord.setObject(point2Save.coordinates?.latitude as CKRecordValue?, forKey: Constants.Attribute.latitude)
             ckWayPointRecord.setObject(point2Save.name as CKRecordValue?, forKey: Constants.Attribute.name)
             ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
+            let listReference = CKReference(recordID: linksRecord.recordID, action: .deleteSelf)
+            ckWayPointRecord.setObject(listReference, forKey: Constants.Attribute.linkReference)
+            ckWayPointRecord.setParent(mapRecord)
             let imageData = UIImageJPEGRepresentation((point2Save.image)!, 1.0)
             do {
                 try imageData?.write(to: file2ShareURL)
@@ -193,16 +228,16 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     if error != nil {
                         print("error \(error.debugDescription)")
                     }
-                    let share = CKShare(rootRecord: savedRecord!)
+                    let share = CKShare(rootRecord: self.mapRecord)
                     share[CKShareTitleKey] = "My First Share" as CKRecordValue
                     share.publicPermission = .none
-                    savedRecord?.parent = nil
+                    self.mapRecord?.parent = nil
                     print("elf.userID \(self.userID)")
                     
                     let sharingController = UICloudSharingController(preparationHandler: {(UICloudSharingController, handler:
                         @escaping (CKShare?, CKContainer?, Error?) -> Void) in
                         let modifyOp = CKModifyRecordsOperation(recordsToSave:
-                            [savedRecord!, share], recordIDsToDelete: nil)
+                            [self.mapRecord, share], recordIDsToDelete: nil)
                         modifyOp.modifyRecordsCompletionBlock = { (record, recordID,
                             error) in
                             handler(share, CKContainer.default(), error)
@@ -232,7 +267,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                                 print("fetchParticipantsOp \(error.debugDescription)")
                             }
                             print("fetchParticipantsOperation completed")
-                            let modifyOperation = CKModifyRecordsOperation(recordsToSave: [savedRecord!, share], recordIDsToDelete: nil)
+                            let modifyOperation = CKModifyRecordsOperation(recordsToSave: [self.mapRecord, share], recordIDsToDelete: nil)
                             modifyOperation.savePolicy = .ifServerRecordUnchanged
                             modifyOperation.perRecordCompletionBlock = {record, error in
                                 print("record completion \(record) and \(error.debugDescription)")
@@ -386,14 +421,40 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         pinObserver = center.addObserver(forName: NSNotification.Name(rawValue: alert2Monitor), object: nil, queue: queue) { (notification) in
              let record2O = notification.userInfo!["pin"] as? CKShareMetadata
             if record2O != nil {
-                self.fetchShare(record2O!)
+//                self.fetchShare(record2O!)
+                self.queryShare(record2O!)
             }
 //            self.didSet(record2U: "showPin")
         }
     }
     
-    func fetchShare(_ metadata: CKShareMetadata) {
-        let operation = CKFetchRecordsOperation(recordIDs: [metadata.rootRecordID])
+    func queryShare(_ metadata: CKShareMetadata) {
+        let recordZone2U = CKRecordZone(zoneName: "LeZone").zoneID
+        let linkRecord = [metadata.rootRecordID].first
+        let reference = CKReference(recordID: linkRecord!, action: .deleteSelf)
+        let pred = NSPredicate(format: "linkReference == %@", reference)
+        let query = CKQuery(recordType: "WayPoints", predicate: pred)
+        privateDB.perform(query, inZoneWith: recordZone2U) { [unowned self] results, error in
+            if let error = error {
+                print("queryShare \(error.localizedDescription)")
+            } else {
+                if let results = results {
+                    print("queryShare No \(results.count)")
+                    self.fetchRecords(results)
+                }
+            }
+        }
+    }
+    
+    
+//    func fetchShare(_ metadata: CKShareMetadata) {
+    func fetchRecords(_ records2F:[CKRecord]) {
+        var recordID2F: [CKRecordID] = []
+        for record2D in records2F {
+            recordID2F.append(record2D.recordID)
+        }
+//        let operation = CKFetchRecordsOperation(recordIDs: [metadata.rootRecordID])
+         let operation = CKFetchRecordsOperation(recordIDs: recordID2F)
         operation.perRecordCompletionBlock = { record, _, error in
             if error != nil {
                 print(error?.localizedDescription)
@@ -455,6 +516,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         
         struct Entity {
             static let wayPoint = "waypoint"
+            static let mapLinks = "mapLinks"
         }
         struct Attribute {
             static let longitude = "longitude"
@@ -462,6 +524,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             static let  name = "name"
             static let hint = "hint"
             static let  imageData = "image"
+            static let mapName = "mapName"
+            static let linkReference = "linkReference"
         }
     }
 }

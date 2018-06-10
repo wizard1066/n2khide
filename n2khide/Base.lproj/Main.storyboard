@@ -164,13 +164,20 @@
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="5Hf-VB-lXi">
-                        <barButtonItem key="leftBarButtonItem" title="Review" id="8SY-yb-OLF">
-                            <connections>
-                                <segue destination="Uiy-VE-yg6" kind="popoverPresentation" identifier="Table Waypoint" popoverAnchorBarButtonItem="8SY-yb-OLF" id="AJ9-fT-sgz">
-                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                </segue>
-                            </connections>
-                        </barButtonItem>
+                        <leftBarButtonItems>
+                            <barButtonItem title="Review" id="8SY-yb-OLF">
+                                <connections>
+                                    <segue destination="Uiy-VE-yg6" kind="popoverPresentation" identifier="Table Waypoint" popoverAnchorBarButtonItem="8SY-yb-OLF" id="AJ9-fT-sgz">
+                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                    </segue>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="NewMap" id="7Tj-8q-gGU">
+                                <connections>
+                                    <action selector="newMap:" destination="17o-cH-NIh" id="gFJ-wp-SDu"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
                         <rightBarButtonItems>
                             <barButtonItem title="Share" id="hBl-mB-9A3">
                                 <connections>
