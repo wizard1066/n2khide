@@ -236,17 +236,24 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         
         // new code added for parent setup 2nd try
         
+        var recordID2Share:[CKReference] = []
         sharePoint = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: self.recordZone.zoneID)
+        
+        for rex in self.records2Share {
+            let parentR = CKReference(record: self.sharePoint, action: .none)
+            rex.parent = parentR
+            let childR = CKReference(record: rex, action: .deleteSelf)
+            recordID2Share.append(childR)
+        }
+        
         sharePoint.setObject(self.recordZone.zoneID.zoneName as CKRecordValue, forKey: Constants.Attribute.mapName)
+        sharePoint.setObject(recordID2Share as CKRecordValue, forKey: Constants.Attribute.wayPointsArray)
         privateDB.save(sharePoint) { (savedRecord, error) in
             if error != nil {
                 print("error \(error.debugDescription)")
             }
         
-            for rex in self.records2Share {
-                let parentR = CKReference(record: self.sharePoint, action: .none)
-                rex.parent = parentR
-            }
+
             
             let modifyOp = CKModifyRecordsOperation(recordsToSave:
                 self.records2Share, recordIDsToDelete: nil)
@@ -454,43 +461,23 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
             if record != nil {
                 let name2S = record?.object(forKey: Constants.Attribute.mapName) as? String
-                if name2S != nil {
-                        DispatchQueue.main.async() {
-                            self.navigationItem.title = name2S
-                        }
-                    }
-                } else {
-                    self.plotPin(record: record!)
+                let pins2Plot = record?.object(forKey: Constants.Attribute.wayPointsArray) as? Array<CKReference>
+                self.queryShare(record2S: pins2Plot!)
                 }
             }
         sharedDB.add(operation)
     }
     
-    func plotPin(record: CKRecord?) {
-        if record != nil {
-            var image2D: UIImage!
-            let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
-            let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
-            let name = record?.object(forKey:  Constants.Attribute.name) as? String
-            let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
-            let asset = record?.object(forKey:  Constants.Attribute.imageData) as? Data
-            
-            DispatchQueue.main.async() {
-                let waypoint = MKPointAnnotation()
-                waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
-                waypoint.title = name
-                waypoint.subtitle = hint
-                if asset != nil {
-                    let image2D = UIImage(data: asset!)
-                }
-                self.mapView.addAnnotation(waypoint)
-            }
-        }
+    func plotPin(pins2P: Array<CKReference>) {
+       
     }
     
-    func queryShare(_ metadata: CKShareMetadata) {
-        let record2S =  [metadata.rootRecordID].first
-        let operation = CKFetchRecordsOperation(recordIDs: [record2S!])
+    func queryShare(record2S: [CKReference]) {
+        var pinID:[CKRecordID] = []
+        for pins in record2S {
+            pinID.append(pins.recordID)
+        }
+        let operation = CKFetchRecordsOperation(recordIDs: pinID)
         operation.perRecordCompletionBlock = { record, _, error in
             if error != nil {
                 print(error?.localizedDescription)
@@ -502,7 +489,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 let name = record?.object(forKey:  Constants.Attribute.name) as? String
                 let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
                 let asset = record?.object(forKey:  Constants.Attribute.imageData) as? Data
-                
+
                 DispatchQueue.main.async() {
                     let waypoint = MKPointAnnotation()
                     waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
@@ -521,7 +508,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 print(error?.localizedDescription)
             }
         }
-        
+
         CKContainer.default().sharedCloudDatabase.add(operation)
     }
     
@@ -568,6 +555,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             static let  imageData = "image"
             static let mapName = "mapName"
             static let linkReference = "linkReference"
+            static let wayPointsArray = "wayPointsArray"
         }
     }
 }
