@@ -184,6 +184,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     private let sharedDB = CKContainer.default().sharedCloudDatabase
     private var operationQueue = OperationQueue()
     private var sharingApp = false
+    private var records2Share:[CKRecord] = []
+    private var sharePoint: CKRecord!
     
     func save2Cloud() {
         sharingApp = true
@@ -203,7 +205,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //            self.userID = id!
 //        }
         
-        var records2Share:[CKRecord] = []
+        
         
         for point2Save in listOfPoint2Seek {
             operationQueue.maxConcurrentOperationCount = 1
@@ -232,15 +234,45 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             records2Share.append(ckWayPointRecord)
         }
         
-        let record2S = records2Share.first!
-                    let share = CKShare(rootRecord: record2S)
+        // new code added for parent setup 2nd try
+        
+        sharePoint = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: self.recordZone.zoneID)
+        sharePoint.setObject(self.recordZone.zoneID.zoneName as CKRecordValue, forKey: Constants.Attribute.mapName)
+        privateDB.save(sharePoint) { (savedRecord, error) in
+            if error != nil {
+                print("error \(error.debugDescription)")
+            }
+        
+            for rex in self.records2Share {
+                let parentR = CKReference(record: self.sharePoint, action: .none)
+                rex.parent = parentR
+            }
+            
+            let modifyOp = CKModifyRecordsOperation(recordsToSave:
+                self.records2Share, recordIDsToDelete: nil)
+            modifyOp.savePolicy = .changedKeys
+            modifyOp.perRecordCompletionBlock = {(record,error) in
+                print("error \(error.debugDescription)")
+            }
+            modifyOp.modifyRecordsCompletionBlock = { (record, recordID,
+                error) in
+                if error != nil {
+                    print("error \(error.debugDescription)")
+                }}
+            self.privateDB.add(modifyOp)
+        
+//        let record2S = records2Share.first!
+        let record2S = self.sharePoint
+        
+            let share = CKShare(rootRecord: record2S!)
                     share[CKShareTitleKey] = "My Next Share" as CKRecordValue
                     share.publicPermission = .none
                     
                     let sharingController = UICloudSharingController(preparationHandler: {(UICloudSharingController, handler:
                         @escaping (CKShare?, CKContainer?, Error?) -> Void) in
                         let modifyOp = CKModifyRecordsOperation(recordsToSave:
-                            [record2S, share], recordIDsToDelete: nil)
+                            [record2S!, share], recordIDsToDelete: nil)
+                        modifyOp.savePolicy = .allKeys
                         modifyOp.modifyRecordsCompletionBlock = { (record, recordID,
                             error) in
                             handler(share, CKContainer.default(), error)
@@ -251,33 +283,55 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                                                               .allowPrivate]
                     sharingController.delegate = self
                     sharingController.popoverPresentationController?.sourceView = self.view
+                DispatchQueue.main.async {
                     self.present(sharingController, animated:true, completion:nil)
+                }
+            
+            // Set the parent relationship up
 
+        }
     }
         
     @IBAction func FetchShare(_ sender: Any) {
-        getShare()
+//        getShare()
     }
     
     @IBAction func GetParts(_ sender: Any) {
-        getParticipant()
+//        getParticipant()
+        for rex in records2Share {
+            let parentR = CKReference(record: sharePoint, action: .none)
+            rex.parent = parentR
+        }
+        
+        let modifyOp = CKModifyRecordsOperation(recordsToSave:
+            records2Share, recordIDsToDelete: nil)
+        modifyOp.savePolicy = .changedKeys
+        modifyOp.perRecordCompletionBlock = {(record,error) in
+            print("error \(error.debugDescription)")
+        }
+        modifyOp.modifyRecordsCompletionBlock = { (record, recordID,
+            error) in
+            if error != nil {
+                print("error \(error.debugDescription)")
+            }}
+        self.privateDB.add(modifyOp)
     }
     
     func getParticipant() {
-        CKContainer.default().discoverAllIdentities { (identities, error) in
-            print("identities \(identities.debugDescription)")
-        }
-    }
-    
-    private var userID: CKUserIdentity!
-    
-    func getShare() {
+//        CKContainer.default().discoverAllIdentities { (identities, error) in
+//            print("identities \(identities.debugDescription)")
+//        }
+//    }
+//
+//    private var userID: CKUserIdentity!
+//
+//    func getShare() {
 //        let shareDB = CKContainer.default().sharedCloudDatabase
 //        let privateDB = CKContainer.default().privateCloudDatabase
 //        let query = CKQuery(recordType: "Waypoints", predicate: NSPredicate(value: true))
 ////        let recordZone2U = CKRecordZone(zoneName: "LeZone").zoneID
 //
-//        shareDB.perform(query, inZoneWith: recordZone2U) { (records, error) in
+//        shareDB.perform(query, inZoneWith: zone2U) { (records, error) in
 //            print("mine record \(records.debugDescription) and error \(error.debugDescription)")
 //        }
     }
@@ -381,14 +435,58 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         pinObserver = center.addObserver(forName: NSNotification.Name(rawValue: alert2Monitor), object: nil, queue: queue) { (notification) in
              let record2O = notification.userInfo!["pin"] as? CKShareMetadata
             if record2O != nil {
-//                self.fetchShare(record2O!)
-                self.queryShare(record2O!)
+//                self.queryShare(record2O!)
+                self.fetchParent(record2O!)
+                
             }
-//            self.didSet(record2U: "showPin")
         }
     }
     
-
+    func fetchParent(_ metadata: CKShareMetadata) {
+        print("fcuk11062018 metadata \(metadata)")
+        let record2S =  [metadata.rootRecordID].first
+       
+        
+        let operation = CKFetchRecordsOperation(recordIDs: [record2S!])
+        operation.perRecordCompletionBlock = { record, _, error in
+            if error != nil {
+                print(error?.localizedDescription)
+            }
+            if record != nil {
+                let name2S = record?.object(forKey: Constants.Attribute.mapName) as? String
+                if name2S != nil {
+                        DispatchQueue.main.async() {
+                            self.navigationItem.title = name2S
+                        }
+                    }
+                } else {
+                    self.plotPin(record: record!)
+                }
+            }
+        sharedDB.add(operation)
+    }
+    
+    func plotPin(record: CKRecord?) {
+        if record != nil {
+            var image2D: UIImage!
+            let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
+            let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
+            let name = record?.object(forKey:  Constants.Attribute.name) as? String
+            let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
+            let asset = record?.object(forKey:  Constants.Attribute.imageData) as? Data
+            
+            DispatchQueue.main.async() {
+                let waypoint = MKPointAnnotation()
+                waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
+                waypoint.title = name
+                waypoint.subtitle = hint
+                if asset != nil {
+                    let image2D = UIImage(data: asset!)
+                }
+                self.mapView.addAnnotation(waypoint)
+            }
+        }
+    }
     
     func queryShare(_ metadata: CKShareMetadata) {
         let record2S =  [metadata.rootRecordID].first
