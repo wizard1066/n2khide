@@ -116,7 +116,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     @IBAction func newMap(_ sender: UIBarButtonItem) {
 
-         recordZone = CKRecordZone(zoneName: "LeZone")
+        
         let alert = UIAlertController(title: "Map Name", message: "", preferredStyle: .alert)
         alert.addTextField { (textField) in
             textField.placeholder = "Map Name"
@@ -124,10 +124,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
                 let textField = alert?.textFields![0]
             if textField?.text != "" {
-                    self.mapRecord = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: self.recordZone.zoneID)
-                    self.mapRecord.setObject(textField?.text as CKRecordValue?, forKey: Constants.Attribute.mapName)
-                    self.mapRecord?.parent = nil
-                    self.linksRecord = CKReference(record: self.mapRecord, action: .deleteSelf)
+//                    self.mapRecord = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: self.recordZone.zoneID)
+//                    self.mapRecord.setObject(textField?.text as CKRecordValue?, forKey: Constants.Attribute.mapName)
+//                    self.mapRecord?.parent = nil
+//                    self.linksRecord = CKReference(record: self.mapRecord, action: .deleteSelf)
+                    self.recordZone = CKRecordZone(zoneName: (textField?.text)!)
                     self.privateDB.save(self.recordZone, completionHandler: ({returnRecord, error in
                     if error != nil {
                         // Zone creation failed
@@ -203,6 +204,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //            self.userID = id!
 //        }
         
+        var records2Share:[CKRecord] = []
+        
         for point2Save in listOfPoint2Seek {
             operationQueue.maxConcurrentOperationCount = 1
             operationQueue.waitUntilAllOperationsAreFinished()
@@ -227,27 +230,21 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             } catch {
                 print("Unable to save Waypoint \(error)")
             }
+            records2Share.append(ckWayPointRecord)
         }
         
-        self.privateDB.save(self.mapRecord, completionHandler: ({returnRecord, error in
-            if error != nil {
-                // Zone creation failed
-                print("Cloud privateDB Error\n\(error?.localizedDescription)")
-            } else {
-                // Zone creation succeeded
-                print("The 'privateDB mapRecord' was successfully created in the private database.")
-            }
-        }))
+        let record2S = records2Share.first!
+        
         
 
-                    let share = CKShare(rootRecord: self.mapRecord)
+                    let share = CKShare(rootRecord: record2S)
                     share[CKShareTitleKey] = "My Next Share" as CKRecordValue
                     share.publicPermission = .none
                     
                     let sharingController = UICloudSharingController(preparationHandler: {(UICloudSharingController, handler:
                         @escaping (CKShare?, CKContainer?, Error?) -> Void) in
                         let modifyOp = CKModifyRecordsOperation(recordsToSave:
-                            [self.mapRecord, share], recordIDsToDelete: nil)
+                            [record2S, share], recordIDsToDelete: nil)
                         modifyOp.modifyRecordsCompletionBlock = { (record, recordID,
                             error) in
                             handler(share, CKContainer.default(), error)
@@ -397,31 +394,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     func queryShare(_ metadata: CKShareMetadata) {
         let record2S =  [metadata.rootRecordID].first
-        let listReference = CKReference(recordID: record2S!, action: .deleteSelf)
-        let zone2S = record2S?.zoneID
-//        let pred = NSPredicate(format: "linkReference == %@", listReference)
-        let pred = NSPredicate(value: true)
-        let query = CKQuery(recordType: "wayPoints", predicate: pred)
-        sharedDB.perform(query, inZoneWith: zone2S) { [unowned self] results, error in
-            if let error = error {
-                print("queryShare \(error.localizedDescription)")
-            } else {
-                if let results = results {
-                    print("queryShare No \(results.count)")
-                    self.fetchRecords(results)
-                }
-            }
-        }
-    }
-    
-//    func fetchShare(_ metadata: CKShareMetadata) {
-    func fetchRecords(_ records2F:[CKRecord]) {
-        var recordID2F: [CKRecordID] = []
-        for record2D in records2F {
-            recordID2F.append(record2D.recordID)
-        }
-//        let operation = CKFetchRecordsOperation(recordIDs: [metadata.rootRecordID])
-         let operation = CKFetchRecordsOperation(recordIDs: recordID2F)
+        let operation = CKFetchRecordsOperation(recordIDs: [record2S!])
         operation.perRecordCompletionBlock = { record, _, error in
             if error != nil {
                 print(error?.localizedDescription)
