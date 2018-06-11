@@ -116,7 +116,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     @IBAction func newMap(_ sender: UIBarButtonItem) {
 
-        
         let alert = UIAlertController(title: "Map Name", message: "", preferredStyle: .alert)
         alert.addTextField { (textField) in
             textField.placeholder = "Map Name"
@@ -234,9 +233,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
         
         let record2S = records2Share.first!
-        
-        
-
                     let share = CKShare(rootRecord: record2S)
                     share[CKShareTitleKey] = "My Next Share" as CKRecordValue
                     share.publicPermission = .none
