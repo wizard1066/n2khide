@@ -295,7 +295,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let encoder = JSONEncoder()
             if let jsonData = try? encoder.encode(w2GA) {
                 if let jsonString = String(data: jsonData, encoding: .utf8) {
-                    var documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                    let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
                     let file2ShareURL = documentsDirectoryURL.appendingPathComponent("config.n2khunt")
                     do {
                         try jsonString.write(to: file2ShareURL, atomically: false, encoding: .utf8)
@@ -388,6 +388,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
+
+    
     func queryShare(_ metadata: CKShareMetadata) {
         let record2S =  [metadata.rootRecordID].first
         let operation = CKFetchRecordsOperation(recordIDs: [record2S!])
@@ -396,16 +398,22 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 print(error?.localizedDescription)
             }
             if record != nil {
+                var image2D: UIImage!
                 let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
                 let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
                 let name = record?.object(forKey:  Constants.Attribute.name) as? String
                 let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
                 let asset = record?.object(forKey:  Constants.Attribute.imageData) as? Data
+                
                 DispatchQueue.main.async() {
                     let waypoint = MKPointAnnotation()
                     waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
                     waypoint.title = name
                     waypoint.subtitle = hint
+                    if asset != nil {
+                        let image2D = UIImage(data: asset!)
+                        // fuck
+                    }
                     self.mapView.addAnnotation(waypoint)
                 }
             }
