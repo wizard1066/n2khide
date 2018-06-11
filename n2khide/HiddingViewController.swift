@@ -113,6 +113,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     var linksRecord: CKReference!
     var mapRecord: CKRecord!
     var recordZone: CKRecordZone!
+    var recordZoneID: CKRecordZoneID!
+    var recordID: CKRecordID!
     
     @IBAction func newMap(_ sender: UIBarButtonItem) {
 
@@ -300,7 +302,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
         
     @IBAction func FetchShare(_ sender: Any) {
-//        getShare()
+        getShare()
     }
     
     @IBAction func GetParts(_ sender: Any) {
@@ -328,19 +330,19 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //        CKContainer.default().discoverAllIdentities { (identities, error) in
 //            print("identities \(identities.debugDescription)")
 //        }
-//    }
+    }
 //
 //    private var userID: CKUserIdentity!
 //
-//    func getShare() {
-//        let shareDB = CKContainer.default().sharedCloudDatabase
-//        let privateDB = CKContainer.default().privateCloudDatabase
-//        let query = CKQuery(recordType: "Waypoints", predicate: NSPredicate(value: true))
-////        let recordZone2U = CKRecordZone(zoneName: "LeZone").zoneID
-//
-//        shareDB.perform(query, inZoneWith: zone2U) { (records, error) in
-//            print("mine record \(records.debugDescription) and error \(error.debugDescription)")
-//        }
+func getShare() {
+        let shareDB = CKContainer.default().sharedCloudDatabase
+        let privateDB = CKContainer.default().privateCloudDatabase
+        let predicate = NSPredicate(format: "owningList == %@", recordID)
+        let query = CKQuery(recordType: "Waypoints", predicate: NSPredicate(value: true))
+
+        shareDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
+            print("mine record \(records.debugDescription) and error \(error.debugDescription)")
+        }
     }
     
     func saveImage() {
@@ -450,7 +452,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
     
     func fetchParent(_ metadata: CKShareMetadata) {
-        print("fcuk11062018 metadata \(metadata)")
+        print("fcuk11062018 metadata \(metadata.share.recordID.zoneID)")
+        recordZoneID = metadata.share.recordID.zoneID
+        recordID = metadata.share.recordID
         let record2S =  [metadata.rootRecordID].first
        
         
@@ -461,6 +465,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
             if record != nil {
                 let name2S = record?.object(forKey: Constants.Attribute.mapName) as? String
+                self.navigationItem.title = name2S
                 let pins2Plot = record?.object(forKey: Constants.Attribute.wayPointsArray) as? Array<CKReference>
                 self.queryShare(record2S: pins2Plot!)
                 }
