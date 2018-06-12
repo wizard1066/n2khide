@@ -208,10 +208,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //        }
         
         
+        operationQueue.maxConcurrentOperationCount = 1
+        operationQueue.waitUntilAllOperationsAreFinished()
         
+        var rec2Save:[CKRecord] = []
         for point2Save in listOfPoint2Seek {
-            operationQueue.maxConcurrentOperationCount = 1
-            operationQueue.waitUntilAllOperationsAreFinished()
             
             let ckWayPointRecord = CKRecord(recordType: Constants.Entity.wayPoints, zoneID: self.recordZone.zoneID)
             ckWayPointRecord.setObject(point2Save.coordinates?.longitude as CKRecordValue?, forKey: Constants.Attribute.longitude)
@@ -221,20 +222,39 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //            let listReference = CKReference(recordID: linksRecord.recordID, action: .deleteSelf)
 //            ckWayPointRecord.setObject(listReference, forKey: Constants.Attribute.linkReference)
 //            ckWayPointRecord.setParent(mapRecord)
-            let imageData = UIImageJPEGRepresentation((point2Save.image)!, 1.0)
+            var imageData: Data!
+            if point2Save.image != nil {
+                let imageData = UIImageJPEGRepresentation((point2Save.image)!, 1.0)
+            } else {
+                let imageData = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
+            }
             do {
                 try imageData?.write(to: file2ShareURL)
                 ckWayPointRecord.setObject(CKAsset(fileURL: file2ShareURL), forKey: Constants.Attribute.imageData)
-                privateDB.save(ckWayPointRecord) { (savedRecord, error) in
-                    if error != nil {
-                        print("error \(error.debugDescription)")
-                    }
-                }
+//                privateDB.save(ckWayPointRecord) { (savedRecord, error) in
+//                    if error != nil {
+//                        print("error \(error.debugDescription)")
+//                    }
+//                }
+                rec2Save.append(ckWayPointRecord)
             } catch {
                 print("Unable to save Waypoint \(error)")
             }
             records2Share.append(ckWayPointRecord)
         }
+        
+        let modifyOp = CKModifyRecordsOperation(recordsToSave:
+            rec2Save, recordIDsToDelete: nil)
+        modifyOp.savePolicy = .allKeys
+        modifyOp.perRecordCompletionBlock = {(record,error) in
+            print("error \(error.debugDescription)")
+        }
+        modifyOp.modifyRecordsCompletionBlock = { (record, recordID,
+            error) in
+            if error != nil {
+                print("error \(error.debugDescription)")
+            }}
+        self.privateDB.add(modifyOp)
         
         // new code added for parent setup 2nd try
         
@@ -451,11 +471,19 @@ func getShare() {
         }
     }
     
+    var spinner: UIActivityIndicatorView!
+    
     func fetchParent(_ metadata: CKShareMetadata) {
         print("fcuk11062018 metadata \(metadata.share.recordID.zoneID)")
         recordZoneID = metadata.share.recordID.zoneID
         recordID = metadata.share.recordID
         let record2S =  [metadata.rootRecordID].first
+        DispatchQueue.main.async() {
+            self.spinner = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 64, height: 64))
+            self.spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+            self.view.addSubview(self.spinner)
+            self.spinner.startAnimating()
+        }
         let operation = CKFetchRecordsOperation(recordIDs: [record2S!])
         operation.perRecordCompletionBlock = { record, _, error in
             if error != nil {
@@ -488,18 +516,16 @@ func getShare() {
                 print(error?.localizedDescription)
             }
             if record != nil {
-                
                 DispatchQueue.main.async() {
                     let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
                     let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
                     let name = record?.object(forKey:  Constants.Attribute.name) as? String
                     let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
-                    let file : CKAsset? = record?.object(forKey: Constants.Attribute.imageData) as! CKAsset
+                    let file : CKAsset? = record?.object(forKey: Constants.Attribute.imageData) as? CKAsset
                     let waypoint = MKPointAnnotation()
                     waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
                     waypoint.title = name
                     waypoint.subtitle = hint
-                    
                         if let data = NSData(contentsOf: (file?.fileURL)!) {
                             let image2D = UIImage(data: data as Data)
                             self.mapView.addAnnotation(waypoint)
@@ -516,6 +542,10 @@ func getShare() {
         operation.fetchRecordsCompletionBlock = { _, error in
             if error != nil {
                 print(error?.localizedDescription)
+            }
+            DispatchQueue.main.async() {
+                self.spinner.stopAnimating()
+                self.spinner.removeFromSuperview()
             }
         }
 
