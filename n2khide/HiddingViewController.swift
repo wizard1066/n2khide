@@ -192,7 +192,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     func save2Cloud() {
         sharingApp = true
         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
+       let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
         if listOfPoint2Seek.count != wayPoints.count {
             listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
         }
@@ -207,40 +207,40 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //            self.userID = id!
 //        }
         
-        
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.waitUntilAllOperationsAreFinished()
         
         var rec2Save:[CKRecord] = []
         for point2Save in listOfPoint2Seek {
+//            let operation1 = BlockOperation {
             
-            let ckWayPointRecord = CKRecord(recordType: Constants.Entity.wayPoints, zoneID: self.recordZone.zoneID)
-            ckWayPointRecord.setObject(point2Save.coordinates?.longitude as CKRecordValue?, forKey: Constants.Attribute.longitude)
-            ckWayPointRecord.setObject(point2Save.coordinates?.latitude as CKRecordValue?, forKey: Constants.Attribute.latitude)
-            ckWayPointRecord.setObject(point2Save.name as CKRecordValue?, forKey: Constants.Attribute.name)
-            ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
-//            let listReference = CKReference(recordID: linksRecord.recordID, action: .deleteSelf)
-//            ckWayPointRecord.setObject(listReference, forKey: Constants.Attribute.linkReference)
-//            ckWayPointRecord.setParent(mapRecord)
-            var imageData: Data!
-            if point2Save.image != nil {
-                let imageData = UIImageJPEGRepresentation((point2Save.image)!, 1.0)
-            } else {
-                let imageData = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
-            }
-            do {
-                try imageData?.write(to: file2ShareURL)
-                ckWayPointRecord.setObject(CKAsset(fileURL: file2ShareURL), forKey: Constants.Attribute.imageData)
-//                privateDB.save(ckWayPointRecord) { (savedRecord, error) in
-//                    if error != nil {
-//                        print("error \(error.debugDescription)")
-//                    }
-//                }
-                rec2Save.append(ckWayPointRecord)
-            } catch {
-                print("Unable to save Waypoint \(error)")
-            }
-            records2Share.append(ckWayPointRecord)
+                let ckWayPointRecord = CKRecord(recordType: Constants.Entity.wayPoints, zoneID: self.recordZone.zoneID)
+                ckWayPointRecord.setObject(point2Save.coordinates?.longitude as CKRecordValue?, forKey: Constants.Attribute.longitude)
+                ckWayPointRecord.setObject(point2Save.coordinates?.latitude as CKRecordValue?, forKey: Constants.Attribute.latitude)
+                ckWayPointRecord.setObject(point2Save.name as CKRecordValue?, forKey: Constants.Attribute.name)
+                ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
+                ckWayPointRecord.setParent(self.mapRecord)
+//                let file2ShareURL = documentsDirectoryURL.appendingPathComponent(point2Save.name!)
+                print("file2ShareURL \(file2ShareURL)")
+                var imageData: Data!
+                if point2Save.image != nil {
+                    let imageData = UIImageJPEGRepresentation((point2Save.image)!, 1.0)
+                } else {
+                    let imageData = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
+                }
+                do {
+                    try imageData?.write(to: file2ShareURL)
+                    ckWayPointRecord.setObject(CKAsset(fileURL: file2ShareURL), forKey: Constants.Attribute.imageData)
+                    rec2Save.append(ckWayPointRecord)
+                } catch {
+                    print("Unable to save Waypoint \(error)")
+                }
+                self.records2Share.append(ckWayPointRecord)
+//            }
+//            operation1.completionBlock = {
+//                print("finished \(self.records2Share.count)")
+//            }
+//            operationQueue.addOperation(operation1)
         }
         
         let modifyOp = CKModifyRecordsOperation(recordsToSave:
