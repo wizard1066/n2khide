@@ -192,7 +192,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     func save2Cloud() {
         sharingApp = true
         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-       let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
+//       let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
         if listOfPoint2Seek.count != wayPoints.count {
             listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
         }
@@ -219,32 +219,17 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 ckWayPointRecord.setObject(point2Save.coordinates?.latitude as CKRecordValue?, forKey: Constants.Attribute.latitude)
                 ckWayPointRecord.setObject(point2Save.name as CKRecordValue?, forKey: Constants.Attribute.name)
                 ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
-                ckWayPointRecord.setParent(self.mapRecord)
-//                let file2ShareURL = documentsDirectoryURL.appendingPathComponent(point2Save.name!)
-                print("file2ShareURL \(file2ShareURL)")
-                var imageData: Data!
-                if point2Save.image != nil {
-                    let imageData = UIImageJPEGRepresentation((point2Save.image)!, 1.0)
-                } else {
-                    let imageData = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
-                }
-                do {
-                    try imageData?.write(to: file2ShareURL)
-                    ckWayPointRecord.setObject(CKAsset(fileURL: file2ShareURL), forKey: Constants.Attribute.imageData)
-                    rec2Save.append(ckWayPointRecord)
-                } catch {
-                    print("Unable to save Waypoint \(error)")
-                }
+//                ckWayPointRecord.setParent(self.mapRecord)
+                let image2D = UIImageJPEGRepresentation(point2Save.image!, 1.0)
+                let file2ShareURL = documentsDirectoryURL.appendingPathComponent(point2Save.name!)
+                try? image2D?.write(to: file2ShareURL, options: .atomicWrite)
+                let newAsset = CKAsset(fileURL: file2ShareURL)
+                ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
                 self.records2Share.append(ckWayPointRecord)
-//            }
-//            operation1.completionBlock = {
-//                print("finished \(self.records2Share.count)")
-//            }
-//            operationQueue.addOperation(operation1)
         }
         
         let modifyOp = CKModifyRecordsOperation(recordsToSave:
-            rec2Save, recordIDsToDelete: nil)
+            records2Share, recordIDsToDelete: nil)
         modifyOp.savePolicy = .allKeys
         modifyOp.perRecordCompletionBlock = {(record,error) in
             print("error \(error.debugDescription)")
@@ -426,9 +411,47 @@ func getShare() {
         }
     }
     
+   
+    
     private func updateWayname(waypoint2U: MKPointAnnotation, image2U: UIImage?) {
-        let waypoint2A = wayPoint(coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U)
-        wayPoints[waypoint2U.title!] = waypoint2A
+        let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
+        var imageD: Data?
+        if image2U != nil {
+           
+            let operation1 = BlockOperation(block: {
+                do {
+                     let image2D = UIImageJPEGRepresentation(image2U!, 1.0)
+                    try imageD?.write(to: file2ShareURL, options: .atomicWrite)
+                    let newAsset = CKAsset(fileURL: file2ShareURL)
+                    let waypoint2A = wayPoint(coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U, imageAsset: newAsset)
+                    wayPoints[waypoint2U.title!] = waypoint2A
+                } catch {
+                    print("error no write \(error)")
+                }
+            })
+            operation1.completionBlock = {
+                
+            }
+            let operation2 = BlockOperation(block: {
+//                print("imageSaved \(file2ShareURL)")
+               
+            })
+           operation2.addDependency(operation1)
+            
+            let queue = OperationQueue()
+            queue.addOperation(operation1)
+            queue.addOperation(operation2)
+            
+                
+     
+//            let image2D = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
+//
+//                try? imageD?.write(to: file2ShareURL)
+//                let waypoint2A = wayPoint(coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U, imageURL: file2ShareURL)
+//                wayPoints[waypoint2U.title!] = waypoint2A
+        }
+        
     }
     
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
@@ -442,7 +465,7 @@ func getShare() {
           waypoint2.subtitle = "Hint"
             updateWayname(waypoint2U: waypoint2, image2U: nil)
             mapView.addAnnotation(waypoint2)
-            let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil)
+            let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil, imageAsset: nil)
             wayPoints[uniqueName] = newWayPoint
         }
     }

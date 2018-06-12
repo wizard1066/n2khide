@@ -8,6 +8,7 @@
 
 import Foundation
 import MapKit
+import CloudKit
 
 typealias Codable = Decodable & Encodable
 
@@ -16,6 +17,7 @@ struct wayPoint {
         var name: String?
         var hint: String?
         var image: UIImage?
+        var imageAsset: CKAsset?
     }
 
 var wayPoints:[String:wayPoint] = [:]
