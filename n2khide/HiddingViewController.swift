@@ -456,8 +456,6 @@ func getShare() {
         recordZoneID = metadata.share.recordID.zoneID
         recordID = metadata.share.recordID
         let record2S =  [metadata.rootRecordID].first
-       
-        
         let operation = CKFetchRecordsOperation(recordIDs: [record2S!])
         operation.perRecordCompletionBlock = { record, _, error in
             if error != nil {
@@ -465,7 +463,9 @@ func getShare() {
             }
             if record != nil {
                 let name2S = record?.object(forKey: Constants.Attribute.mapName) as? String
-                self.navigationItem.title = name2S
+                DispatchQueue.main.async() {
+                    self.navigationItem.title = name2S
+                }
                 let pins2Plot = record?.object(forKey: Constants.Attribute.wayPointsArray) as? Array<CKReference>
                 self.queryShare(record2S: pins2Plot!)
                 }
@@ -473,9 +473,9 @@ func getShare() {
         sharedDB.add(operation)
     }
     
-    func plotPin(pins2P: Array<CKReference>) {
-       
-    }
+//    func plotPin(pins2P: Array<CKReference>) {
+//
+//    }
     
     func queryShare(record2S: [CKReference]) {
         var pinID:[CKRecordID] = []
@@ -488,23 +488,28 @@ func getShare() {
                 print(error?.localizedDescription)
             }
             if record != nil {
-                var image2D: UIImage!
-                let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
-                let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
-                let name = record?.object(forKey:  Constants.Attribute.name) as? String
-                let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
-                let asset = record?.object(forKey:  Constants.Attribute.imageData) as? Data
-
+                
                 DispatchQueue.main.async() {
+                    let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
+                    let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
+                    let name = record?.object(forKey:  Constants.Attribute.name) as? String
+                    let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
+                    let file : CKAsset? = record?.object(forKey: Constants.Attribute.imageData) as! CKAsset
                     let waypoint = MKPointAnnotation()
                     waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
                     waypoint.title = name
                     waypoint.subtitle = hint
-                    if asset != nil {
-                        let image2D = UIImage(data: asset!)
-                        // fuck
+                    
+                        if let data = NSData(contentsOf: (file?.fileURL)!) {
+                            let image2D = UIImage(data: data as Data)
+                            self.mapView.addAnnotation(waypoint)
+                            self.pinViewSelected = waypoint
+                            self.mapView.selectAnnotation(self.pinViewSelected!, animated: true)
+                            self.didSetImage(image: image2D)
+                            self.updateWayname(waypoint2U: waypoint, image2U: image2D)
+                        } else {
+                            self.mapView.addAnnotation(waypoint)
                     }
-                    self.mapView.addAnnotation(waypoint)
                 }
             }
         }

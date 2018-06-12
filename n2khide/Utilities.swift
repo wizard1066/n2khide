@@ -216,46 +216,34 @@ extension UIView {
     }
 }
 
-class MapPin : NSObject, MKAnnotation {
-    var coordinate: CLLocationCoordinate2D
-    var title: String?
-    var subtitle: String?
+extension UIImage {
     
-    init(coordinate: CLLocationCoordinate2D, title: String, subtitle: String) {
-        self.coordinate = coordinate
-        self.title = title
-        self.subtitle = subtitle
+    func resize(withWidth newWidth: CGFloat) -> UIImage? {
+        
+        let scale = newWidth / self.size.width
+        let newHeight = self.size.height * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        self.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
+    func resize(withHight newHeight: CGFloat) -> UIImage? {
+        
+        let scale = newHeight / self.size.height
+        let newWidth = self.size.width * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        self.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
 }
 
-class eMapPin: MapPin {
-    override var coordinate: CLLocationCoordinate2D {
-        get {
-            return super.coordinate
-        }
-        set {
-            super.coordinate.latitude = newValue.latitude
-            super.coordinate.longitude = newValue.longitude
-        }
-    }
-    override var title: String? {
-        get {
-            return super.title
-        }
-        set {
-            super.title = newValue
-        }
-    }
-    override var subtitle: String? {
-        get {
-            return super.subtitle
-        }
-        set {
-            super.subtitle = newValue
-        }
-    }
-    
-}
+
 
 
 
