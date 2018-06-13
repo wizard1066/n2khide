@@ -388,6 +388,9 @@ func getShare() {
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
         privateDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
             print("mine record \(records.debugDescription) and error \(error.debugDescription)")
+            for record in records! {
+                self.plotPin(pin2P: record)
+            }
         }
     
 //        let predicate = NSPredicate(format: "owningList == %@", recordID)
@@ -538,10 +541,6 @@ func getShare() {
         sharedDB.add(operation)
     }
     
-//    func plotPin(pins2P: Array<CKReference>) {
-//
-//    }
-    
     func queryShare(record2S: [CKReference]) {
         var pinID:[CKRecordID] = []
         for pins in record2S {
@@ -553,27 +552,28 @@ func getShare() {
                 print(error?.localizedDescription.debugDescription)
             }
             if record != nil {
-                DispatchQueue.main.async() {
-                    let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
-                    let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
-                    let name = record?.object(forKey:  Constants.Attribute.name) as? String
-                    let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
-                    let file : CKAsset? = record?.object(forKey: Constants.Attribute.imageData) as? CKAsset
-                    let waypoint = MKPointAnnotation()
-                    waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
-                    waypoint.title = name
-                    waypoint.subtitle = hint
-                        if let data = NSData(contentsOf: (file?.fileURL)!) {
-                            let image2D = UIImage(data: data as Data)
-                            self.mapView.addAnnotation(waypoint)
-                            self.pinViewSelected = waypoint
-                            self.mapView.selectAnnotation(self.pinViewSelected!, animated: true)
-                            self.didSetImage(image: image2D)
-                            self.updateWayname(waypoint2U: waypoint, image2U: image2D)
-                        } else {
-                            self.mapView.addAnnotation(waypoint)
-                    }
-                }
+                self.plotPin(pin2P: record!)
+//                DispatchQueue.main.async() {
+//                    let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
+//                    let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
+//                    let name = record?.object(forKey:  Constants.Attribute.name) as? String
+//                    let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
+//                    let file : CKAsset? = record?.object(forKey: Constants.Attribute.imageData) as? CKAsset
+//                    let waypoint = MKPointAnnotation()
+//                    waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
+//                    waypoint.title = name
+//                    waypoint.subtitle = hint
+//                        if let data = NSData(contentsOf: (file?.fileURL)!) {
+//                            let image2D = UIImage(data: data as Data)
+//                            self.mapView.addAnnotation(waypoint)
+//                            self.pinViewSelected = waypoint
+//                            self.mapView.selectAnnotation(self.pinViewSelected!, animated: true)
+//                            self.didSetImage(image: image2D)
+//                            self.updateWayname(waypoint2U: waypoint, image2U: image2D)
+//                        } else {
+//                            self.mapView.addAnnotation(waypoint)
+//                    }
+//                }
             }
         }
         operation.fetchRecordsCompletionBlock = { _, error in
@@ -585,8 +585,31 @@ func getShare() {
                 self.spinner.removeFromSuperview()
             }
         }
-
         CKContainer.default().sharedCloudDatabase.add(operation)
+    }
+    
+    private func plotPin(pin2P: CKRecord) {
+        DispatchQueue.main.async() {
+            let longitude = pin2P.object(forKey:  Constants.Attribute.longitude) as? Double
+            let latitude = pin2P.object(forKey:  Constants.Attribute.latitude) as? Double
+            let name = pin2P.object(forKey:  Constants.Attribute.name) as? String
+            let hint = pin2P.object(forKey:  Constants.Attribute.hint) as? String
+            let file : CKAsset? = pin2P.object(forKey: Constants.Attribute.imageData) as? CKAsset
+            let waypoint = MKPointAnnotation()
+            waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
+            waypoint.title = name
+            waypoint.subtitle = hint
+            if let data = NSData(contentsOf: (file?.fileURL)!) {
+                let image2D = UIImage(data: data as Data)
+                self.mapView.addAnnotation(waypoint)
+                self.pinViewSelected = waypoint
+                self.mapView.selectAnnotation(self.pinViewSelected!, animated: true)
+                self.didSetImage(image: image2D)
+                self.updateWayname(waypoint2U: waypoint, image2U: image2D)
+            } else {
+                self.mapView.addAnnotation(waypoint)
+            }
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
