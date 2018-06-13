@@ -146,15 +146,15 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
-    private func region(withPins geotification: [wayPoint]) -> [CLCircularRegion] {
-        var regions2M:[CLCircularRegion] = []
-        for regions2D in geotification {
-            let region = CLCircularRegion(center: regions2D.coordinates!, radius: CLLocationDistance(Constants.Variable.radius), identifier: regions2D.name!)
-            region.notifyOnEntry = true
-            region.notifyOnExit = false
-            regions2M.append(region)
-        }
-        return regions2M
+    private func region(withPins region2D: CKRecord) -> CLCircularRegion {
+        let longitude = region2D.object(forKey:  Constants.Attribute.longitude) as? Double
+        let latitude = region2D.object(forKey:  Constants.Attribute.latitude) as? Double
+        let name = region2D.object(forKey:  Constants.Attribute.name) as? String
+        let r2DCoordinates = CLLocationCoordinate2D(latitude: latitude!, longitude:longitude!)
+        let region = CLCircularRegion(center: r2DCoordinates, radius: CLLocationDistance(Constants.Variable.radius), identifier: name!)
+        region.notifyOnEntry = true
+        region.notifyOnExit = false
+        return region
     }
     
     // MARK: UIAlertController + iCloud code
@@ -390,6 +390,8 @@ func getShare() {
             print("mine record \(records.debugDescription) and error \(error.debugDescription)")
             for record in records! {
                 self.plotPin(pin2P: record)
+                let region2M = self.region(withPins: record)
+                self.locationManager.startMonitoring(for: region2M)
             }
         }
     
@@ -553,27 +555,8 @@ func getShare() {
             }
             if record != nil {
                 self.plotPin(pin2P: record!)
-//                DispatchQueue.main.async() {
-//                    let longitude = record?.object(forKey:  Constants.Attribute.longitude) as? Double
-//                    let latitude = record?.object(forKey:  Constants.Attribute.latitude) as? Double
-//                    let name = record?.object(forKey:  Constants.Attribute.name) as? String
-//                    let hint = record?.object(forKey:  Constants.Attribute.hint) as? String
-//                    let file : CKAsset? = record?.object(forKey: Constants.Attribute.imageData) as? CKAsset
-//                    let waypoint = MKPointAnnotation()
-//                    waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
-//                    waypoint.title = name
-//                    waypoint.subtitle = hint
-//                        if let data = NSData(contentsOf: (file?.fileURL)!) {
-//                            let image2D = UIImage(data: data as Data)
-//                            self.mapView.addAnnotation(waypoint)
-//                            self.pinViewSelected = waypoint
-//                            self.mapView.selectAnnotation(self.pinViewSelected!, animated: true)
-//                            self.didSetImage(image: image2D)
-//                            self.updateWayname(waypoint2U: waypoint, image2U: image2D)
-//                        } else {
-//                            self.mapView.addAnnotation(waypoint)
-//                    }
-//                }
+                let region2M = self.region(withPins: record!)
+                self.locationManager.startMonitoring(for: region2M)
             }
         }
         operation.fetchRecordsCompletionBlock = { _, error in
