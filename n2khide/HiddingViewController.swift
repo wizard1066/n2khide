@@ -9,10 +9,51 @@
 import UIKit
 import MapKit
 import CloudKit
+import CoreLocation
 
-class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint {
+class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint, CLLocationManagerDelegate {
     
-    //MARK:  observer
+    var geotifications = [Geotification]()
+    let locationManager = CLLocationManager()
+    
+    // MARK location Manager delegate code + more
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+        case .notDetermined:
+            print("User still thinking")
+        case .denied:
+            print("User hates you")
+        case .authorizedWhenInUse:
+                locationManager.stopUpdatingLocation()
+        case .authorizedAlways:
+                locationManager.startUpdatingLocation()
+        case .restricted:
+            print("User dislikes you")
+        }
+        mapView.showsUserLocation = (status == .authorizedAlways)
+    }
+    
+    var regionHasBeenCentered = false
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let local2U = locations.first
+        let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
+        let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(local2U!.coordinate.latitude, local2U!.coordinate.longitude)
+        let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
+        self.mapView.setRegion(region, animated: true)
+        self.regionHasBeenCentered = true
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+    }
+    
+    func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
+        print("moving")
+    }
+    
+    //MARK:  Observer
     func didSet(record2U: String) {
         if !sharingApp {
             DispatchQueue.main.async {
@@ -22,9 +63,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
         }
     }
-    
-
-    
     
     // MARK: delete waypoints by name
     
@@ -108,6 +146,17 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
+    private func region(withPins geotification: [wayPoint]) -> [CLCircularRegion] {
+        var regions2M:[CLCircularRegion] = []
+        for regions2D in geotification {
+            let region = CLCircularRegion(center: regions2D.coordinates!, radius: CLLocationDistance(Constants.Variable.radius), identifier: regions2D.name!)
+            region.notifyOnEntry = true
+            region.notifyOnExit = false
+            regions2M.append(region)
+        }
+        return regions2M
+    }
+    
     // MARK: UIAlertController + iCloud code
     
     var linksRecord: CKReference!
@@ -133,20 +182,16 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     self.privateDB.save(self.recordZone, completionHandler: ({returnRecord, error in
                     if error != nil {
                         // Zone creation failed
-                        print("Cloud privateDB Error\n\(error?.localizedDescription)")
+                        print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
                     } else {
                         // Zone creation succeeded
                         print("The 'privateDB LeZone' was successfully created in the private database.")
-                        
                     }
                 }))
             }
             }))
         self.present(alert, animated: true, completion: nil)
     }
-    
-    
-
     
     // MARK: CloudSharing delegate
     
@@ -210,7 +255,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.waitUntilAllOperationsAreFinished()
         
-        var rec2Save:[CKRecord] = []
+//        var rec2Save:[CKRecord] = []
         for point2Save in listOfPoint2Seek {
 //            let operation1 = BlockOperation {
             
@@ -260,8 +305,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 print("error \(error.debugDescription)")
             }
         
-
-            
             let modifyOp = CKModifyRecordsOperation(recordsToSave:
                 self.records2Share, recordIDsToDelete: nil)
             modifyOp.savePolicy = .changedKeys
@@ -300,9 +343,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 DispatchQueue.main.async {
                     self.present(sharingController, animated:true, completion:nil)
                 }
-            
-            // Set the parent relationship up
-
         }
     }
         
@@ -341,14 +381,24 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //
 func getShare() {
         let shareDB = CKContainer.default().sharedCloudDatabase
-        let privateDB = CKContainer.default().privateCloudDatabase
-        let predicate = NSPredicate(format: "owningList == %@", recordID)
-        let query = CKQuery(recordType: "Waypoints", predicate: NSPredicate(value: true))
-
-        shareDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
+//        let privateDB = CKContainer.default().privateCloudDatabase
+        recordZone = CKRecordZone(zoneName: "zen")
+        recordZoneID = recordZone.zoneID
+        let predicate = NSPredicate(value: true)
+        let query = CKQuery(recordType: "Waypoints", predicate: predicate)
+        privateDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
             print("mine record \(records.debugDescription) and error \(error.debugDescription)")
         }
+    
+//        let predicate = NSPredicate(format: "owningList == %@", recordID)
+//        let query = CKQuery(recordType: "Waypoints", predicate: predicate)
+//
+//        shareDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
+//            print("mine record \(records.debugDescription) and error \(error.debugDescription)")
+//        }
     }
+    
+    // MARK: Saving to the iPad as JSON
     
     func saveImage() {
 //        if listOfPoint2Seek.count != wayPoints.count {
@@ -411,47 +461,11 @@ func getShare() {
         }
     }
     
-   
-    
     private func updateWayname(waypoint2U: MKPointAnnotation, image2U: UIImage?) {
-        let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
-        var imageD: Data?
         if image2U != nil {
-           
-            let operation1 = BlockOperation(block: {
-                do {
-                     let image2D = UIImageJPEGRepresentation(image2U!, 1.0)
-                    try imageD?.write(to: file2ShareURL, options: .atomicWrite)
-                    let newAsset = CKAsset(fileURL: file2ShareURL)
-                    let waypoint2A = wayPoint(coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U, imageAsset: newAsset)
-                    wayPoints[waypoint2U.title!] = waypoint2A
-                } catch {
-                    print("error no write \(error)")
-                }
-            })
-            operation1.completionBlock = {
-                
-            }
-            let operation2 = BlockOperation(block: {
-//                print("imageSaved \(file2ShareURL)")
-               
-            })
-           operation2.addDependency(operation1)
-            
-            let queue = OperationQueue()
-            queue.addOperation(operation1)
-            queue.addOperation(operation2)
-            
-                
-     
-//            let image2D = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
-//
-//                try? imageD?.write(to: file2ShareURL)
-//                let waypoint2A = wayPoint(coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U, imageURL: file2ShareURL)
-//                wayPoints[waypoint2U.title!] = waypoint2A
+            let waypoint2A = wayPoint(coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U)
+            wayPoints[waypoint2U.title!] = waypoint2A
         }
-        
     }
     
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
@@ -465,7 +479,7 @@ func getShare() {
           waypoint2.subtitle = "Hint"
             updateWayname(waypoint2U: waypoint2, image2U: nil)
             mapView.addAnnotation(waypoint2)
-            let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil, imageAsset: nil)
+            let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil)
             wayPoints[uniqueName] = newWayPoint
         }
     }
@@ -497,12 +511,12 @@ func getShare() {
     var spinner: UIActivityIndicatorView!
     
     func fetchParent(_ metadata: CKShareMetadata) {
-        print("fcuk11062018 metadata \(metadata.share.recordID.zoneID)")
         recordZoneID = metadata.share.recordID.zoneID
         recordID = metadata.share.recordID
         let record2S =  [metadata.rootRecordID].first
         DispatchQueue.main.async() {
-            self.spinner = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 64, height: 64))
+            self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
+            self.spinner = UIActivityIndicatorView(frame: CGRect(x: self.view.center.x, y: self.view.center.y, width: 64, height: 64))
             self.spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
             self.view.addSubview(self.spinner)
             self.spinner.startAnimating()
@@ -510,7 +524,7 @@ func getShare() {
         let operation = CKFetchRecordsOperation(recordIDs: [record2S!])
         operation.perRecordCompletionBlock = { record, _, error in
             if error != nil {
-                print(error?.localizedDescription)
+                print(error?.localizedDescription.debugDescription)
             }
             if record != nil {
                 let name2S = record?.object(forKey: Constants.Attribute.mapName) as? String
@@ -536,7 +550,7 @@ func getShare() {
         let operation = CKFetchRecordsOperation(recordIDs: pinID)
         operation.perRecordCompletionBlock = { record, _, error in
             if error != nil {
-                print(error?.localizedDescription)
+                print(error?.localizedDescription.debugDescription)
             }
             if record != nil {
                 DispatchQueue.main.async() {
@@ -564,7 +578,7 @@ func getShare() {
         }
         operation.fetchRecordsCompletionBlock = { _, error in
             if error != nil {
-                print(error?.localizedDescription)
+                print(error?.localizedDescription.debugDescription)
             }
             DispatchQueue.main.async() {
                 self.spinner.stopAnimating()
@@ -586,9 +600,13 @@ func getShare() {
     override func viewDidLoad() {
         super.viewDidLoad()
         CKContainer.default().requestApplicationPermission(.userDiscoverability, completionHandler: {status, error in
-            print("error \(error)")
+            print("error \(error.debugDescription)")
         })
-        // Do any additional setup after loading the view.
+        locationManager.delegate = self
+        locationManager.requestAlwaysAuthorization()
+        locationManager.distanceFilter = kCLDistanceFilterNone
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestLocation()
     }
 
     override func didReceiveMemoryWarning() {
@@ -619,6 +637,9 @@ func getShare() {
             static let mapName = "mapName"
             static let linkReference = "linkReference"
             static let wayPointsArray = "wayPointsArray"
+        }
+        struct Variable {
+            static  let radius = 100
         }
     }
 }

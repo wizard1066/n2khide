@@ -45,5 +45,9 @@
 	<string>Needed if you want to take snaps for your maphunt</string>
     <key>CKSharingSupported</key>
     <true/>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>n2khide requires access to your devices's location to notify you when you find a hidden pin.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>n2khide is currently monitoring your location.</string>
 </dict>
 </plist>
