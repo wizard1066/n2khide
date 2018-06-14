@@ -189,7 +189,7 @@
                                     <action selector="FetchShare:" destination="17o-cH-NIh" id="hGt-zJ-ZlS"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Parts" id="5rp-DO-9vb">
+                            <barButtonItem title="Pin" id="5rp-DO-9vb">
                                 <connections>
                                     <action selector="GetParts:" destination="17o-cH-NIh" id="fcK-ll-V4P"/>
                                 </connections>
@@ -200,6 +200,7 @@
                     <connections>
                         <outlet property="hideView" destination="ddt-Qx-MRh" id="Nf5-fu-lTm"/>
                         <outlet property="mapView" destination="sLL-BY-qSg" id="Y0F-Zx-rsl"/>
+                        <outlet property="pin" destination="5rp-DO-9vb" id="qgw-05-E2y"/>
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="sLL-BY-qSg" id="RQi-Wn-jN8">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>

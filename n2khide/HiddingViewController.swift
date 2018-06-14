@@ -35,22 +35,59 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
     
     var regionHasBeenCentered = false
+    var currentLocation: CLLocation!
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let local2U = locations.first
+        pin.isEnabled = true
+        currentLocation = locations.first
         let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
-        let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(local2U!.coordinate.latitude, local2U!.coordinate.longitude)
+        let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
         let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
         self.mapView.setRegion(region, animated: true)
+        
         self.regionHasBeenCentered = true
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print(error)
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "LocationMgr fail", message:  "\(error)", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
         print("moving")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        print("Monitoring failed for region with identifier: \(region!.identifier)")
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Monitoring failed for region with identifier", message:  "\(region!.identifier)", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func handleEvent(forRegion region: CLRegion!) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Geofence Triggered", message: "Geofence Triggered", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        if region is CLCircularRegion {
+            handleEvent(forRegion: region)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        if region is CLCircularRegion {
+            handleEvent(forRegion: region)
+        }
     }
     
     //MARK:  Observer
@@ -115,6 +152,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
+    class MyPointAnnotation : MKPointAnnotation {
+        var pinTintColor: UIColor?
+    }
+    
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         var view: MKAnnotationView! = mapView.dequeueReusableAnnotationView(withIdentifier: Constants.AnnotationViewReuseIdentifier)
         if view == nil {
@@ -146,6 +187,17 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if let overlay = overlay as? MKCircle {
+            let circleRenderer = MKCircleRenderer(circle: overlay)
+            circleRenderer.fillColor = UIColor.yellow
+            return circleRenderer
+        }
+        else {
+            return MKOverlayRenderer(overlay: overlay)
+        }
+    }
+    
     private func region(withPins region2D: CKRecord) -> CLCircularRegion {
         let longitude = region2D.object(forKey:  Constants.Attribute.longitude) as? Double
         let latitude = region2D.object(forKey:  Constants.Attribute.latitude) as? Double
@@ -153,8 +205,18 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         let r2DCoordinates = CLLocationCoordinate2D(latitude: latitude!, longitude:longitude!)
         let region = CLCircularRegion(center: r2DCoordinates, radius: CLLocationDistance(Constants.Variable.radius), identifier: name!)
         region.notifyOnEntry = true
-        region.notifyOnExit = false
+        region.notifyOnExit = true
         return region
+    }
+    
+    func addRadiusOverlay(forGeotification region2D: CKRecord) {
+        let longitude = region2D.object(forKey:  Constants.Attribute.longitude) as? Double
+        let latitude = region2D.object(forKey:  Constants.Attribute.latitude) as? Double
+        let name = region2D.object(forKey:  Constants.Attribute.name) as? String
+        let r2DCoordinates = CLLocationCoordinate2D(latitude: latitude!, longitude:longitude!)
+        DispatchQueue.main.async {
+            self.mapView?.add(MKCircle(center: r2DCoordinates, radius: CLLocationDistance(Constants.Variable.radius)))
+        }
     }
     
     // MARK: UIAlertController + iCloud code
@@ -235,6 +297,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     private var sharePoint: CKRecord!
     
     func save2Cloud() {
+        if recordZone == nil {
+            return
+        }
         sharingApp = true
         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 //       let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
@@ -350,25 +415,23 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         getShare()
     }
     
+    
+    @IBOutlet weak var pin: UIBarButtonItem!
     @IBAction func GetParts(_ sender: Any) {
-//        getParticipant()
-        for rex in records2Share {
-            let parentR = CKReference(record: sharePoint, action: .none)
-            rex.parent = parentR
+        if currentLocation != nil {
+            let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
+            let wayNames = Array(wayPoints.keys)
+            let uniqueName = "Clue".madeUnique(withRespectTo: wayNames)
+            let waypoint2 = MyPointAnnotation()
+            waypoint2.coordinate  = userLocation
+            waypoint2.title = uniqueName
+            waypoint2.subtitle = "Hint"
+            waypoint2.pinTintColor = UIColor.green
+            updateWayname(waypoint2U: waypoint2, image2U: nil)
+            mapView.addAnnotation(waypoint2)
+            let newWayPoint = wayPoint(coordinates: userLocation, name: uniqueName, hint: "Hint", image: nil)
+            wayPoints[uniqueName] = newWayPoint
         }
-        
-        let modifyOp = CKModifyRecordsOperation(recordsToSave:
-            records2Share, recordIDsToDelete: nil)
-        modifyOp.savePolicy = .changedKeys
-        modifyOp.perRecordCompletionBlock = {(record,error) in
-            print("error \(error.debugDescription)")
-        }
-        modifyOp.modifyRecordsCompletionBlock = { (record, recordID,
-            error) in
-            if error != nil {
-                print("error \(error.debugDescription)")
-            }}
-        self.privateDB.add(modifyOp)
     }
     
     func getParticipant() {
@@ -382,7 +445,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 func getShare() {
         let shareDB = CKContainer.default().sharedCloudDatabase
 //        let privateDB = CKContainer.default().privateCloudDatabase
-        recordZone = CKRecordZone(zoneName: "zen")
+        recordZone = CKRecordZone(zoneName: "pin")
         recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
@@ -391,7 +454,9 @@ func getShare() {
             for record in records! {
                 self.plotPin(pin2P: record)
                 let region2M = self.region(withPins: record)
-                self.locationManager.startMonitoring(for: region2M)
+                self.addRadiusOverlay(forGeotification: record)
+//               self.locationManager.startMonitoring(for: region2M)
+                self.locationManager.startMonitoringSignificantLocationChanges()
             }
         }
     
@@ -556,7 +621,9 @@ func getShare() {
             if record != nil {
                 self.plotPin(pin2P: record!)
                 let region2M = self.region(withPins: record!)
-                self.locationManager.startMonitoring(for: region2M)
+//                self.locationManager.startMonitoring(for: region2M)
+//                self.locationManager.startMonitoringVisits()
+                self.locationManager.startMonitoringSignificantLocationChanges()
             }
         }
         operation.fetchRecordsCompletionBlock = { _, error in
@@ -613,6 +680,7 @@ func getShare() {
         locationManager.distanceFilter = kCLDistanceFilterNone
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestLocation()
+        pin.isEnabled = true
     }
 
     override func didReceiveMemoryWarning() {
