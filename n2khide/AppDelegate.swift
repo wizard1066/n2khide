@@ -8,6 +8,7 @@
 
 import UIKit
 import CloudKit
+import CoreLocation
 
 protocol showPoint {
     func didSet(record2U: String)
@@ -17,6 +18,13 @@ protocol showPoint {
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+    var locationManager = CLLocationManager()
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+        locationManager.delegate = self
+        locationManager.requestAlwaysAuthorization()
+        return true
+    }
 
     func application(_ application: UIApplication, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShareMetadata) {
 
@@ -35,12 +43,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         CKContainer(identifier:cloudKitShareMetadata.containerIdentifier).add(acceptShareOperation)
-    }
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-  
-        return true
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -64,7 +66,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
+    
+    func handleEvent(forRegion region: CLRegion!, action: String) {
+        let peru = Notification.Name("regionEvent")
+        NotificationCenter.default.post(name: peru, object: nil, userInfo: ["region":action])
+    }
+}
 
-
+extension AppDelegate: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        if region is CLCircularRegion {
+            handleEvent(forRegion: region, action: "enter")
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        if region is CLCircularRegion {
+            handleEvent(forRegion: region, action: "exit")
+        }
+    }
 }
 

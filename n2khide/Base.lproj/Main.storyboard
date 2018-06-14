@@ -194,6 +194,11 @@
                                     <action selector="GetParts:" destination="17o-cH-NIh" id="fcK-ll-V4P"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem title="state" id="AZy-8n-fWh">
+                                <connections>
+                                    <action selector="stateButton:" destination="17o-cH-NIh" id="ZD0-ye-LY6"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
