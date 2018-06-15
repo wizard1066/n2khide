@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -134,9 +135,34 @@
                                                     <outletCollection property="gestureRecognizers" destination="UVg-oV-eg7" appends="YES" id="3Ao-zu-coc"/>
                                                 </connections>
                                             </mapView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="p8I-zv-5sN">
+                                                <rect key="frame" x="59" y="526" width="256" height="25"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7MQ-s0-Grh">
+                                                        <rect key="frame" x="0.0" y="0.0" width="128" height="25"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="128" id="k9b-sb-9hV"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="18"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aP3-6O-m9a">
+                                                        <rect key="frame" x="128" y="0.0" width="128" height="25"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="128" id="Ble-pR-ZYg"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="18"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </stackView>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
+                                            <constraint firstItem="p8I-zv-5sN" firstAttribute="bottom" secondItem="SvD-CE-nLV" secondAttribute="bottomMargin" id="C9F-ie-oMC"/>
+                                            <constraint firstItem="p8I-zv-5sN" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="LwJ-Nw-RQ9"/>
                                             <constraint firstAttribute="trailing" secondItem="sLL-BY-qSg" secondAttribute="trailing" id="TmX-9p-yW7"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="top" secondItem="SvD-CE-nLV" secondAttribute="top" id="XtS-pi-euW"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" id="emq-tz-5Sh"/>
@@ -194,7 +220,7 @@
                                     <action selector="GetParts:" destination="17o-cH-NIh" id="fcK-ll-V4P"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="state" id="AZy-8n-fWh">
+                            <barButtonItem title="State" id="AZy-8n-fWh">
                                 <connections>
                                     <action selector="stateButton:" destination="17o-cH-NIh" id="ZD0-ye-LY6"/>
                                 </connections>
@@ -204,6 +230,8 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="hideView" destination="ddt-Qx-MRh" id="Nf5-fu-lTm"/>
+                        <outlet property="latitudeLabel" destination="aP3-6O-m9a" id="2h9-ZO-8NN"/>
+                        <outlet property="longitudeLabel" destination="7MQ-s0-Grh" id="N2l-pg-HkB"/>
                         <outlet property="mapView" destination="sLL-BY-qSg" id="Y0F-Zx-rsl"/>
                         <outlet property="pin" destination="5rp-DO-9vb" id="qgw-05-E2y"/>
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="sLL-BY-qSg" id="RQi-Wn-jN8">

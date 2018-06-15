@@ -9,20 +9,25 @@
 import UIKit
 import CloudKit
 import CoreLocation
+import UserNotifications
 
 protocol showPoint {
     func didSet(record2U: String)
 }
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
     
     var window: UIWindow?
-    var locationManager = CLLocationManager()
+    var locationManager:CLLocationManager? = CLLocationManager()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
-        locationManager.delegate = self
-        locationManager.requestAlwaysAuthorization()
+        locationManager?.delegate = self
+        locationManager?.requestAlwaysAuthorization()
+        locationManager?.allowsBackgroundLocationUpdates = true
+        locationManager?.distanceFilter = kCLDistanceFilterNone
+        locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        locationManager?.activityType = CLActivityType.fitness
         return true
     }
 
@@ -43,6 +48,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         CKContainer(identifier:cloudKitShareMetadata.containerIdentifier).add(acceptShareOperation)
+        UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]) { (granted, error) in
+            if granted {
+                UIApplication.shared.registerForRemoteNotifications()
+            }
+        }
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -68,12 +79,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func handleEvent(forRegion region: CLRegion!, action: String) {
-        let peru = Notification.Name("regionEvent")
-        NotificationCenter.default.post(name: peru, object: nil, userInfo: ["region":action])
+        if UIApplication.shared.applicationState == .active {
+            let peru = Notification.Name("regionEvent")
+            NotificationCenter.default.post(name: peru, object: nil, userInfo: ["region":action])
+        } else {
+            // Otherwise present a local notification
+            let content = UNMutableNotificationContent()
+            content.title = "Late wake up call"
+            content.body = "The early bird catches the worm, but the second mouse gets the cheese."
+            content.categoryIdentifier = "alarm"
+            content.userInfo = ["customData": "fizzbuzz"]
+            content.sound = UNNotificationSound.default()
+            let trigger = UNLocationNotificationTrigger(region:region, repeats:false)
+            let identifier = "UYLLocalNotification"
+            let request = UNNotificationRequest(identifier: identifier,
+                                                content: content, trigger: trigger)
+            UNUserNotificationCenter.current().add(request, withCompletionHandler: { (error) in
+                if let error = error {
+                    print(error)
+                }
+            })
+        }
     }
 }
 
-extension AppDelegate: CLLocationManagerDelegate {
+extension AppDelegate {
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         if region is CLCircularRegion {
@@ -86,5 +116,12 @@ extension AppDelegate: CLLocationManagerDelegate {
             handleEvent(forRegion: region, action: "exit")
         }
     }
+    
+    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+        self.locationManager?.requestState(for: region)
+        print("started Monitoring")
+    }
+    
+    
 }
 

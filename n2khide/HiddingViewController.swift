@@ -12,13 +12,19 @@ import CloudKit
 import CoreLocation
 
 class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint, CLLocationManagerDelegate {
+    @IBOutlet weak var longitudeLabel: UILabel!
+    @IBOutlet weak var latitudeLabel: UILabel!
     
     var geotifications = [Geotification]()
-    let locationManager = CLLocationManager()
+    var locationManager:CLLocationManager? = nil
     
     // MARK location Manager delegate code + more
     
     @IBAction func stateButton(_ sender: Any) {
+        
+    }
+    
+    func statusRequest() {
         
     }
     
@@ -30,6 +36,40 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
+    func getLocationDegreesFrom(latitude: Double) -> String {
+        var latSeconds = Int(latitude * 3600)
+        var latitudeSeconds = abs(latitude * 3600).truncatingRemainder(dividingBy: 60)
+        let latDegrees = latSeconds / 3600
+        latSeconds = abs(latSeconds % 3600)
+        let latMinutes = latSeconds / 60
+        latSeconds %= 60
+        
+        return String(
+            format: "%d°%d'%d\"%@",
+            abs(latDegrees),
+            latMinutes,
+            latSeconds,
+            latDegrees >= 0 ? "N" : "S"
+        )
+    }
+    
+    func getLocationDegreesFrom(longitude: Double) -> String {
+        var longSeconds = Int(longitude * 3600)
+        let longDegrees = longSeconds / 3600
+        longSeconds = abs(longSeconds % 3600)
+        var longitudeSeconds = abs(longitude * 3600).truncatingRemainder(dividingBy: 60)
+        let longMinutes = longSeconds / 60
+        longSeconds %= 60
+        
+        return String(
+            format: "%d°%d'%d\"%@",
+            abs(longDegrees),
+            longMinutes,
+            longSeconds,
+            longDegrees >= 0 ? "E" : "W"
+        )
+    }
+    
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
         case .notDetermined:
@@ -37,9 +77,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         case .denied:
             print("User hates you")
         case .authorizedWhenInUse:
-                locationManager.stopUpdatingLocation()
+                locationManager?.stopUpdatingLocation()
         case .authorizedAlways:
-                locationManager.startUpdatingLocation()
+                locationManager?.startUpdatingLocation()
         case .restricted:
             print("User dislikes you")
         }
@@ -49,6 +89,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     var regionHasBeenCentered = false
     var currentLocation: CLLocation!
     
+ 
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         pin.isEnabled = true
         currentLocation = locations.first
@@ -57,6 +99,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
         self.mapView.setRegion(region, animated: true)
         self.regionHasBeenCentered = true
+        DispatchQueue.main.async {
+            self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
+            self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -210,7 +256,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         let latitude = region2D.object(forKey:  Constants.Attribute.latitude) as? Double
         let name = region2D.object(forKey:  Constants.Attribute.name) as? String
         let r2DCoordinates = CLLocationCoordinate2D(latitude: latitude!, longitude:longitude!)
-        let maxDistance = locationManager.maximumRegionMonitoringDistance
+        let maxDistance = locationManager?.maximumRegionMonitoringDistance
         if CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
             print("Monitoring available")
         }
@@ -457,7 +503,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 func getShare() {
 //        let shareDB = CKContainer.default().sharedCloudDatabase
 //        let privateDB = CKContainer.default().privateCloudDatabase
-        recordZone = CKRecordZone(zoneName: "pin")
+        recordZone = CKRecordZone(zoneName: "leysin")
         recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
@@ -466,7 +512,7 @@ func getShare() {
                 self.plotPin(pin2P: record)
                 let region2M = self.region(withPins: record)
                 self.addRadiusOverlay(forGeotification: record)
-               self.locationManager.startMonitoring(for: region2M)
+               self.locationManager?.startMonitoring(for: region2M)
             }
         }
     
@@ -641,7 +687,7 @@ func getShare() {
             if record != nil {
                 self.plotPin(pin2P: record!)
                 let region2M = self.region(withPins: record!)
-                self.locationManager.startMonitoring(for: region2M)
+                self.locationManager?.startMonitoring(for: region2M)
 //                self.locationManager.startMonitoringVisits()
             }
         }
@@ -694,14 +740,18 @@ func getShare() {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        locationManager = appDelegate.locationManager
         CKContainer.default().requestApplicationPermission(.userDiscoverability, completionHandler: {status, error in
             print("error \(error.debugDescription)")
         })
-        locationManager.delegate = self
-        locationManager.requestAlwaysAuthorization()
-        locationManager.distanceFilter = kCLDistanceFilterNone
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestLocation()
+        locationManager?.delegate = self
+        locationManager?.requestAlwaysAuthorization()
+        locationManager?.distanceFilter = kCLDistanceFilterNone
+        locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        locationManager?.activityType = CLActivityType.fitness
+        let yahoo = locationManager?.allowsBackgroundLocationUpdates
+        locationManager?.requestLocation()
         pin.isEnabled = true
     }
 
@@ -735,7 +785,7 @@ func getShare() {
             static let wayPointsArray = "wayPointsArray"
         }
         struct Variable {
-            static  let radius = 20
+            static  let radius = 40
         }
     }
 }
