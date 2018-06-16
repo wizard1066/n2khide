@@ -11,6 +11,14 @@ import MapKit
 import CloudKit
 import CoreLocation
 
+extension Double {
+    /// Rounds the double to decimal places value
+    func rounded(toPlaces places:Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
+    }
+}
+
 class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint, CLLocationManagerDelegate {
     @IBOutlet weak var longitudeLabel: UILabel!
     @IBOutlet weak var latitudeLabel: UILabel!
@@ -21,7 +29,28 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     // MARK location Manager delegate code + more
     
     @IBAction func stateButton(_ sender: Any) {
+        let mRect = self.mapView.visibleMapRect
+        let cordSW = mapView.convert(getSWCoordinate(mRect: mRect), toPointTo: mapView)
+        let cordNE = mapView.convert(getNECoordinate(mRect: mRect), toPointTo: mapView)
+        let cordNW = mapView.convert(getNWCoordinate(mRect: mRect), toPointTo: mapView)
+        let cordSE = mapView.convert(getSECoordinate(mRect: mRect), toPointTo: mapView)
         
+        let DNELat = getLocationDegreesFrom(latitude: getNECoordinate(mRect: mRect).latitude)
+        let DNELog = getLocationDegreesFrom(longitude: getNECoordinate(mRect: mRect).longitude)
+        let cord2D = getDigitalFromDegrees(latitude: DNELat, longitude: DNELog)
+        let cord2U = CLLocationCoordinate2D(latitude: cord2D.0, longitude: cord2D.1)
+        
+        var coordinates =  [cord2U, getSECoordinate(mRect: mRect)]
+        let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
+        self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
+    }
+    
+    
+    private func doPin(cord2D: CLLocationCoordinate2D, title: String) {
+        let pin = MyPointAnnotation()
+        pin.coordinate  = cord2D
+        pin.title = title
+        mapView.addAnnotation(pin)
     }
     
     func statusRequest() {
@@ -45,7 +74,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         latSeconds %= 60
         
         return String(
-            format: "%d°%d'%d\"%@",
+//            format: "%d°%d'%d\"%@",
+            format: "%d-%d-%d-%@",
             abs(latDegrees),
             latMinutes,
             latSeconds,
@@ -62,12 +92,38 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         longSeconds %= 60
         
         return String(
-            format: "%d°%d'%d\"%@",
+//            format: "%d°%d'%d\"%@",
+             format: "%d-%d-%d-%@",
             abs(longDegrees),
             longMinutes,
             longSeconds,
             longDegrees >= 0 ? "E" : "W"
         )
+    }
+    
+    func getDigitalFromDegrees(latitude: String, longitude: String) -> (Double, Double) {
+        
+        var n2C = latitude.split(separator: "-")
+        let latS = Double(n2C[2])! / 3600
+        let latM = Double(n2C[1])! / 60
+        let latD = Double(n2C[0])?.rounded(toPlaces: 0)
+        var DDlatitude:Double!
+        if n2C[3] == "S" {
+            DDlatitude = -latD! - latM - latS
+        } else {
+            DDlatitude = latD! + latM + latS
+        }
+        n2C = longitude.split(separator: "-")
+        let lonS = Double(n2C[2])! / 3600
+        let lonM = Double(n2C[1])! / 60
+        let lonD = Double(n2C[0])?.rounded(toPlaces: 0)
+        var DDlongitude:Double!
+        if n2C[3]  == "W" {
+            DDlongitude = -lonD! - lonM - lonS
+        } else {
+            DDlongitude = lonD! + lonM + lonS
+        }
+        return (DDlatitude,DDlongitude)
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -194,6 +250,84 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     // MARK: MapView
     
+    //    -(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mRect{
+    //    return [self getCoordinateFromMapRectanglePoint:MKMapRectGetMaxX(mRect) y:mRect.origin.y];
+    //    }
+    
+private func getNECoordinate(mRect: MKMapRect) ->  CLLocationCoordinate2D {
+        return getCoordinateFromMapRectanglePoint(x: MKMapRectGetMaxX(mRect), y: mRect.origin.y)
+}
+    
+    //    -(CLLocationCoordinate2D)getNWCoordinate:(MKMapRect)mRect{
+    //    return [self getCoordinateFromMapRectanglePoint:MKMapRectGetMinX(mRect) y:mRect.origin.y];
+    //    }
+    
+private func getNWCoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
+        return getCoordinateFromMapRectanglePoint(x: MKMapRectGetMinX(mRect), y: mRect.origin.y)
+}
+    //    -(CLLocationCoordinate2D)getSECoordinate:(MKMapRect)mRect{
+    //    return [self getCoordinateFromMapRectanglePoint:MKMapRectGetMaxX(mRect) y:MKMapRectGetMaxY(mRect)];
+    //    }
+
+private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
+    return getCoordinateFromMapRectanglePoint(x: MKMapRectGetMaxX(mRect), y: MKMapRectGetMaxY(mRect))
+}
+    
+    //    -(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mRect{
+    //    return [self getCoordinateFromMapRectanglePoint:mRect.origin.x y:MKMapRectGetMaxY(mRect)];
+    //    }
+    
+    private func getSWCoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
+    return getCoordinateFromMapRectanglePoint(x: mRect.origin.x, y: MKMapRectGetMaxY(mRect))
+}
+    
+//    -(CLLocationCoordinate2D)getCoordinateFromMapRectanglePoint:(double)x y:(double)y{
+//    MKMapPoint swMapPoint = MKMapPointMake(x, y);
+//    return MKCoordinateForMapPoint(swMapPoint);
+//    }
+    
+    private func getCoordinateFromMapRectanglePoint(x: Double, y: Double) -> CLLocationCoordinate2D  {
+        let swMapPoint = MKMapPointMake(x, y)
+        return MKCoordinateForMapPoint(swMapPoint);
+    }
+    
+//    -(NSArray *)getBoundingBox:(MKMapRect)mRect{
+//    CLLocationCoordinate2D bottomLeft = [self getSWCoordinate:mRect];
+//    CLLocationCoordinate2D topRight = [self getNECoordinate:mRect];
+//    return @[[NSNumber numberWithDouble:bottomLeft.latitude ],
+//    [NSNumber numberWithDouble:bottomLeft.longitude],
+//    [NSNumber numberWithDouble:topRight.latitude],
+//    [NSNumber numberWithDouble:topRight.longitude]];
+//    }
+
+//    private func getBoundingBox(mRect: MKMapRect) ->(Double, Double, Double, Double) {
+////        let botLeft = getSWCoordinate(mRect: mRect)
+////        let topRight = getNECoordinate(mRect: mRect)
+//
+//
+////        let BLP = MyPointAnnotation()
+////        BLP.coordinate  = CLLocationCoordinate2D(latitude: botLeft.latitude, longitude: botLeft.longitude)
+////        BLP.title = "botLeft"
+////        mapView.addAnnotation(BLP)
+////
+////        let TRP = MyPointAnnotation()
+////        TRP.coordinate  = CLLocationCoordinate2D(latitude: topRight.latitude, longitude: topRight.longitude)
+////        TRP.title = "topRight"
+////        mapView.addAnnotation(TRP)
+//
+//        return (botLeft.latitude, botLeft.longitude, topRight.latitude, topRight.longitude)
+//    }
+
+    @IBAction func boxButton(_ sender: Any) {
+        
+    }
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        print("mapview region changed")
+//        let answer = getBoundingBox(mRect: mapView.visibleMapRect)
+//        print("mapview region changed \(answer)")
+    }
+    
     private func clearWaypoints() {
         mapView?.removeAnnotation(mapView.annotations as! MKAnnotation)
     }
@@ -213,6 +347,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         var view: MKAnnotationView! = mapView.dequeueReusableAnnotationView(withIdentifier: Constants.AnnotationViewReuseIdentifier)
         if view == nil {
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: Constants.AnnotationViewReuseIdentifier)
+            view.tintColor = MKPinAnnotationView.greenPinColor()
             view.canShowCallout = true
         } else {
             view.annotation = annotation
@@ -245,8 +380,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let circleRenderer = MKCircleRenderer(circle: overlay)
             circleRenderer.fillColor = UIColor.yellow.withAlphaComponent(0.2)
             return circleRenderer
-        }
-        else {
+        } else  if overlay is MKPolyline {
+            let renderer = MKPolylineRenderer(overlay: overlay)
+            renderer.strokeColor = UIColor.orange
+            renderer.lineWidth = 1
+            return renderer
+        } else {
             return MKOverlayRenderer(overlay: overlay)
         }
     }
