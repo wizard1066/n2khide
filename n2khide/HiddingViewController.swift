@@ -345,11 +345,21 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         var coordinates:[CLLocationCoordinate2D] = []
         var latitude2P = latitude2S.split(separator: "-")
         var longitude2P = longitude2S.split(separator: "-")
-        let cord2D = getDigitalFromDegrees(latitude: latitude2S, longitude: longitude2S)
-        let cord2U = CLLocationCoordinate2D(latitude: cord2D.1, longitude: cord2D.0)
+        var cord2D = getDigitalFromDegrees(latitude: latitude2S, longitude: longitude2S)
+        var cord2U = CLLocationCoordinate2D(latitude: cord2D.1, longitude: cord2D.0)
         coordinates.append(cord2U)
-        var source2PLatitude = "7-0-\(latitude2P[0])-E"
-        
+        let lat2P = Double(latitude2P[0])! + 1
+        let lon2P = Double(longitude2P[0])! + 1
+        let source2PLatitude = "\(latitude2P[2])-\(latitude2P[1])-\(lat2P)-\(latitude2P[3])"
+        cord2D = getDigitalFromDegrees(latitude: source2PLatitude, longitude: longitude2S)
+        cord2U = CLLocationCoordinate2D(latitude: cord2D.1, longitude: cord2D.0)
+        coordinates.append(cord2U)
+        let source2PLongitude = "\(longitude2P[2])-\(longitude2P[1])-\(lon2P)-\(longitude2P[2])"
+        cord2D = getDigitalFromDegrees(latitude: source2PLatitude, longitude: source2PLongitude)
+        cord2U = CLLocationCoordinate2D(latitude: cord2D.1, longitude: cord2D.0)
+        coordinates.append(cord2U)
+        let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
+        self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
@@ -773,12 +783,17 @@ func getShare() {
           waypoint2.title = uniqueName
           waypoint2.subtitle = "Hint"
             updateWayname(waypoint2U: waypoint2, image2U: nil)
-            mapView.addAnnotation(waypoint2)
+            
             let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil)
             wayPoints[uniqueName] = newWayPoint
             let wp2FLat = getLocationDegreesFrom(latitude: coordinate.latitude)
             let wp2FLog = getLocationDegreesFrom(latitude: coordinate.longitude)
             WP2M[wp2FLat+wp2FLog] = uniqueName
+            // fuck
+            DispatchQueue.main.async() {
+                self.mapView.addAnnotation(waypoint2)
+                self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
+            }
         }
     }
     
