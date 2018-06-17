@@ -203,6 +203,11 @@
                                     <action selector="newMap:" destination="17o-cH-NIh" id="gFJ-wp-SDu"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem title="Save" id="UIv-EG-Tar">
+                                <connections>
+                                    <action selector="saveB:" destination="17o-cH-NIh" id="uDv-8i-8aH"/>
+                                </connections>
+                            </barButtonItem>
                         </leftBarButtonItems>
                         <rightBarButtonItems>
                             <barButtonItem title="Share" id="hBl-mB-9A3">
