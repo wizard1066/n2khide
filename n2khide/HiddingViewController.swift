@@ -29,6 +29,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     // MARK location Manager delegate code + more
     
     @IBAction func stateButton(_ sender: Any) {
+        // fuck
         let mRect = self.mapView.visibleMapRect
         let cordSW = mapView.convert(getSWCoordinate(mRect: mRect), toPointTo: mapView)
         let cordNE = mapView.convert(getNECoordinate(mRect: mRect), toPointTo: mapView)
@@ -38,9 +39,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         let DNELat = getLocationDegreesFrom(latitude: getNECoordinate(mRect: mRect).latitude)
         let DNELog = getLocationDegreesFrom(longitude: getNECoordinate(mRect: mRect).longitude)
         let cord2D = getDigitalFromDegrees(latitude: DNELat, longitude: DNELog)
-        let cord2U = CLLocationCoordinate2D(latitude: cord2D.0, longitude: cord2D.1)
+        let cord2U = CLLocationCoordinate2D(latitude: cord2D.1, longitude: cord2D.0)
         
-        var coordinates =  [cord2U, getSECoordinate(mRect: mRect)]
+        var coordinates =  [getNWCoordinate(mRect: mRect),getNECoordinate(mRect: mRect), getSECoordinate(mRect: mRect),getSWCoordinate(mRect: mRect),getNWCoordinate(mRect: mRect)]
         let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
         self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
     }
@@ -158,7 +159,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         DispatchQueue.main.async {
             self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
             self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
-        }
+            if WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!] != nil {
+                let alert = UIAlertController(title: "WP2M Triggered", message: "WP2M Triggered", preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+            }
+       }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -319,6 +325,30 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //    }
 
     @IBAction func boxButton(_ sender: Any) {
+        //fuck
+        // 7-0-36-E
+        // 46-20-22-N
+        let box2D:[(Double,Double)] = [(36,22),(37,22),(37,23),(36,23),(36,22)]
+        var coordinates:[CLLocationCoordinate2D] = []
+        for sec2U in box2D {
+                let lat2P = "7-0-\(sec2U.0)-E"
+                let lon2P  = "46-20-\(sec2U.1)-N"
+                let cord2D = getDigitalFromDegrees(latitude: lat2P, longitude: lon2P)
+                let cord2U = CLLocationCoordinate2D(latitude: cord2D.1, longitude: cord2D.0)
+                coordinates.append(cord2U)
+        }
+        let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
+        self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
+    }
+    
+    private func doBox(latitude2S: String, longitude2S: String) {
+        var coordinates:[CLLocationCoordinate2D] = []
+        var latitude2P = latitude2S.split(separator: "-")
+        var longitude2P = longitude2S.split(separator: "-")
+        let cord2D = getDigitalFromDegrees(latitude: latitude2S, longitude: longitude2S)
+        let cord2U = CLLocationCoordinate2D(latitude: cord2D.1, longitude: cord2D.0)
+        coordinates.append(cord2U)
+        var source2PLatitude = "7-0-\(latitude2P[0])-E"
         
     }
     
@@ -746,6 +776,9 @@ func getShare() {
             mapView.addAnnotation(waypoint2)
             let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint: "Hint", image: nil)
             wayPoints[uniqueName] = newWayPoint
+            let wp2FLat = getLocationDegreesFrom(latitude: coordinate.latitude)
+            let wp2FLog = getLocationDegreesFrom(latitude: coordinate.longitude)
+            WP2M[wp2FLat+wp2FLog] = uniqueName
         }
     }
     

@@ -141,7 +141,7 @@
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7MQ-s0-Grh">
                                                         <rect key="frame" x="0.0" y="0.0" width="128" height="25"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="128" id="k9b-sb-9hV"/>
+                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="128" id="k9b-sb-9hV"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="18"/>
                                                         <nil key="textColor"/>
@@ -150,7 +150,7 @@
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aP3-6O-m9a">
                                                         <rect key="frame" x="128" y="0.0" width="128" height="25"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="128" id="Ble-pR-ZYg"/>
+                                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="128" id="Ble-pR-ZYg"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="18"/>
                                                         <nil key="textColor"/>
