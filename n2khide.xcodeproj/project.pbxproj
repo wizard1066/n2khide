@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EF0C63A220D9343200A65CC0 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0C63A120D9343200A65CC0 /* ScannerViewController.swift */; };
+		EF0C63A420D9472B00A65CC0 /* BeaconCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0C63A320D9472B00A65CC0 /* BeaconCode.swift */; };
 		EF258B8D20C7D1D10089EB4D /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF258B8C20C7D1D10089EB4D /* CloudKit.framework */; };
 		EF40AAB620C6F83100CF6B3E /* CustomItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF40AAB520C6F83100CF6B3E /* CustomItem.swift */; };
 		EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF56461720BD9A4C00F500F6 /* AppDelegate.swift */; };
@@ -27,6 +28,7 @@
 
 /* Begin PBXFileReference section */
 		EF0C63A120D9343200A65CC0 /* ScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
+		EF0C63A320D9472B00A65CC0 /* BeaconCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconCode.swift; sourceTree = "<group>"; };
 		EF258B8A20C7D1CD0089EB4D /* n2khide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = n2khide.entitlements; sourceTree = "<group>"; };
 		EF258B8C20C7D1D10089EB4D /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		EF40AAB520C6F83100CF6B3E /* CustomItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomItem.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 				EFF07FAF20C03B160018C8C7 /* Common.swift */,
 				EF56461720BD9A4C00F500F6 /* AppDelegate.swift */,
 				EF56461B20BD9A4C00F500F6 /* Main.storyboard */,
+				EF0C63A320D9472B00A65CC0 /* BeaconCode.swift */,
 				EF897B7320D3A43400C0D2D9 /* America.gpx */,
 				EF8E3B2220D1481800F6C6CD /* Geotification.swift */,
 				EF8586A120BEE09C00A21777 /* EditWaypointController.swift */,
@@ -201,6 +204,7 @@
 				EF0C63A220D9343200A65CC0 /* ScannerViewController.swift in Sources */,
 				EF85869620BE845100A21777 /* HideTableViewController.swift in Sources */,
 				EF85869820BE847300A21777 /* HideView.swift in Sources */,
+				EF0C63A420D9472B00A65CC0 /* BeaconCode.swift in Sources */,
 				EF8586A220BEE09C00A21777 /* EditWaypointController.swift in Sources */,
 				EF40AAB620C6F83100CF6B3E /* CustomItem.swift in Sources */,
 				EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */,

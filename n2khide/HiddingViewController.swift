@@ -73,16 +73,89 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         mapView.addAnnotation(pin)
     }
     
-    func statusRequest() {
-        
+    // MARK: // iBeacon code
+    
+    func startScanning(UUID2Use: String) {
+//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//        locationManager = appDelegate.locationManager
+        if UUID2Use != nil {
+            beaconRegion = CLBeaconRegion(proximityUUID: UUID(uuidString: UUID2Use)!, identifier: "nobody")
+            locationManager?.startMonitoring(for: beaconRegion)
+            locationManager?.startRangingBeacons(in: beaconRegion)
+            beaconRegion.notifyOnEntry = true
+            beaconRegion.notifyOnExit = true
+        }
     }
     
+    var isSearchingForBeacons = false
+    var lastFoundBeacon: CLBeacon! = CLBeacon()
+    var lastProximity: CLProximity! = CLProximity.unknown
+    
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-        DispatchQueue.main.async {
-            let alert = UIAlertController(title: "LocationMgr state", message:  "\(region.identifier) \(state)", preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
+//        DispatchQueue.main.async {
+//            let alert = UIAlertController(title: "LocationMgr state", message:  "\(region.identifier) \(state)", preferredStyle: UIAlertControllerStyle.alert)
+//            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+//            self.present(alert, animated: true, completion: nil)
+//        }
+        if state == CLRegionState.inside {
+            locationManager?.startRangingBeacons(in: beaconRegion)
         }
+        else {
+            locationManager?.stopRangingBeacons(in: beaconRegion)
+        }
+    }
+    
+    func locationManager(manager: CLLocationManager!, didEnterRegion region: CLRegion!) {
+        print( "Beacon in range")
+//        lblBeaconDetails.hidden = false
+    }
+    
+    
+    func locationManager(manager: CLLocationManager!, didExitRegion region: CLRegion!) {
+        print("No beacons in range")
+//        lblBeaconDetails.hidden = true
+    }
+    
+    func locationManager(manager: CLLocationManager!, didRangeBeacons beacons: [AnyObject]!, inRegion region: CLBeaconRegion!) {
+        var shouldHideBeaconDetails = true
+        if let foundBeacons = beacons {
+            if foundBeacons.count > 0 {
+                if let closestBeacon = foundBeacons[0] as? CLBeacon {
+                    if closestBeacon != lastFoundBeacon || lastProximity != closestBeacon.proximity  {
+                        lastFoundBeacon = closestBeacon
+                        lastProximity = closestBeacon.proximity
+                        var proximityMessage: String!
+                        switch lastFoundBeacon.proximity {
+                        case CLProximity.immediate:
+                            proximityMessage = "Very close"
+                        case CLProximity.near:
+                            proximityMessage = "Near"
+                        case CLProximity.far:
+                            proximityMessage = "Far"
+                        default:
+                            proximityMessage = "Where's the beacon?"
+                        }
+                        shouldHideBeaconDetails = false
+                          print("Beacon Major = \(closestBeacon.major.intValue) \nMinor \(closestBeacon.minor.intValue) Distance: \(proximityMessage)")
+                    }
+                }
+            }
+        }
+//        lblBeaconDetails.hidden = shouldHideBeaconDetails
+    }
+    
+    func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
+        print(error)
+    }
+    
+    
+    func locationManager(manager: CLLocationManager!, monitoringDidFailForRegion region: CLRegion!, withError error: NSError!) {
+        print(error)
+    }
+    
+    
+    func locationManager(manager: CLLocationManager!, rangingBeaconsDidFailForRegion region: CLBeaconRegion!, withError error: NSError!) {
+        print(error)
     }
     
     func getLocationDegreesFrom(latitude: Double) -> String {
@@ -178,7 +251,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         DispatchQueue.main.async {
             self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!).reformatIntoDMS()
             self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!).reformatIntoDMS()
-           print("\(self.longitudeLabel.text)")
             if WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!] != nil {
                let  alert2Post = WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!]
                 let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)

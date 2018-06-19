@@ -34,6 +34,8 @@ struct way2G: Codable
     var imageURL: URL
 }
 
+var beaconRegion:CLBeaconRegion!
+
 
 
     
