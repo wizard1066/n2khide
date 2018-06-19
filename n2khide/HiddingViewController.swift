@@ -345,7 +345,6 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //    }
 
     @IBAction func boxButton(_ sender: Any) {
-        //fuck
         // 7-0-36-E
         // 46-20-22-N
         let box2D:[(Double,Double)] = [(36,22),(37,22),(37,23),(36,23),(36,22)]
@@ -362,7 +361,6 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     }
     
     private func doBox(latitude2S: String, longitude2S: String) {
-        // fuck
         var coordinates:[CLLocationCoordinate2D] = []
         print("latitude2S \(latitude2S) longitude2S \(longitude2S)")
         var latitude2P = latitude2S.split(separator: "-")
@@ -617,6 +615,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         operationQueue.waitUntilAllOperationsAreFinished()
         
 //        var rec2Save:[CKRecord] = []
+        var p2S = 0
         for point2Save in listOfPoint2Seek {
 //            let operation1 = BlockOperation {
             
@@ -625,6 +624,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 ckWayPointRecord.setObject(point2Save.coordinates?.latitude as CKRecordValue?, forKey: Constants.Attribute.latitude)
                 ckWayPointRecord.setObject(point2Save.name as CKRecordValue?, forKey: Constants.Attribute.name)
                 ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
+                ckWayPointRecord.setObject(p2S as CKRecordValue?, forKey: Constants.Attribute.order)
+                p2S += 1
 //                ckWayPointRecord.setParent(self.mapRecord)
             var image2D: Data!
             if point2Save.image != nil {
@@ -750,13 +751,13 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //    private var userID: CKUserIdentity!
 //
 func getShare() {
-    // fuck
         mapView.alpha = 0.2
         centerImage.image = UIImage(named: "compassClip")
         recordZone = CKRecordZone(zoneName: "work")
         recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
+        query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
         privateDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
             for record in records! {
                 self.plotPin(pin2P: record)
@@ -873,7 +874,6 @@ func getShare() {
 //            let wp2FLat = getLocationDegreesFrom(latitude: coordinate.latitude)
 //            let wp2FLog = getLocationDegreesFrom(longitude: coordinate.longitude)
             WP2M[wp2FLat+wp2FLog] = uniqueName
-            // fuck
             DispatchQueue.main.async() {
                 self.mapView.addAnnotation(waypoint2)
                 self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
@@ -1054,6 +1054,7 @@ func getShare() {
             static let  latitude = "latitude"
             static let  name = "name"
             static let hint = "hint"
+            static let order = "order"
             static let  imageData = "image"
             static let mapName = "mapName"
             static let linkReference = "linkReference"
