@@ -113,6 +113,21 @@
             </objects>
             <point key="canvasLocation" x="2769" y="599"/>
         </scene>
+        <!--Scanner View Controller-->
+        <scene sceneID="jQP-q9-cgE">
+            <objects>
+                <viewController id="D55-Yg-gKr" customClass="ScannerViewController" customModule="n2khide" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="AAw-vN-eJG">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="4Xp-Qy-5Qd"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2uS-l6-AxE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1879" y="-124"/>
+        </scene>
         <!--Hidding View Controller-->
         <scene sceneID="1MW-og-wL4">
             <objects>
@@ -232,6 +247,11 @@
                             <barButtonItem title="Save" id="UIv-EG-Tar">
                                 <connections>
                                     <action selector="saveB:" destination="17o-cH-NIh" id="uDv-8i-8aH"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Scan" id="gau-6O-lj9">
+                                <connections>
+                                    <segue destination="D55-Yg-gKr" kind="show" id="lDr-mI-aY8"/>
                                 </connections>
                             </barButtonItem>
                         </leftBarButtonItems>

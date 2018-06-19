@@ -14,7 +14,6 @@ import CoreLocation
 // 2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6 UUID
 
 extension String {
-    
     func reformatIntoDMS() -> String {
         let parts2F = split(separator: "-")
         let partsF = parts2F.map { String($0) }
@@ -594,6 +593,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     
     func save2Cloud() {
         if recordZone == nil {
+            newMap(UIBarButtonItem())
             return
         }
         sharingApp = true
