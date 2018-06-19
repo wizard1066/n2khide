@@ -155,8 +155,8 @@
                                                     <constraint firstAttribute="width" constant="128" id="9vK-HV-uQe"/>
                                                     <constraint firstAttribute="height" constant="48" id="YRC-pR-TU5"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Bold" family="Avenir Next Condensed" pointSize="24"/>
-                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
+                                                <color key="textColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XxX-fC-dMw">
@@ -165,10 +165,17 @@
                                                     <constraint firstAttribute="width" constant="128" id="B0o-Uz-oes"/>
                                                     <constraint firstAttribute="height" constant="48" id="lFr-sR-95n"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Bold" family="Avenir Next Condensed" pointSize="24"/>
-                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
+                                                <color key="textColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="sLL-BY-qSg">
+                                                <rect key="frame" x="-370" y="72" width="768" height="916"/>
+                                                <gestureRecognizers/>
+                                                <connections>
+                                                    <outletCollection property="gestureRecognizers" destination="UVg-oV-eg7" appends="YES" id="3Ao-zu-coc"/>
+                                                </connections>
+                                            </mapView>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screen Shot 2018-06-19 at 14.22.28" translatesAutoresizingMaskIntoConstraints="NO" id="9q8-3h-DBK">
                                                 <rect key="frame" x="294" y="530" width="180" height="50"/>
                                                 <constraints>
@@ -183,18 +190,34 @@
                                                     <constraint firstAttribute="width" constant="180" id="sNS-fr-xwK"/>
                                                 </constraints>
                                             </imageView>
-                                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="sLL-BY-qSg">
-                                                <rect key="frame" x="0.0" y="0.0" width="768" height="916"/>
-                                                <gestureRecognizers/>
-                                                <connections>
-                                                    <outletCollection property="gestureRecognizers" destination="UVg-oV-eg7" appends="YES" id="3Ao-zu-coc"/>
-                                                </connections>
-                                            </mapView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rws-ci-FeV">
+                                                <rect key="frame" x="320" y="280" width="128" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="0eC-77-Zve"/>
+                                                    <constraint firstAttribute="width" constant="128" id="vo3-Ly-2gg"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
+                                                <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zax-lQ-oNB">
+                                                <rect key="frame" x="320" y="224" width="128" height="48"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="128" id="dP4-Y0-T4K"/>
+                                                    <constraint firstAttribute="height" constant="48" id="esO-q1-b9G"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
+                                                <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
+                                            <constraint firstItem="VqB-ip-3yV" firstAttribute="top" secondItem="rws-ci-FeV" secondAttribute="bottom" constant="8" id="0tH-7l-Dft"/>
                                             <constraint firstItem="XxX-fC-dMw" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="378-HH-DJD"/>
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="3QL-hm-TyA"/>
+                                            <constraint firstItem="rws-ci-FeV" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="D8O-9N-yfl"/>
+                                            <constraint firstItem="rws-ci-FeV" firstAttribute="top" secondItem="Zax-lQ-oNB" secondAttribute="bottom" constant="8" id="HSb-aO-zYZ"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerY" secondItem="sLL-BY-qSg" secondAttribute="centerY" id="I7Q-2n-NZT"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="top" secondItem="VqB-ip-3yV" secondAttribute="bottom" constant="8" id="Id4-Vq-zBK"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerX" secondItem="sLL-BY-qSg" secondAttribute="centerX" id="RWb-oe-CXi"/>
@@ -204,6 +227,7 @@
                                             <constraint firstItem="VqB-ip-3yV" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="Y93-hT-wj3"/>
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="top" secondItem="XxX-fC-dMw" secondAttribute="bottom" constant="1" id="bwl-gt-EZT"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" id="emq-tz-5Sh"/>
+                                            <constraint firstItem="Zax-lQ-oNB" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="gkR-qF-ZUh"/>
                                             <constraint firstItem="XxX-fC-dMw" firstAttribute="top" secondItem="9q8-3h-DBK" secondAttribute="bottom" constant="8" id="hyP-vM-F1L"/>
                                             <constraint firstItem="9q8-3h-DBK" firstAttribute="top" secondItem="9zf-oX-1TL" secondAttribute="bottom" constant="8" id="xpX-aj-6iX"/>
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="top" secondItem="XxX-fC-dMw" secondAttribute="bottom" constant="1" id="ya8-Z3-PfT"/>
@@ -288,7 +312,9 @@
                         <outlet property="centerImage" destination="9zf-oX-1TL" id="bHh-L1-ET5"/>
                         <outlet property="hideView" destination="ddt-Qx-MRh" id="Nf5-fu-lTm"/>
                         <outlet property="latitudeLabel" destination="XxX-fC-dMw" id="tYi-BS-FRL"/>
+                        <outlet property="latitudeNextLabel" destination="rws-ci-FeV" id="ksF-f1-hTv"/>
                         <outlet property="longitudeLabel" destination="UXF-hu-0wk" id="1JG-WU-bGi"/>
+                        <outlet property="longitudeNextLabel" destination="Zax-lQ-oNB" id="Zcf-Nb-pAp"/>
                         <outlet property="mapView" destination="sLL-BY-qSg" id="Y0F-Zx-rsl"/>
                         <outlet property="pin" destination="5rp-DO-9vb" id="qgw-05-E2y"/>
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="sLL-BY-qSg" id="RQi-Wn-jN8">

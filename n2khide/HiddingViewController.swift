@@ -39,6 +39,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var longitudeLabel: UILabel!
     @IBOutlet weak var latitudeLabel: UILabel!
     @IBOutlet weak var centerImage: UIImageView!
+    @IBOutlet weak var longitudeNextLabel: UILabel!
+    @IBOutlet weak var latitudeNextLabel: UILabel!
     
     var geotifications = [Geotification]()
     var locationManager:CLLocationManager? = nil
@@ -752,13 +754,17 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //
 func getShare() {
         mapView.alpha = 0.2
+        listOfPoint2Seek = []
         centerImage.image = UIImage(named: "compassClip")
         recordZone = CKRecordZone(zoneName: "work")
         recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
-        query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
+//        query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
         privateDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
+            if error != nil {
+                print("error \(error)")
+            }
             for record in records! {
                 self.plotPin(pin2P: record)
                 let region2M = self.region(withPins: record)
@@ -767,14 +773,26 @@ func getShare() {
                 let longitude = record.object(forKey:  Constants.Attribute.longitude) as? Double
                 let latitude = record.object(forKey:  Constants.Attribute.latitude) as? Double
                 let name = record.object(forKey:  Constants.Attribute.name) as? String
+                let hint = record.object(forKey:  Constants.Attribute.hint) as? String
                 let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
                 let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
+                let wp2S = wayPoint(coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil)
+                listOfPoint2Seek.append(wp2S)
                 WP2M[wp2FLat+wp2FLog] = name
                 DispatchQueue.main.async {
                     self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
                 }
             }
         }
+    
+    let when = DispatchTime.now() + Double(4)
+    DispatchQueue.main.asyncAfter(deadline: when){
+        print("listOfPoint2Seek \(listOfPoint2Seek)")
+        let nextWP2S = listOfPoint2Seek[order]
+        self.longitudeNextLabel.text = self.getLocationDegreesFrom(longitude: (nextWP2S.coordinates?.longitude)!)
+        self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
+    }
+    
     
 //        let predicate = NSPredicate(format: "owningList == %@", recordID)
 //        let query = CKQuery(recordType: "Waypoints", predicate: predicate)
@@ -895,7 +913,7 @@ func getShare() {
         super.viewDidAppear(animated)
         let center = NotificationCenter.default
         let queue = OperationQueue.main
-        let alert2Monitor = "regionEvent"
+        var alert2Monitor = "regionEvent"
         regionObserver = center.addObserver(forName: NSNotification.Name(rawValue: alert2Monitor), object: nil, queue: queue) { (notification) in
              let message2N = notification.userInfo!["region"] as? String
             DispatchQueue.main.async {
@@ -904,7 +922,7 @@ func getShare() {
                 self.present(alert, animated: true, completion: nil)
             }
         }
-        
+         alert2Monitor = "showPin"
         pinObserver = center.addObserver(forName: NSNotification.Name(rawValue: alert2Monitor), object: nil, queue: queue) { (notification) in
              let record2O = notification.userInfo!["pin"] as? CKShareMetadata
             if record2O != nil {

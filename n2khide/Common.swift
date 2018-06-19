@@ -23,6 +23,7 @@ struct wayPoint {
 var wayPoints:[String:wayPoint] = [:]
 var listOfPoint2Seek:[wayPoint] = []
 var WP2M:[String:String] = [:]
+var order = 0
 
 struct way2G: Codable
 {
