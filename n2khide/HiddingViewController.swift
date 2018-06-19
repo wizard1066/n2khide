@@ -11,6 +11,23 @@ import MapKit
 import CloudKit
 import CoreLocation
 
+// 2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6 UUID
+
+extension String {
+    
+    func reformatIntoDMS() -> String {
+        let parts2F = split(separator: "-")
+        let partsF = parts2F.map { String($0) }
+        return String(
+            format: "%@°%@'%@\"%@",
+            partsF[0],
+            partsF[1],
+            partsF[2],
+            partsF[3]
+        )
+    }
+}
+
 extension Double {
     /// Rounds the double to decimal places value
     func rounded(toPlaces places:Int) -> Double {
@@ -22,6 +39,7 @@ extension Double {
 class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint, CLLocationManagerDelegate {
     @IBOutlet weak var longitudeLabel: UILabel!
     @IBOutlet weak var latitudeLabel: UILabel!
+    @IBOutlet weak var centerImage: UIImageView!
     
     var geotifications = [Geotification]()
     var locationManager:CLLocationManager? = nil
@@ -29,7 +47,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     // MARK location Manager delegate code + more
     
     @IBAction func stateButton(_ sender: Any) {
-        // fuck
+        // draws a square around the current window
         let mRect = self.mapView.visibleMapRect
         let cordSW = mapView.convert(getSWCoordinate(mRect: mRect), toPointTo: mapView)
         let cordNE = mapView.convert(getNECoordinate(mRect: mRect), toPointTo: mapView)
@@ -157,10 +175,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         self.mapView.setRegion(region, animated: true)
         self.regionHasBeenCentered = true
         DispatchQueue.main.async {
-            self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
-            self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
+            self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!).reformatIntoDMS()
+            self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!).reformatIntoDMS()
+           print("\(self.longitudeLabel.text)")
             if WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!] != nil {
-                let alert = UIAlertController(title: "WP2M Triggered", message: "WP2M Triggered", preferredStyle: UIAlertControllerStyle.alert)
+               let  alert2Post = WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!]
+                let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
                         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                         self.present(alert, animated: true, completion: nil)
             }
@@ -259,6 +279,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     //    -(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mRect{
     //    return [self getCoordinateFromMapRectanglePoint:MKMapRectGetMaxX(mRect) y:mRect.origin.y];
     //    }
+
     
 private func getNECoordinate(mRect: MKMapRect) ->  CLLocationCoordinate2D {
         return getCoordinateFromMapRectanglePoint(x: MKMapRectGetMaxX(mRect), y: mRect.origin.y)
@@ -414,16 +435,24 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        //check annotation is not user location
+        let userLongitude = mapView.userLocation.coordinate.longitude
+        let userLatitiude = mapView.userLocation.coordinate.latitude
+        if annotation.coordinate.longitude == userLongitude, annotation.coordinate.latitude == userLatitiude {
+            return nil
+        }
+    
         var view: MKAnnotationView! = mapView.dequeueReusableAnnotationView(withIdentifier: Constants.AnnotationViewReuseIdentifier)
         if view == nil {
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: Constants.AnnotationViewReuseIdentifier)
-            view.tintColor = MKPinAnnotationView.greenPinColor()
+
             view.canShowCallout = true
         } else {
             view.annotation = annotation
         }
         view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
         view.leftCalloutAccessoryView  = UIButton(frame: Constants.LeftCalloutFrame)
+     
         view.isDraggable = true
         return view
     }
@@ -597,7 +626,12 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 ckWayPointRecord.setObject(point2Save.name as CKRecordValue?, forKey: Constants.Attribute.name)
                 ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
 //                ckWayPointRecord.setParent(self.mapRecord)
-                let image2D = UIImageJPEGRepresentation(point2Save.image!, 1.0)
+            var image2D: Data!
+            if point2Save.image != nil {
+                image2D = UIImageJPEGRepresentation(point2Save.image!, 1.0)
+            } else {
+                image2D = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
+            }
                 let file2ShareURL = documentsDirectoryURL.appendingPathComponent(point2Save.name!)
                 try? image2D?.write(to: file2ShareURL, options: .atomicWrite)
                 let newAsset = CKAsset(fileURL: file2ShareURL)
@@ -717,7 +751,9 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //
 func getShare() {
     // fuck
-        recordZone = CKRecordZone(zoneName: "leysin")
+        mapView.alpha = 0.2
+        centerImage.image = UIImage(named: "compassClip")
+        recordZone = CKRecordZone(zoneName: "work")
         recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
@@ -729,8 +765,10 @@ func getShare() {
                self.locationManager?.startMonitoring(for: region2M)
                 let longitude = record.object(forKey:  Constants.Attribute.longitude) as? Double
                 let latitude = record.object(forKey:  Constants.Attribute.latitude) as? Double
+                let name = record.object(forKey:  Constants.Attribute.name) as? String
                 let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
                 let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
+                WP2M[wp2FLat+wp2FLog] = name
                 DispatchQueue.main.async {
                     self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
                 }
@@ -920,7 +958,8 @@ func getShare() {
             if record != nil {
                 self.plotPin(pin2P: record!)
                 let region2M = self.region(withPins: record!)
-                self.locationManager?.startMonitoring(for: region2M)
+                self.locationManager?.startUpdatingLocation()
+//                self.locationManager?.startMonitoring(for: region2M)
 //                self.locationManager.startMonitoringVisits()
             }
         }
