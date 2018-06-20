@@ -10,6 +10,8 @@ import Foundation
 import MapKit
 import CloudKit
 
+// "2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6"
+
 typealias Codable = Decodable & Encodable
 
 struct wayPoint {
@@ -24,6 +26,7 @@ var wayPoints:[String:wayPoint] = [:]
 var listOfPoint2Seek:[wayPoint] = []
 var WP2M:[String:String] = [:]
 var order = 0
+
 
 struct way2G: Codable
 {

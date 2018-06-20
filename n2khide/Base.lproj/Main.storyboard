@@ -10,6 +10,11 @@
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="Star Strella.otf">
+            <string>StarStrella</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Edit Waypoint Controller-->
         <scene sceneID="4o1-fP-MX7">
@@ -150,43 +155,29 @@
                                                 </constraints>
                                             </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Longitude" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UXF-hu-0wk">
-                                                <rect key="frame" x="320" y="637" width="128" height="48"/>
+                                                <rect key="frame" x="320" y="606" width="128" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="128" id="9vK-HV-uQe"/>
-                                                    <constraint firstAttribute="height" constant="48" id="YRC-pR-TU5"/>
+                                                    <constraint firstAttribute="height" constant="24" id="YRC-pR-TU5"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
                                                 <color key="textColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Latitude" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XxX-fC-dMw">
-                                                <rect key="frame" x="320" y="588" width="128" height="48"/>
+                                                <rect key="frame" x="320" y="578" width="128" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="128" id="B0o-Uz-oes"/>
-                                                    <constraint firstAttribute="height" constant="48" id="lFr-sR-95n"/>
+                                                    <constraint firstAttribute="height" constant="24" id="lFr-sR-95n"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
                                                 <color key="textColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screen Shot 2018-06-19 at 14.22.28" translatesAutoresizingMaskIntoConstraints="NO" id="9q8-3h-DBK">
-                                                <rect key="frame" x="294" y="530" width="180" height="50"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="180" id="MBM-6p-D0i"/>
-                                                    <constraint firstAttribute="height" constant="50" id="dhT-vn-vt6"/>
-                                                </constraints>
-                                            </imageView>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Screen Shot 2018-06-19 at 14.22.49" translatesAutoresizingMaskIntoConstraints="NO" id="VqB-ip-3yV">
-                                                <rect key="frame" x="294" y="336" width="180" height="50"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="50" id="9aK-3R-9Aq"/>
-                                                    <constraint firstAttribute="width" constant="180" id="sNS-fr-xwK"/>
-                                                </constraints>
-                                            </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Latitude" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rws-ci-FeV">
-                                                <rect key="frame" x="320" y="280" width="128" height="48"/>
+                                                <rect key="frame" x="320" y="314" width="128" height="24"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="48" id="0eC-77-Zve"/>
+                                                    <constraint firstAttribute="height" constant="24" id="0eC-77-Zve"/>
                                                     <constraint firstAttribute="width" constant="128" id="vo3-Ly-2gg"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
@@ -194,10 +185,10 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Longitude" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zax-lQ-oNB">
-                                                <rect key="frame" x="320" y="224" width="128" height="48"/>
+                                                <rect key="frame" x="320" y="286" width="128" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="128" id="dP4-Y0-T4K"/>
-                                                    <constraint firstAttribute="height" constant="48" id="esO-q1-b9G"/>
+                                                    <constraint firstAttribute="height" constant="24" id="esO-q1-b9G"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
                                                 <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -210,27 +201,46 @@
                                                     <outletCollection property="gestureRecognizers" destination="UVg-oV-eg7" appends="YES" id="3Ao-zu-coc"/>
                                                 </connections>
                                             </mapView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="{You are here}" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Qb-jJ-lNW">
+                                                <rect key="frame" x="304" y="538" width="160" height="32"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="160" id="Ul2-Pt-erX"/>
+                                                    <constraint firstAttribute="height" constant="32" id="c5K-Kg-rgW"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="24"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="{You need to be here}" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Shq-1A-DO9">
+                                                <rect key="frame" x="274" y="346" width="220" height="32"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="220" id="fRK-p7-i8w"/>
+                                                    <constraint firstAttribute="height" constant="32" id="sVP-aS-FHA"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="24"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="VqB-ip-3yV" firstAttribute="top" secondItem="rws-ci-FeV" secondAttribute="bottom" constant="8" id="0tH-7l-Dft"/>
                                             <constraint firstItem="XxX-fC-dMw" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="378-HH-DJD"/>
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="3QL-hm-TyA"/>
+                                            <constraint firstItem="8Qb-jJ-lNW" firstAttribute="top" secondItem="9zf-oX-1TL" secondAttribute="bottom" constant="16" id="3iF-2L-QBC"/>
                                             <constraint firstItem="rws-ci-FeV" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="D8O-9N-yfl"/>
-                                            <constraint firstItem="rws-ci-FeV" firstAttribute="top" secondItem="Zax-lQ-oNB" secondAttribute="bottom" constant="8" id="HSb-aO-zYZ"/>
+                                            <constraint firstItem="rws-ci-FeV" firstAttribute="top" secondItem="Zax-lQ-oNB" secondAttribute="bottom" constant="4" id="HSb-aO-zYZ"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerY" secondItem="sLL-BY-qSg" secondAttribute="centerY" id="I7Q-2n-NZT"/>
-                                            <constraint firstItem="9zf-oX-1TL" firstAttribute="top" secondItem="VqB-ip-3yV" secondAttribute="bottom" constant="8" id="Id4-Vq-zBK"/>
+                                            <constraint firstItem="9zf-oX-1TL" firstAttribute="top" secondItem="Shq-1A-DO9" secondAttribute="bottom" constant="16" id="PcT-YB-VyB"/>
+                                            <constraint firstItem="8Qb-jJ-lNW" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="Pqx-0n-aND"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerX" secondItem="sLL-BY-qSg" secondAttribute="centerX" id="RWb-oe-CXi"/>
                                             <constraint firstAttribute="trailing" secondItem="sLL-BY-qSg" secondAttribute="trailing" id="TmX-9p-yW7"/>
-                                            <constraint firstItem="9q8-3h-DBK" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="Uyo-gt-azZ"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="top" secondItem="SvD-CE-nLV" secondAttribute="top" id="XtS-pi-euW"/>
-                                            <constraint firstItem="VqB-ip-3yV" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="Y93-hT-wj3"/>
-                                            <constraint firstItem="UXF-hu-0wk" firstAttribute="top" secondItem="XxX-fC-dMw" secondAttribute="bottom" constant="1" id="bwl-gt-EZT"/>
+                                            <constraint firstItem="Shq-1A-DO9" firstAttribute="top" secondItem="rws-ci-FeV" secondAttribute="bottom" constant="8" id="YhJ-2z-Ihy"/>
+                                            <constraint firstItem="UXF-hu-0wk" firstAttribute="top" secondItem="XxX-fC-dMw" secondAttribute="bottom" constant="4" id="bwl-gt-EZT"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" id="emq-tz-5Sh"/>
                                             <constraint firstItem="Zax-lQ-oNB" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="gkR-qF-ZUh"/>
-                                            <constraint firstItem="XxX-fC-dMw" firstAttribute="top" secondItem="9q8-3h-DBK" secondAttribute="bottom" constant="8" id="hyP-vM-F1L"/>
-                                            <constraint firstItem="9q8-3h-DBK" firstAttribute="top" secondItem="9zf-oX-1TL" secondAttribute="bottom" constant="8" id="xpX-aj-6iX"/>
-                                            <constraint firstItem="UXF-hu-0wk" firstAttribute="top" secondItem="XxX-fC-dMw" secondAttribute="bottom" constant="1" id="ya8-Z3-PfT"/>
+                                            <constraint firstItem="Shq-1A-DO9" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="isv-qx-WkY"/>
+                                            <constraint firstItem="XxX-fC-dMw" firstAttribute="top" secondItem="8Qb-jJ-lNW" secondAttribute="bottom" constant="8" symbolic="YES" id="z0A-Ad-EbB"/>
                                             <constraint firstAttribute="bottom" secondItem="sLL-BY-qSg" secondAttribute="bottom" id="zS4-SA-vjp"/>
                                         </constraints>
                                     </view>
@@ -275,7 +285,7 @@
                             </barButtonItem>
                             <barButtonItem title="Scan" id="gau-6O-lj9">
                                 <connections>
-                                    <segue destination="D55-Yg-gKr" kind="show" id="lDr-mI-aY8"/>
+                                    <segue destination="D55-Yg-gKr" kind="show" identifier="Scan VC" id="lDr-mI-aY8"/>
                                 </connections>
                             </barButtonItem>
                         </leftBarButtonItems>
@@ -413,8 +423,4 @@
             <point key="canvasLocation" x="2769" y="-123"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="Screen Shot 2018-06-19 at 14.22.28" width="170" height="50"/>
-        <image name="Screen Shot 2018-06-19 at 14.22.49" width="180" height="50"/>
-    </resources>
 </document>

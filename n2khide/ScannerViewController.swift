@@ -12,6 +12,7 @@ import UIKit
 class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     var captureSession: AVCaptureSession!
     var previewLayer: AVCaptureVideoPreviewLayer!
+    weak var firstViewController: HiddingViewController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,9 +66,9 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if (captureSession?.isRunning == false) {
-            captureSession.startRunning()
-        }
+//        if (captureSession?.isRunning == false) {
+//            captureSession.startRunning()
+//        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -83,16 +84,25 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         
         if let metadataObject = metadataObjects.first {
             guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
-            guard let stringValue = readableObject.stringValue else { return }
+            guard let localUUID = readableObject.stringValue else { return }
             AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-            found(code: stringValue)
+            found(code: localUUID)
         }
         
-        dismiss(animated: true)
+//        dismiss(animated: true)
     }
     
     func found(code: String) {
-        print(code)
+        let ac = UIAlertController(title: "Code Read", message:code, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
+//           self.presentingViewController?.dismiss(animated: true, completion: {
+//                // nothing
+//            })
+            self.firstViewController?.globalUUID = code
+            self.navigationController?.popViewController(animated: true)
+        }))
+        ac.addAction(UIAlertAction(title: "No", style: .cancel))
+        present(ac, animated: true)
     }
     
     override var prefersStatusBarHidden: Bool {

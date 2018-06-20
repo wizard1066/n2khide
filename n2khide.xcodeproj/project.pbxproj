@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		EF0C63A220D9343200A65CC0 /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0C63A120D9343200A65CC0 /* ScannerViewController.swift */; };
 		EF0C63A420D9472B00A65CC0 /* BeaconCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0C63A320D9472B00A65CC0 /* BeaconCode.swift */; };
+		EF0C63A720DA90F500A65CC0 /* Star Strella.otf in Resources */ = {isa = PBXBuildFile; fileRef = EF0C63A620DA90B600A65CC0 /* Star Strella.otf */; };
 		EF258B8D20C7D1D10089EB4D /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF258B8C20C7D1D10089EB4D /* CloudKit.framework */; };
 		EF40AAB620C6F83100CF6B3E /* CustomItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF40AAB520C6F83100CF6B3E /* CustomItem.swift */; };
 		EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF56461720BD9A4C00F500F6 /* AppDelegate.swift */; };
@@ -29,6 +30,7 @@
 /* Begin PBXFileReference section */
 		EF0C63A120D9343200A65CC0 /* ScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
 		EF0C63A320D9472B00A65CC0 /* BeaconCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconCode.swift; sourceTree = "<group>"; };
+		EF0C63A620DA90B600A65CC0 /* Star Strella.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Star Strella.otf"; sourceTree = "<group>"; };
 		EF258B8A20C7D1CD0089EB4D /* n2khide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = n2khide.entitlements; sourceTree = "<group>"; };
 		EF258B8C20C7D1D10089EB4D /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		EF40AAB520C6F83100CF6B3E /* CustomItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomItem.swift; sourceTree = "<group>"; };
@@ -62,6 +64,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EF0C63A520DA908700A65CC0 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EF0C63A620DA90B600A65CC0 /* Star Strella.otf */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		EF258B8B20C7D1D10089EB4D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -102,6 +112,7 @@
 				EF8586A120BEE09C00A21777 /* EditWaypointController.swift */,
 				EF85869720BE847300A21777 /* HideView.swift */,
 				EF85869D20BE880800A21777 /* HiddingViewController.swift */,
+				EF0C63A520DA908700A65CC0 /* Resources */,
 				EF0C63A120D9343200A65CC0 /* ScannerViewController.swift */,
 				EF40AAB520C6F83100CF6B3E /* CustomItem.swift */,
 				EF85869B20BE84A300A21777 /* Utilities.swift */,
@@ -187,6 +198,7 @@
 				EF56462220BD9A4E00F500F6 /* LaunchScreen.storyboard in Resources */,
 				EF56461F20BD9A4E00F500F6 /* Assets.xcassets in Resources */,
 				EF897B7420D3A43400C0D2D9 /* America.gpx in Resources */,
+				EF0C63A720DA90F500A65CC0 /* Star Strella.otf in Resources */,
 				EF56461D20BD9A4C00F500F6 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

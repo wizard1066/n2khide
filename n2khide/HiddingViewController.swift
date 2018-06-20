@@ -35,6 +35,8 @@ extension Double {
     }
 }
 
+
+
 class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint, CLLocationManagerDelegate {
     @IBOutlet weak var longitudeLabel: UILabel!
     @IBOutlet weak var latitudeLabel: UILabel!
@@ -75,21 +77,28 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     // MARK: // iBeacon code
     
-    func startScanning(UUID2Use: String) {
+    var globalUUID: String? {
+        didSet {
+            startScanning()
+        }
+    }
+    
+    func startScanning() {
 //        let appDelegate = UIApplication.shared.delegate as! AppDelegate
 //        locationManager = appDelegate.locationManager
-        if UUID2Use != nil {
-            beaconRegion = CLBeaconRegion(proximityUUID: UUID(uuidString: UUID2Use)!, identifier: "nobody")
+        if globalUUID != nil {
+            beaconRegion = CLBeaconRegion(proximityUUID: UUID(uuidString: globalUUID!)!, identifier: "nobody")
             locationManager?.startMonitoring(for: beaconRegion)
             locationManager?.startRangingBeacons(in: beaconRegion)
             beaconRegion.notifyOnEntry = true
             beaconRegion.notifyOnExit = true
         }
+        print("Monitoring for beacons \(globalUUID)")
     }
     
     var isSearchingForBeacons = false
-    var lastFoundBeacon: CLBeacon! = CLBeacon()
-    var lastProximity: CLProximity! = CLProximity.unknown
+    var lastFoundBeacon:CLBeacon!
+    var lastProximity: CLProximity!
     
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
 //        DispatchQueue.main.async {
@@ -105,43 +114,43 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
-    func locationManager(manager: CLLocationManager!, didEnterRegion region: CLRegion!) {
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         print( "Beacon in range")
 //        lblBeaconDetails.hidden = false
     }
     
     
-    func locationManager(manager: CLLocationManager!, didExitRegion region: CLRegion!) {
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         print("No beacons in range")
 //        lblBeaconDetails.hidden = true
     }
     
-    func locationManager(manager: CLLocationManager!, didRangeBeacons beacons: [AnyObject]!, inRegion region: CLBeaconRegion!) {
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         var shouldHideBeaconDetails = true
-        if let foundBeacons = beacons {
-            if foundBeacons.count > 0 {
-                if let closestBeacon = foundBeacons[0] as? CLBeacon {
-                    if closestBeacon != lastFoundBeacon || lastProximity != closestBeacon.proximity  {
-                        lastFoundBeacon = closestBeacon
-                        lastProximity = closestBeacon.proximity
-                        var proximityMessage: String!
-                        switch lastFoundBeacon.proximity {
-                        case CLProximity.immediate:
-                            proximityMessage = "Very close"
-                        case CLProximity.near:
-                            proximityMessage = "Near"
-                        case CLProximity.far:
-                            proximityMessage = "Far"
-                        default:
-                            proximityMessage = "Where's the beacon?"
-                        }
-                        shouldHideBeaconDetails = false
-                          print("Beacon Major = \(closestBeacon.major.intValue) \nMinor \(closestBeacon.minor.intValue) Distance: \(proximityMessage)")
+
+        if beacons.count > 0 {
+            if let closestBeacon = beacons[0] as? CLBeacon {
+                if closestBeacon != lastFoundBeacon, lastProximity != closestBeacon.proximity  {
+                    lastFoundBeacon = closestBeacon
+                    lastProximity = closestBeacon.proximity
+                    var proximityMessage: String!
+                    switch lastFoundBeacon.proximity {
+                    case CLProximity.immediate:
+                        proximityMessage = "Very close"
+                    case CLProximity.near:
+                        proximityMessage = "Near"
+                    case CLProximity.far:
+                        proximityMessage = "Far"
+                    default:
+                        proximityMessage = "Where's the beacon?"
                     }
+                    shouldHideBeaconDetails = false
+                    print("Beacon Major = \(closestBeacon.major.intValue) \nMinor \(closestBeacon.minor.intValue) Distance: \(proximityMessage)")
                 }
             }
+        
         }
-//        lblBeaconDetails.hidden = shouldHideBeaconDetails
+//      lblBeaconDetails.hidden = shouldHideBeaconDetails
     }
     
     func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
@@ -349,56 +358,26 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     // MARK: MapView
     
-    //    -(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mRect{
-    //    return [self getCoordinateFromMapRectanglePoint:MKMapRectGetMaxX(mRect) y:mRect.origin.y];
-    //    }
-
-    
 private func getNECoordinate(mRect: MKMapRect) ->  CLLocationCoordinate2D {
         return getCoordinateFromMapRectanglePoint(x: MKMapRectGetMaxX(mRect), y: mRect.origin.y)
 }
     
-    //    -(CLLocationCoordinate2D)getNWCoordinate:(MKMapRect)mRect{
-    //    return [self getCoordinateFromMapRectanglePoint:MKMapRectGetMinX(mRect) y:mRect.origin.y];
-    //    }
-    
 private func getNWCoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         return getCoordinateFromMapRectanglePoint(x: MKMapRectGetMinX(mRect), y: mRect.origin.y)
 }
-    //    -(CLLocationCoordinate2D)getSECoordinate:(MKMapRect)mRect{
-    //    return [self getCoordinateFromMapRectanglePoint:MKMapRectGetMaxX(mRect) y:MKMapRectGetMaxY(mRect)];
-    //    }
 
 private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     return getCoordinateFromMapRectanglePoint(x: MKMapRectGetMaxX(mRect), y: MKMapRectGetMaxY(mRect))
 }
     
-    //    -(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mRect{
-    //    return [self getCoordinateFromMapRectanglePoint:mRect.origin.x y:MKMapRectGetMaxY(mRect)];
-    //    }
-    
     private func getSWCoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     return getCoordinateFromMapRectanglePoint(x: mRect.origin.x, y: MKMapRectGetMaxY(mRect))
 }
-    
-//    -(CLLocationCoordinate2D)getCoordinateFromMapRectanglePoint:(double)x y:(double)y{
-//    MKMapPoint swMapPoint = MKMapPointMake(x, y);
-//    return MKCoordinateForMapPoint(swMapPoint);
-//    }
     
     private func getCoordinateFromMapRectanglePoint(x: Double, y: Double) -> CLLocationCoordinate2D  {
         let swMapPoint = MKMapPointMake(x, y)
         return MKCoordinateForMapPoint(swMapPoint);
     }
-    
-//    -(NSArray *)getBoundingBox:(MKMapRect)mRect{
-//    CLLocationCoordinate2D bottomLeft = [self getSWCoordinate:mRect];
-//    CLLocationCoordinate2D topRight = [self getNECoordinate:mRect];
-//    return @[[NSNumber numberWithDouble:bottomLeft.latitude ],
-//    [NSNumber numberWithDouble:bottomLeft.longitude],
-//    [NSNumber numberWithDouble:topRight.latitude],
-//    [NSNumber numberWithDouble:topRight.longitude]];
-//    }
 
 //    private func getBoundingBox(mRect: MKMapRect) ->(Double, Double, Double, Double) {
 ////        let botLeft = getSWCoordinate(mRect: mRect)
@@ -857,7 +836,7 @@ func getShare() {
             }
         }
     
-    let when = DispatchTime.now() + Double(4)
+    let when = DispatchTime.now() + Double(8)
     DispatchQueue.main.asyncAfter(deadline: when){
         print("listOfPoint2Seek \(listOfPoint2Seek)")
         let nextWP2S = listOfPoint2Seek[order]
@@ -936,6 +915,10 @@ func getShare() {
             let tbvc = destination as?  HideTableViewController
             tbvc?.zapperDelegate = self
         }
+        if segue.identifier == Constants.ScannerViewController {
+            let svc = destination as? ScannerViewController
+            svc?.firstViewController = self
+        }
     }
     
     private func updateWayname(waypoint2U: MKPointAnnotation, image2U: UIImage?) {
@@ -974,7 +957,8 @@ func getShare() {
     // MARK: Popover Delegate
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-        print("popoverPresentationControllerDidDismissPopover")
+//        print("popoverPresentationControllerDidDismissPopover \(globalUUID)")
+//        startScanning(UUID2Use: globalUUID)
     }
     
      @IBOutlet weak var hideView: HideView!
@@ -1003,7 +987,17 @@ func getShare() {
                 
             }
         }
+//        for family: String in UIFont.familyNames
+//        {
+//            print("\(family)")
+//            for names: String in UIFont.fontNames(forFamilyName: family)
+//            {
+//                print("== \(names)")
+//            }
+//        }
     }
+    
+    // MARK: // StarStrella
     
     var spinner: UIActivityIndicatorView!
     
@@ -1134,6 +1128,7 @@ func getShare() {
         static let ShowImageSegue = "Show Image"
         static let EditUserWaypoint = "Edit Waypoint"
         static let TableWaypoint = "Table Waypoint"
+        static let ScannerViewController = "Scan VC"
         
         struct Entity {
             static let wayPoints = "wayPoints"
