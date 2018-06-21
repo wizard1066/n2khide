@@ -304,7 +304,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let latValue = self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
             self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
             self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
-            if listOfPoint2Seek.count > 0 {
+            if listOfPoint2Seek.count > 0, order! > 0, order! <  listOfPoint2Seek.count {
                 let nextWP2S = listOfPoint2Seek[order!]
                 if WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!] != nil {
                     let  alert2Post = WP2M[latValue + longValue]
@@ -328,7 +328,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         self.orderLabel.text = String(order!)
                         WP2M[latValue + longValue] = nil
                         order? += 1
-                        UIView.animate(withDuration: 8, animations: {
+                        UIView.animate(withDuration: 4, animations: {
                             image2Show.alpha = 0
                             self.hintLabel.alpha = 0
                         }, completion: { (result) in
@@ -872,7 +872,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             waypoint2.pinTintColor = UIColor.green
             updateWayname(waypoint2U: waypoint2, image2U: nil)
             mapView.addAnnotation(waypoint2)
-            let newWayPoint = wayPoint(major:nil, minor: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil)
+            let newWayPoint = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil, order: wayPoints.count)
             wayPoints[uniqueName] = newWayPoint
         }
     }
@@ -893,11 +893,11 @@ func getShare() {
         mapView.alpha = 0.7
         listOfPoint2Seek = []
         centerImage.image = UIImage(named: "compassClip")
-        recordZone = CKRecordZone(zoneName: "work")
+        recordZone = CKRecordZone(zoneName: "home")
         recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
-//        query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
+        query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
         privateDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
             if error != nil {
                 print("error \(error)")
@@ -911,9 +911,10 @@ func getShare() {
                 let latitude = record.object(forKey:  Constants.Attribute.latitude) as? Double
                 let name = record.object(forKey:  Constants.Attribute.name) as? String
                 let hint = record.object(forKey:  Constants.Attribute.hint) as? String
+                let order = record.object(forKey:  Constants.Attribute.order) as? Int
                 let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
                 let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
-                let wp2S = wayPoint(major:nil, minor: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil)
+                let wp2S = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil, order: order)
                 listOfPoint2Seek.append(wp2S)
                 WP2M[wp2FLat+wp2FLog] = name
                 DispatchQueue.main.async {
@@ -1019,7 +1020,7 @@ func getShare() {
     
     private func updateWayname(waypoint2U: MKPointAnnotation, image2U: UIImage?) {
         if image2U != nil {
-            let waypoint2A = wayPoint(major:nil, minor: nil,coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U)
+            let waypoint2A = wayPoint(major:nil, minor: nil,proximity: nil, coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U, order: wayPoints.count)
             wayPoints[waypoint2U.title!] = waypoint2A
         }
     }
@@ -1038,7 +1039,7 @@ func getShare() {
             updateWayname(waypoint2U: waypoint2, image2U: nil)
             
             let hint2D = wp2FLat + wp2FLog
-            let newWayPoint = wayPoint(major:nil, minor: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil)
+            let newWayPoint = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: wayPoints.count)
             wayPoints[uniqueName] = newWayPoint
 //            let wp2FLat = getLocationDegreesFrom(latitude: coordinate.latitude)
 //            let wp2FLog = getLocationDegreesFrom(longitude: coordinate.longitude)
@@ -1053,8 +1054,6 @@ func getShare() {
     // MARK: Popover Delegate
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-//        print("popoverPresentationControllerDidDismissPopover \(globalUUID)")
-//        startScanning(UUID2Use: globalUUID)
     }
     
      @IBOutlet weak var hideView: HideView!
@@ -1080,7 +1079,6 @@ func getShare() {
             if record2O != nil {
 //                self.queryShare(record2O!)
                 self.fetchParent(record2O!)
-                
             }
         }
 //        for family: String in UIFont.familyNames
@@ -1139,7 +1137,7 @@ func getShare() {
             }
             if record != nil {
                 self.plotPin(pin2P: record!)
-                let region2M = self.region(withPins: record!)
+//                let region2M = self.region(withPins: record!)
 //                self.locationManager?.startUpdatingLocation()
 //                self.locationManager?.startUpdatingHeading()
 //                self.locationManager?.startMonitoring(for: region2M)
@@ -1163,9 +1161,10 @@ func getShare() {
             let longitude = pin2P.object(forKey:  Constants.Attribute.longitude) as? Double
             let latitude = pin2P.object(forKey:  Constants.Attribute.latitude) as? Double
             let name = pin2P.object(forKey:  Constants.Attribute.name) as? String
+            let order = pin2P.object(forKey:  Constants.Attribute.order) as? Int
             let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
             let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
-            let hint2D = wp2FLat + wp2FLog
+            let hint2D = String(order!) + ":" + wp2FLat + wp2FLog
 //            let hint = pin2P.object(forKey:  Constants.Attribute.hint) as? String
             let file : CKAsset? = pin2P.object(forKey: Constants.Attribute.imageData) as? CKAsset
             let waypoint = MKPointAnnotation()
@@ -1236,6 +1235,9 @@ func getShare() {
             static let mapLinks = "mapLinks"
         }
         struct Attribute {
+            static let minor = "minor"
+            static let major = "major"
+            static let proximity = "proximity"
             static let longitude = "longitude"
             static let  latitude = "latitude"
             static let  name = "name"

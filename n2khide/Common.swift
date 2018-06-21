@@ -17,10 +17,12 @@ typealias Codable = Decodable & Encodable
 struct wayPoint {
         var major: Int?
         var minor: Int?
+        var proximity:  CLProximity?
         var coordinates: CLLocationCoordinate2D?
         var name: String?
         var hint: String?
         var image: UIImage?
+        var order: Int?
 //        var imageAsset: CKAsset?
     }
 
