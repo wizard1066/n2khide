@@ -90,15 +90,15 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         // draws a square around the current window
         // Disabled 21.06.2018
         let mRect = self.mapView.visibleMapRect
-        let cordSW = mapView.convert(getSWCoordinate(mRect: mRect), toPointTo: mapView)
-        let cordNE = mapView.convert(getNECoordinate(mRect: mRect), toPointTo: mapView)
-        let cordNW = mapView.convert(getNWCoordinate(mRect: mRect), toPointTo: mapView)
-        let cordSE = mapView.convert(getSECoordinate(mRect: mRect), toPointTo: mapView)
+//        let cordSW = mapView.convert(getSWCoordinate(mRect: mRect), toPointTo: mapView)
+//        let cordNE = mapView.convert(getNECoordinate(mRect: mRect), toPointTo: mapView)
+//        let cordNW = mapView.convert(getNWCoordinate(mRect: mRect), toPointTo: mapView)
+//        let cordSE = mapView.convert(getSECoordinate(mRect: mRect), toPointTo: mapView)
         
-        let DNELat = getLocationDegreesFrom(latitude: getNECoordinate(mRect: mRect).latitude)
-        let DNELog = getLocationDegreesFrom(longitude: getNECoordinate(mRect: mRect).longitude)
-        let (latCords,longCords) = getDigitalFromDegrees(latitude: DNELat, longitude: DNELog)
-        let cord2U = CLLocationCoordinate2D(latitude: latCords, longitude: longCords)
+//        let DNELat = getLocationDegreesFrom(latitude: getNECoordinate(mRect: mRect).latitude)
+//        let DNELog = getLocationDegreesFrom(longitude: getNECoordinate(mRect: mRect).longitude)
+//        let (latCords,longCords) = getDigitalFromDegrees(latitude: DNELat, longitude: DNELog)
+//        let cord2U = CLLocationCoordinate2D(latitude: latCords, longitude: longCords)
         
         var coordinates =  [getNWCoordinate(mRect: mRect),getNECoordinate(mRect: mRect), getSECoordinate(mRect: mRect),getSWCoordinate(mRect: mRect),getNWCoordinate(mRect: mRect)]
         let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
@@ -131,7 +131,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             beaconRegion.notifyOnEntry = true
             beaconRegion.notifyOnExit = true
         }
-        print("Monitoring for beacons \(globalUUID)")
     }
     
     var isSearchingForBeacons = false
@@ -166,7 +165,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        var shouldHideBeaconDetails = true
+//        var shouldHideBeaconDetails = true
 
         if beacons.count > 0 {
             if let closestBeacon = beacons[0] as? CLBeacon {
@@ -184,7 +183,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     default:
                         proximityMessage = "Where's the beacon?"
                     }
-                    shouldHideBeaconDetails = false
+//                    shouldHideBeaconDetails = false
                     print("Beacon Major = \(closestBeacon.major.intValue) \nMinor \(closestBeacon.minor.intValue) Distance: \(proximityMessage)")
                 }
             }
@@ -193,23 +192,21 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //      lblBeaconDetails.hidden = shouldHideBeaconDetails
     }
     
-    func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
+    func locationManager(_ manager: CLLocationManager!, didFailWithError error: NSError!) {
         print(error)
     }
     
-    
-    func locationManager(manager: CLLocationManager!, monitoringDidFailForRegion region: CLRegion!, withError error: NSError!) {
-        print(error)
-    }
-    
-    
-    func locationManager(manager: CLLocationManager!, rangingBeaconsDidFailForRegion region: CLBeaconRegion!, withError error: NSError!) {
-        print(error)
-    }
+//    func locationManager(_ manager: CLLocationManager!, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+//        print(error)
+//    }
+
+//    func locationManager(_ manager: CLLocationManager!, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
+//        print(error)
+//    }
     
     func getLocationDegreesFrom(latitude: Double) -> String {
         var latSeconds = Int(latitude * 3600)
-        var latitudeSeconds = abs(latitude * 3600).truncatingRemainder(dividingBy: 60)
+//        var latitudeSeconds = abs(latitude * 3600).truncatingRemainder(dividingBy: 60)
         let latDegrees = latSeconds / 3600
         latSeconds = abs(latSeconds % 3600)
         let latMinutes = latSeconds / 60
@@ -229,7 +226,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         var longSeconds = Int(longitude * 3600)
         let longDegrees = longSeconds / 3600
         longSeconds = abs(longSeconds % 3600)
-        var longitudeSeconds = abs(longitude * 3600).truncatingRemainder(dividingBy: 60)
+//        var longitudeSeconds = abs(longitude * 3600).truncatingRemainder(dividingBy: 60)
         let longMinutes = longSeconds / 60
         longSeconds %= 60
         
@@ -503,8 +500,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         
         let lat2Pplus = Int(latitude2P[2])! + 1
         let lon2Pplus = Int(longitude2P[2])! + 1
-        let lat2Pminus = Int(latitude2P[2])! - 1
-        let lon2Pminus = Int(longitude2P[2])! - 1
+//        let lat2Pminus = Int(latitude2P[2])! - 1
+//        let lon2Pminus = Int(longitude2P[2])! - 1
         
         //        [(36,22)
         let start2PLatitude = "\(latitude2P[0])-\(latitude2P[1])-\(latitude2P[2])-\(latitude2P[3])"
@@ -1133,7 +1130,7 @@ func getShare() {
         let operation = CKFetchRecordsOperation(recordIDs: pinID)
         operation.perRecordCompletionBlock = { record, _, error in
             if error != nil {
-                print(error?.localizedDescription.debugDescription)
+                print(error?.localizedDescription)
             }
             if record != nil {
                 self.plotPin(pin2P: record!)
@@ -1178,10 +1175,12 @@ func getShare() {
                 self.mapView.selectAnnotation(self.pinViewSelected!, animated: true)
                 self.didSetImage(image: image2D)
                 self.updateWayname(waypoint2U: waypoint, image2U: image2D)
+                self.mapView.deselectAnnotation(waypoint, animated: false)
             } else {
                 self.mapView.addAnnotation(waypoint)
             }
         }
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -1209,7 +1208,7 @@ func getShare() {
         locationManager?.distanceFilter = kCLDistanceFilterNone
         locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager?.activityType = CLActivityType.fitness
-        let yahoo = locationManager?.allowsBackgroundLocationUpdates
+        locationManager?.allowsBackgroundLocationUpdates
         locationManager?.requestLocation()
         pin.isEnabled = true
     }
