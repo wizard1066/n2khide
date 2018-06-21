@@ -15,6 +15,8 @@ import CloudKit
 typealias Codable = Decodable & Encodable
 
 struct wayPoint {
+        var major: Int?
+        var minor: Int?
         var coordinates: CLLocationCoordinate2D?
         var name: String?
         var hint: String?
@@ -25,7 +27,7 @@ struct wayPoint {
 var wayPoints:[String:wayPoint] = [:]
 var listOfPoint2Seek:[wayPoint] = []
 var WP2M:[String:String] = [:]
-var order = 0
+var order:Int?  = nil
 
 
 struct way2G: Codable

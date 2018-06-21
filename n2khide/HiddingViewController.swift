@@ -43,14 +43,52 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var centerImage: UIImageView!
     @IBOutlet weak var longitudeNextLabel: UILabel!
     @IBOutlet weak var latitudeNextLabel: UILabel!
+    @IBOutlet weak var lowLabel: UILabel!
+    @IBOutlet weak var highLabel: UILabel!
+    @IBOutlet weak var directionLabel: UILabel!
+    @IBOutlet weak var hintLabel: UILabel!
+    @IBOutlet weak var orderLabel: UILabel!
     
     var geotifications = [Geotification]()
     var locationManager:CLLocationManager? = nil
+    
+    // MARK: DMS direction section
+    
+    func showDirection2Take(direction2G:CGFloat) {
+        if self.angle2U != nil {
+            DispatchQueue.main.async {
+                let direction2GN = CGFloat(self.angle2U!) - direction2G
+                let tr2 = CGAffineTransform.identity.rotated(by: direction2GN)
+                let degree2S = self.radiansToDegrees(radians: Double(direction2GN))
+                self.centerImage.transform = tr2
+                self.directionLabel.text = String(Int(degree2S))
+            }
+        }
+    }
+    
+    func radiansToDegrees(radians: Double) -> Double { return radians * 180.0 / Double.pi }
+    func degreesToRadians(degrees: Double) -> Double { return degrees * Double.pi / 180.0 }
+    
+    func getBearing(toPoint point: CLLocationCoordinate2D, longitude:Double, latitude: Double) -> Double {
+        
+        let lat1 = degreesToRadians(degrees: latitude)
+        let lon1 = degreesToRadians(degrees: longitude)
+        let lat2 = degreesToRadians(degrees: point.latitude)
+        let lon2 = degreesToRadians(degrees: point.longitude)
+        let dLon = lon2 - lon1
+        let y = sin(dLon) * cos(lat2)
+        let x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon)
+        let radiansBearing = atan2(y, x)
+        //        return radiansToDegrees(radians: radiansBearing)
+
+        return radiansBearing
+    }
     
     // MARK location Manager delegate code + more
     
     @IBAction func stateButton(_ sender: Any) {
         // draws a square around the current window
+        // Disabled 21.06.2018
         let mRect = self.mapView.visibleMapRect
         let cordSW = mapView.convert(getSWCoordinate(mRect: mRect), toPointTo: mapView)
         let cordNE = mapView.convert(getNECoordinate(mRect: mRect), toPointTo: mapView)
@@ -106,11 +144,13 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
 //            self.present(alert, animated: true, completion: nil)
 //        }
-        if state == CLRegionState.inside {
-            locationManager?.startRangingBeacons(in: beaconRegion)
-        }
-        else {
-            locationManager?.stopRangingBeacons(in: beaconRegion)
+        if beaconRegion != nil {
+            if state == CLRegionState.inside {
+                locationManager?.startRangingBeacons(in: beaconRegion)
+            }
+            else {
+                locationManager?.stopRangingBeacons(in: beaconRegion)
+            }
         }
     }
     
@@ -236,8 +276,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             print("User hates you")
         case .authorizedWhenInUse:
                 locationManager?.stopUpdatingLocation()
+            locationManager?.startUpdatingHeading()
         case .authorizedAlways:
                 locationManager?.startUpdatingLocation()
+            locationManager?.startUpdatingHeading()
         case .restricted:
             print("User dislikes you")
         }
@@ -258,15 +300,50 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         self.mapView.setRegion(region, animated: true)
         self.regionHasBeenCentered = true
         DispatchQueue.main.async {
-            self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!).reformatIntoDMS()
-            self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!).reformatIntoDMS()
-            if WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!] != nil {
-               let  alert2Post = WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!]
-                let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
+            let longValue =  self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
+            let latValue = self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
+            self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
+            self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
+            if listOfPoint2Seek.count > 0 {
+                let nextWP2S = listOfPoint2Seek[order!]
+                if WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!] != nil {
+                    let  alert2Post = WP2M[latValue + longValue]
+                    if alert2Post == nextWP2S.name {
+                        let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
                         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                         self.present(alert, animated: true, completion: nil)
+                        let wayPointRec = wayPoints[alert2Post!]
+//                        self.centerImage.image = wayPointRec?.image
+                        let image2Show = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+                        image2Show.image = wayPointRec?.image
+                        self.mapView.addSubview(image2Show)
+                        image2Show.translatesAutoresizingMaskIntoConstraints  = false
+                        let THighConstraint = NSLayoutConstraint(item: image2Show, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 30)
+                        let TLowConstraint = NSLayoutConstraint(item: image2Show, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
+                        let TLeftConstraint = NSLayoutConstraint(item: image2Show, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1, constant: 0)
+                        let TRightConstraint = NSLayoutConstraint(item: image2Show, attribute: .trailing, relatedBy: .equal, toItem: self.view, attribute: .trailing, multiplier: 1, constant: 0)
+                        self.view.addConstraints([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
+                        NSLayoutConstraint.activate([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
+                        self.hintLabel.text = wayPointRec?.hint
+                        self.orderLabel.text = String(order!)
+                        WP2M[latValue + longValue] = nil
+                        order? += 1
+                        UIView.animate(withDuration: 8, animations: {
+                            image2Show.alpha = 0
+                            self.hintLabel.alpha = 0
+                        }, completion: { (result) in
+                            image2Show.removeFromSuperview()
+                            self.hintLabel.text = ""
+                            self.hintLabel.alpha = 1
+                            self.nextLocation2Show()
+                        })
+                    }
+                }
             }
        }
+        if angle2U != nil {
+            self.angle2U = self.getBearing(toPoint: nextLocation, longitude:  (self.locationManager?.location?.coordinate.longitude)!, latitude:  (self.locationManager?.location?.coordinate.latitude)!)
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -285,6 +362,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         print("Monitoring failed for region with identifier: \(region!.identifier)")
         
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        showDirection2Take(direction2G: CGFloat(newHeading.magneticHeading * Double.pi/180))
     }
     
 //    func handleEvent(forRegion region: CLRegion!) {
@@ -398,6 +479,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //    }
 
     @IBAction func boxButton(_ sender: Any) {
+        // Disabled 21.06.2018
         // 7-0-36-E
         // 46-20-22-N
         let box2D:[(Double,Double)] = [(36,22),(37,22),(37,23),(36,23),(36,22)]
@@ -790,7 +872,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             waypoint2.pinTintColor = UIColor.green
             updateWayname(waypoint2U: waypoint2, image2U: nil)
             mapView.addAnnotation(waypoint2)
-            let newWayPoint = wayPoint(coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil)
+            let newWayPoint = wayPoint(major:nil, minor: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil)
             wayPoints[uniqueName] = newWayPoint
         }
     }
@@ -803,8 +885,12 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //
 //    private var userID: CKUserIdentity!
 //
+    
+    var nextLocation: CLLocationCoordinate2D!
+    var angle2U: Double? = nil
+    
 func getShare() {
-        mapView.alpha = 0.2
+        mapView.alpha = 0.7
         listOfPoint2Seek = []
         centerImage.image = UIImage(named: "compassClip")
         recordZone = CKRecordZone(zoneName: "work")
@@ -827,7 +913,7 @@ func getShare() {
                 let hint = record.object(forKey:  Constants.Attribute.hint) as? String
                 let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
                 let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
-                let wp2S = wayPoint(coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil)
+                let wp2S = wayPoint(major:nil, minor: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil)
                 listOfPoint2Seek.append(wp2S)
                 WP2M[wp2FLat+wp2FLog] = name
                 DispatchQueue.main.async {
@@ -839,10 +925,12 @@ func getShare() {
     let when = DispatchTime.now() + Double(8)
     DispatchQueue.main.asyncAfter(deadline: when){
         print("listOfPoint2Seek \(listOfPoint2Seek)")
-        let nextWP2S = listOfPoint2Seek[order]
-        self.longitudeNextLabel.text = self.getLocationDegreesFrom(longitude: (nextWP2S.coordinates?.longitude)!)
-        self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
+        self.lowLabel.isHidden = false
+        self.highLabel.isHidden = false
+        self.nextLocation2Show()
     }
+    
+
     
     
 //        let predicate = NSPredicate(format: "owningList == %@", recordID)
@@ -853,6 +941,14 @@ func getShare() {
 //        }
     }
     
+    private func nextLocation2Show() {
+        if listOfPoint2Seek.count == 0 { return }
+        let nextWP2S = listOfPoint2Seek[(order!)]
+        self.longitudeNextLabel.text = self.getLocationDegreesFrom(longitude: (nextWP2S.coordinates?.longitude)!)
+        self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
+        self.nextLocation = CLLocationCoordinate2DMake((nextWP2S.coordinates?.latitude)!, (nextWP2S.coordinates?.longitude)!)
+        self.angle2U = self.getBearing(toPoint: self.nextLocation, longitude:  (self.locationManager?.location?.coordinate.longitude)!, latitude:  (self.locationManager?.location?.coordinate.latitude)!)
+    }
     // MARK: Saving to the iPad as JSON
     
     func saveImage() {
@@ -923,7 +1019,7 @@ func getShare() {
     
     private func updateWayname(waypoint2U: MKPointAnnotation, image2U: UIImage?) {
         if image2U != nil {
-            let waypoint2A = wayPoint(coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U)
+            let waypoint2A = wayPoint(major:nil, minor: nil,coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U)
             wayPoints[waypoint2U.title!] = waypoint2A
         }
     }
@@ -942,7 +1038,7 @@ func getShare() {
             updateWayname(waypoint2U: waypoint2, image2U: nil)
             
             let hint2D = wp2FLat + wp2FLog
-            let newWayPoint = wayPoint(coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil)
+            let newWayPoint = wayPoint(major:nil, minor: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil)
             wayPoints[uniqueName] = newWayPoint
 //            let wp2FLat = getLocationDegreesFrom(latitude: coordinate.latitude)
 //            let wp2FLog = getLocationDegreesFrom(longitude: coordinate.longitude)
@@ -995,6 +1091,8 @@ func getShare() {
 //                print("== \(names)")
 //            }
 //        }
+        highLabel.isHidden = true
+        lowLabel.isHidden = true
     }
     
     // MARK: // StarStrella
@@ -1042,7 +1140,8 @@ func getShare() {
             if record != nil {
                 self.plotPin(pin2P: record!)
                 let region2M = self.region(withPins: record!)
-                self.locationManager?.startUpdatingLocation()
+//                self.locationManager?.startUpdatingLocation()
+//                self.locationManager?.startUpdatingHeading()
 //                self.locationManager?.startMonitoring(for: region2M)
 //                self.locationManager.startMonitoringVisits()
             }
@@ -1098,6 +1197,8 @@ func getShare() {
     }
 
     override func viewDidLoad() {
+//        centerImage.isHidden = true
+        order = 0
         super.viewDidLoad()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         locationManager = appDelegate.locationManager

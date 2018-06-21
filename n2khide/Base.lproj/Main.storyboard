@@ -83,8 +83,8 @@
                                                     <action selector="Library:" destination="89x-Hb-n98" eventType="touchUpInside" id="g9P-TU-oxr"/>
                                                 </connections>
                                             </button>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WSk-oe-v5z">
-                                                <rect key="frame" x="147" y="8" width="48" height="48"/>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="noun_711081_cc" translatesAutoresizingMaskIntoConstraints="NO" id="WSk-oe-v5z">
+                                                <rect key="frame" x="140" y="8" width="48" height="48"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             </imageView>
                                         </subviews>
@@ -221,15 +221,43 @@
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GHw-WU-YGA">
+                                                <rect key="frame" x="359.5" y="237" width="49" height="33"/>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mxa-CI-Jfg">
+                                                <rect key="frame" x="8" y="876" width="752" height="32"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="32" id="FHU-U0-oq0"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="24"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="order" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2KP-uV-ovL">
+                                                <rect key="frame" x="320" y="638" width="128" height="32"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="32" id="50C-ab-4Zy"/>
+                                                    <constraint firstAttribute="width" constant="128" id="C6j-cg-KNm"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
+                                            <constraint firstItem="Zax-lQ-oNB" firstAttribute="top" secondItem="GHw-WU-YGA" secondAttribute="bottom" constant="16" id="1PO-C7-tF7"/>
                                             <constraint firstItem="XxX-fC-dMw" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="378-HH-DJD"/>
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="3QL-hm-TyA"/>
                                             <constraint firstItem="8Qb-jJ-lNW" firstAttribute="top" secondItem="9zf-oX-1TL" secondAttribute="bottom" constant="16" id="3iF-2L-QBC"/>
+                                            <constraint firstItem="2KP-uV-ovL" firstAttribute="top" secondItem="UXF-hu-0wk" secondAttribute="bottom" constant="8" id="B7F-U7-BUJ"/>
                                             <constraint firstItem="rws-ci-FeV" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="D8O-9N-yfl"/>
                                             <constraint firstItem="rws-ci-FeV" firstAttribute="top" secondItem="Zax-lQ-oNB" secondAttribute="bottom" constant="4" id="HSb-aO-zYZ"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerY" secondItem="sLL-BY-qSg" secondAttribute="centerY" id="I7Q-2n-NZT"/>
+                                            <constraint firstItem="mxa-CI-Jfg" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" constant="8" id="L9Q-0t-pwT"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="top" secondItem="Shq-1A-DO9" secondAttribute="bottom" constant="16" id="PcT-YB-VyB"/>
                                             <constraint firstItem="8Qb-jJ-lNW" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="Pqx-0n-aND"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerX" secondItem="sLL-BY-qSg" secondAttribute="centerX" id="RWb-oe-CXi"/>
@@ -238,8 +266,12 @@
                                             <constraint firstItem="Shq-1A-DO9" firstAttribute="top" secondItem="rws-ci-FeV" secondAttribute="bottom" constant="8" id="YhJ-2z-Ihy"/>
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="top" secondItem="XxX-fC-dMw" secondAttribute="bottom" constant="4" id="bwl-gt-EZT"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" id="emq-tz-5Sh"/>
+                                            <constraint firstItem="2KP-uV-ovL" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="fTG-w1-6NV"/>
                                             <constraint firstItem="Zax-lQ-oNB" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="gkR-qF-ZUh"/>
                                             <constraint firstItem="Shq-1A-DO9" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="isv-qx-WkY"/>
+                                            <constraint firstAttribute="trailing" secondItem="mxa-CI-Jfg" secondAttribute="trailing" constant="8" id="q62-iu-luO"/>
+                                            <constraint firstItem="GHw-WU-YGA" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="smL-85-Vlb"/>
+                                            <constraint firstAttribute="bottom" secondItem="mxa-CI-Jfg" secondAttribute="bottom" constant="8" id="xFq-72-OFl"/>
                                             <constraint firstItem="XxX-fC-dMw" firstAttribute="top" secondItem="8Qb-jJ-lNW" secondAttribute="bottom" constant="8" symbolic="YES" id="z0A-Ad-EbB"/>
                                             <constraint firstAttribute="bottom" secondItem="sLL-BY-qSg" secondAttribute="bottom" id="zS4-SA-vjp"/>
                                         </constraints>
@@ -266,21 +298,16 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="5Hf-VB-lXi">
                         <leftBarButtonItems>
-                            <barButtonItem title="Review" id="8SY-yb-OLF">
+                            <barButtonItem title="View" id="8SY-yb-OLF">
                                 <connections>
                                     <segue destination="Uiy-VE-yg6" kind="popoverPresentation" identifier="Table Waypoint" popoverAnchorBarButtonItem="8SY-yb-OLF" id="AJ9-fT-sgz">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                                     </segue>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="NewMap" id="7Tj-8q-gGU">
+                            <barButtonItem title="New" id="7Tj-8q-gGU">
                                 <connections>
                                     <action selector="newMap:" destination="17o-cH-NIh" id="gFJ-wp-SDu"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem title="Save" id="UIv-EG-Tar">
-                                <connections>
-                                    <action selector="saveB:" destination="17o-cH-NIh" id="uDv-8i-8aH"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem title="Scan" id="gau-6O-lj9">
@@ -295,7 +322,7 @@
                                     <action selector="ShareButton2:" destination="17o-cH-NIh" id="0Vk-FL-SrB"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Fetch" id="HSj-4F-8zi">
+                            <barButtonItem title="Play" id="HSj-4F-8zi">
                                 <connections>
                                     <action selector="FetchShare:" destination="17o-cH-NIh" id="hGt-zJ-ZlS"/>
                                 </connections>
@@ -305,27 +332,22 @@
                                     <action selector="GetParts:" destination="17o-cH-NIh" id="fcK-ll-V4P"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="State" id="AZy-8n-fWh">
-                                <connections>
-                                    <action selector="stateButton:" destination="17o-cH-NIh" id="ZD0-ye-LY6"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem title="box" id="wIX-na-N5B">
-                                <connections>
-                                    <action selector="boxButton:" destination="17o-cH-NIh" id="skl-j0-U0h"/>
-                                </connections>
-                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="centerImage" destination="9zf-oX-1TL" id="bHh-L1-ET5"/>
+                        <outlet property="directionLabel" destination="GHw-WU-YGA" id="T7w-6J-cHB"/>
                         <outlet property="hideView" destination="ddt-Qx-MRh" id="Nf5-fu-lTm"/>
+                        <outlet property="highLabel" destination="Shq-1A-DO9" id="HC6-AS-y7q"/>
+                        <outlet property="hintLabel" destination="mxa-CI-Jfg" id="17N-xB-86t"/>
                         <outlet property="latitudeLabel" destination="XxX-fC-dMw" id="tYi-BS-FRL"/>
                         <outlet property="latitudeNextLabel" destination="rws-ci-FeV" id="ksF-f1-hTv"/>
                         <outlet property="longitudeLabel" destination="UXF-hu-0wk" id="1JG-WU-bGi"/>
                         <outlet property="longitudeNextLabel" destination="Zax-lQ-oNB" id="Zcf-Nb-pAp"/>
+                        <outlet property="lowLabel" destination="8Qb-jJ-lNW" id="XbW-Rw-LXj"/>
                         <outlet property="mapView" destination="sLL-BY-qSg" id="Y0F-Zx-rsl"/>
+                        <outlet property="orderLabel" destination="2KP-uV-ovL" id="7o9-Ns-616"/>
                         <outlet property="pin" destination="5rp-DO-9vb" id="qgw-05-E2y"/>
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="sLL-BY-qSg" id="RQi-Wn-jN8">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
@@ -423,4 +445,7 @@
             <point key="canvasLocation" x="2769" y="-123"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="noun_711081_cc" width="700" height="700"/>
+    </resources>
 </document>
