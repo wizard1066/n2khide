@@ -345,9 +345,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         currentLocation = locations.first
         let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
         let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
-        let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
-        self.mapView.setRegion(region, animated: true)
-        self.regionHasBeenCentered = true
+//        let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
+//        self.mapView.setRegion(region, animated: true)
+//        self.regionHasBeenCentered = true
         DispatchQueue.main.async {
             let longValue =  self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
             let latValue = self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
@@ -555,64 +555,121 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latD, longitude: longD)
     }
     
+    private func drawBox(Cords2E: CLLocationCoordinate2D,  boxColor: UIColor) {
+        var cords2D:[CLLocationCoordinate2D] = []
+        let SWLatitude = Cords2E.latitude - Constants.Variable.magic
+        let SWLongitude = Cords2E.longitude - Constants.Variable.magic
+        var cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
+        //        doPin(cord2D: cord2U, title: "SW")
+        cords2D.append(cord2U)
+        let NWLatitude = Cords2E.latitude + Constants.Variable.magic
+        cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: SWLongitude)
+        //        doPin(cord2D: cord2U, title: "NW")
+        cords2D.append(cord2U)
+        let NELongitude = Cords2E.longitude + Constants.Variable.magic
+        cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: NELongitude)
+//        doPin(cord2D: cord2U, title: "NE")
+        cords2D.append(cord2U)
+        cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: NELongitude)
+        //        doPin(cord2D: cord2U, title: "SE")
+        cords2D.append(cord2U)
+        cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
+        cords2D.append(cord2U)
+        let polyLine = MKPolyline(coordinates: &cords2D, count: cords2D.count)
+        
+        DispatchQueue.main.async {
+            self.polyColor = boxColor
+            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
+        }
+    }
+    
     private func doBoxV2(latitude2D: Double, longitude2D: Double) {
         var coordinates:[CLLocationCoordinate2D] = []
         var sector:[CLLocationCoordinate2D] = []
-        let lowLeft = latitude2D - Constants.Variable.magic
-        let nearLeft = longitude2D - Constants.Variable.magic
-        var cord2U = CLLocationCoordinate2D(latitude: lowLeft, longitude: nearLeft)
+        
+        
+        if latitude2D + (Constants.Variable.magic/2)  > latitude2D {
+            var cords2U = convert2nB(latitude2D: latitude2D + (Constants.Variable.magic*1.5), longitude2D: longitude2D)
+            drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
+            cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D)
+            drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
+//            print("fcuk greater than \(self.getLocationDegreesFrom(latitude: latitude2D + Constants.Variable.magic * 1.5))")
+//            print("fcuk greater than \(self.getLocationDegreesFrom(latitude: latitude2D))")
+        } else {
+            var cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D)
+            drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
+            cords2U = convert2nB(latitude2D: latitude2D - (Constants.Variable.magic * 1.5), longitude2D: longitude2D)
+            drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
+//            print("fcuk less than \(self.getLocationDegreesFrom(latitude: latitude2D - Constants.Variable.magic * 1.5))")
+//            print("fcuk less than \(self.getLocationDegreesFrom(latitude: latitude2D))")
+        }
+        if longitude2D + (Constants.Variable.magic/2) > longitude2D  {
+            var cords2U = convert2nB(latitude2D: latitude2D + Constants.Variable.magic * 1.5, longitude2D: longitude2D + Constants.Variable.magic * 1.5)
+            drawBox(Cords2E: cords2U, boxColor: UIColor.green)
+            cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D + Constants.Variable.magic * 1.5)
+            drawBox(Cords2E: cords2U, boxColor: UIColor.red)
+        } else {
+            var cords2U = convert2nB(latitude2D: latitude2D - Constants.Variable.magic * 1.5, longitude2D: longitude2D - Constants.Variable.magic * 1.5)
+            drawBox(Cords2E: cords2U, boxColor: UIColor.green)
+            cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D - Constants.Variable.magic * 1.5)
+            drawBox(Cords2E: cords2U, boxColor: UIColor.red)
+        }
+        
+        let SWLatitude = latitude2D - Constants.Variable.magic
+        let SWLongitude = longitude2D - Constants.Variable.magic
+        var cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
         let SW = cord2U
-        sector.append(convert2nB(latitude2D: lowLeft, longitude2D: nearLeft))
+        sector.append(convert2nB(latitude2D: SWLatitude, longitude2D: SWLongitude))
 //        doPin(cord2D: cord2U, title: "SW")
         coordinates.append(cord2U)
-        let highLeft = latitude2D + Constants.Variable.magic
-        cord2U = CLLocationCoordinate2D(latitude: highLeft, longitude: nearLeft)
+        let NWLatitude = latitude2D + Constants.Variable.magic
+        cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: SWLongitude)
         let NW = cord2U
-        sector.append(convert2nB(latitude2D: highLeft, longitude2D: nearLeft))
+        sector.append(convert2nB(latitude2D: NWLatitude, longitude2D: SWLongitude))
 //        doPin(cord2D: cord2U, title: "NW")
         coordinates.append(cord2U)
-        let farRight = longitude2D + Constants.Variable.magic
-        cord2U = CLLocationCoordinate2D(latitude: highLeft, longitude: farRight)
+        let NELongitude = longitude2D + Constants.Variable.magic
+        cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: NELongitude)
         let NE = cord2U
-        sector.append(convert2nB(latitude2D: highLeft, longitude2D: farRight))
-        doPin(cord2D: cord2U, title: "NE")
+        sector.append(convert2nB(latitude2D: NWLatitude, longitude2D: NELongitude))
+//        doPin(cord2D: cord2U, title: "NE")
         coordinates.append(cord2U)
-        cord2U = CLLocationCoordinate2D(latitude: lowLeft, longitude: farRight)
+        cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: NELongitude)
         let SE = cord2U
-        sector.append(convert2nB(latitude2D: lowLeft, longitude2D: farRight))
+        sector.append(convert2nB(latitude2D: SWLatitude, longitude2D: NELongitude))
 //        doPin(cord2D: cord2U, title: "SE")
         coordinates.append(cord2U)
-        cord2U = CLLocationCoordinate2D(latitude: lowLeft, longitude: nearLeft)
-        sector.append(convert2nB(latitude2D: lowLeft, longitude2D: nearLeft))
+        cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
+        sector.append(convert2nB(latitude2D: SWLatitude, longitude2D: SWLongitude))
         coordinates.append(cord2U)
-        let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
-        let polyLine2 = MKPolyline(coordinates: &sector, count: sector.count)
+//        let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
+//        let polyLine2 = MKPolyline(coordinates: &sector, count: sector.count)
         
-        DispatchQueue.main.async {
-            self.polyColor = UIColor.red
-            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
-            self.polyColor = UIColor.blue
-            self.mapView.add(polyLine2, level: MKOverlayLevel.aboveRoads)
-            let point2M = MKMapPoint(x: NW.latitude, y: NW.longitude)
-            let point2D = MKMapPoint(x: latitude2D, y: longitude2D)
-            
-//            let site2M = MKMapSize(width: 0.0003, height: 0.0003)
-//            let rect2G = MKMapRect(origin: point2M, size: site2M)
-            
-            
-            
-            let rect2G = MKMapRectMake(NE.latitude, NE.longitude, 128, 128)
-            let pointInside = MKMapRectContainsPoint(rect2G, point2D)
-            
-//            let mkcr = MKCoordinateRegionForMapRect(rect2G)
-//            let cgr = self.mapView.convertRegion(mkcr, toRectTo: self.view)
-//            let win2S = UIView(frame: cgr)
-//            win2S.backgroundColor = UIColor.yellow
-//            self.view.addSubview(win2S)
-//            win2S.bringSubview(toFront: self.mapView)
-            
-            print("cgr \(pointInside)")
-        }
+//        DispatchQueue.main.async {
+//            self.polyColor = UIColor.red
+////            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
+//            self.polyColor = UIColor.blue
+////            self.mapView.add(polyLine2, level: MKOverlayLevel.aboveRoads)
+//            let point2M = MKMapPoint(x: NW.latitude, y: NW.longitude)
+//            let point2D = MKMapPoint(x: latitude2D, y: longitude2D)
+//
+////            let site2M = MKMapSize(width: 0.0003, height: 0.0003)
+////            let rect2G = MKMapRect(origin: point2M, size: site2M)
+//
+//
+//
+//            let rect2G = MKMapRectMake(NE.latitude, NE.longitude, 128, 128)
+//            let pointInside = MKMapRectContainsPoint(rect2G, point2D)
+//
+////            let mkcr = MKCoordinateRegionForMapRect(rect2G)
+////            let cgr = self.mapView.convertRegion(mkcr, toRectTo: self.view)
+////            let win2S = UIView(frame: cgr)
+////            win2S.backgroundColor = UIColor.yellow
+////            self.view.addSubview(win2S)
+////            win2S.bringSubview(toFront: self.mapView)
+////
+////            print("cgr \(pointInside)")
+//        }
     }
     
     private func doBox(latitude2S: String, longitude2S: String) {
@@ -1049,6 +1106,8 @@ func getShare() {
     
     let when = DispatchTime.now() + Double(8)
     DispatchQueue.main.asyncAfter(deadline: when){
+
+        
         for points in listOfPoint2Seek {
             let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
             let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
@@ -1193,6 +1252,15 @@ func getShare() {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        let when = DispatchTime.now() + Double(8)
+        DispatchQueue.main.asyncAfter(deadline: when){
+            let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
+            let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(self.currentLocation!.coordinate.latitude, self.currentLocation!.coordinate.longitude)
+            let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
+            self.mapView.setRegion(region, animated: true)
+            self.regionHasBeenCentered = true
+        }
+
         let center = NotificationCenter.default
         let queue = OperationQueue.main
         var alert2Monitor = "regionEvent"
