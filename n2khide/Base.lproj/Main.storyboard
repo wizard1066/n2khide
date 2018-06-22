@@ -246,6 +246,44 @@
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H9l-Jh-LRi">
+                                                <rect key="frame" x="8" y="8" width="752" height="35"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="35" id="c6B-wF-8fd"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="24"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Debug" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bYg-YS-ptb">
+                                                <rect key="frame" x="576" y="118" width="128" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Debug" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Gx-ST-ntr">
+                                                <rect key="frame" x="576" y="147" width="128" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zt8-qy-iqE">
+                                                <rect key="frame" x="486" y="176" width="256" height="21"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="vd8-I4-zsf">
+                                                <rect key="frame" x="133" y="695" width="502" height="128"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                            </textView>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -257,13 +295,16 @@
                                             <constraint firstItem="rws-ci-FeV" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="D8O-9N-yfl"/>
                                             <constraint firstItem="rws-ci-FeV" firstAttribute="top" secondItem="Zax-lQ-oNB" secondAttribute="bottom" constant="4" id="HSb-aO-zYZ"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerY" secondItem="sLL-BY-qSg" secondAttribute="centerY" id="I7Q-2n-NZT"/>
+                                            <constraint firstItem="H9l-Jh-LRi" firstAttribute="top" secondItem="SvD-CE-nLV" secondAttribute="top" constant="8" id="Ige-5Y-98z"/>
                                             <constraint firstItem="mxa-CI-Jfg" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" constant="8" id="L9Q-0t-pwT"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="top" secondItem="Shq-1A-DO9" secondAttribute="bottom" constant="16" id="PcT-YB-VyB"/>
                                             <constraint firstItem="8Qb-jJ-lNW" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="Pqx-0n-aND"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerX" secondItem="sLL-BY-qSg" secondAttribute="centerX" id="RWb-oe-CXi"/>
+                                            <constraint firstAttribute="trailing" secondItem="H9l-Jh-LRi" secondAttribute="trailing" constant="8" id="RZL-di-h84"/>
                                             <constraint firstAttribute="trailing" secondItem="sLL-BY-qSg" secondAttribute="trailing" id="TmX-9p-yW7"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="top" secondItem="SvD-CE-nLV" secondAttribute="top" id="XtS-pi-euW"/>
                                             <constraint firstItem="Shq-1A-DO9" firstAttribute="top" secondItem="rws-ci-FeV" secondAttribute="bottom" constant="8" id="YhJ-2z-Ihy"/>
+                                            <constraint firstItem="H9l-Jh-LRi" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" constant="8" id="aWg-Zf-Ako"/>
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="top" secondItem="XxX-fC-dMw" secondAttribute="bottom" constant="4" id="bwl-gt-EZT"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" id="emq-tz-5Sh"/>
                                             <constraint firstItem="2KP-uV-ovL" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="fTG-w1-6NV"/>
@@ -337,6 +378,10 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="centerImage" destination="9zf-oX-1TL" id="bHh-L1-ET5"/>
+                        <outlet property="debug1" destination="bYg-YS-ptb" id="xQw-6c-b6C"/>
+                        <outlet property="debug2" destination="1Gx-ST-ntr" id="KvR-Yf-d4w"/>
+                        <outlet property="debug3" destination="zt8-qy-iqE" id="Z1r-b7-jlO"/>
+                        <outlet property="debug4" destination="vd8-I4-zsf" id="UuN-FC-S8u"/>
                         <outlet property="directionLabel" destination="GHw-WU-YGA" id="T7w-6J-cHB"/>
                         <outlet property="hideView" destination="ddt-Qx-MRh" id="Nf5-fu-lTm"/>
                         <outlet property="highLabel" destination="Shq-1A-DO9" id="HC6-AS-y7q"/>
@@ -347,6 +392,7 @@
                         <outlet property="longitudeNextLabel" destination="Zax-lQ-oNB" id="Zcf-Nb-pAp"/>
                         <outlet property="lowLabel" destination="8Qb-jJ-lNW" id="XbW-Rw-LXj"/>
                         <outlet property="mapView" destination="sLL-BY-qSg" id="Y0F-Zx-rsl"/>
+                        <outlet property="nameLabel" destination="H9l-Jh-LRi" id="cBp-Pw-diZ"/>
                         <outlet property="orderLabel" destination="2KP-uV-ovL" id="7o9-Ns-616"/>
                         <outlet property="pin" destination="5rp-DO-9vb" id="qgw-05-E2y"/>
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="sLL-BY-qSg" id="RQi-Wn-jN8">

@@ -48,6 +48,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var directionLabel: UILabel!
     @IBOutlet weak var hintLabel: UILabel!
     @IBOutlet weak var orderLabel: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var debug2: UILabel!
+    @IBOutlet weak var debug1: UILabel!
+    @IBOutlet weak var debug3: UILabel!
+    @IBOutlet weak var debug4: UITextView!
     
     var geotifications = [Geotification]()
     var locationManager:CLLocationManager? = nil
@@ -222,6 +227,52 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         )
     }
     
+    func getLocationDegreesFromV2(latitude: Double, longitude: Double) -> (latitude: String, longitude: String) {
+        var latitudeSeconds = latitude * 3600
+    
+    let latitudeDegrees = latitudeSeconds / 3600
+    
+    latitudeSeconds = latitudeSeconds.truncatingRemainder(dividingBy: 3600)
+    
+    let latitudeMinutes = latitudeSeconds / 60
+    
+    latitudeSeconds = latitudeSeconds.truncatingRemainder(dividingBy: 60)
+    
+    // Calculating the degrees, minutes and seconds for the given longitude value (DD)
+    
+    var longitudeSeconds = longitude * 3600
+    
+    let longitudeDegrees = longitudeSeconds / 3600
+    
+    longitudeSeconds = longitudeSeconds.truncatingRemainder(dividingBy: 3600)
+    
+    let longitudeMinutes = longitudeSeconds / 60
+    
+    longitudeSeconds = longitudeSeconds.truncatingRemainder(dividingBy: 60)
+    
+    // Analyzing if it's North or South. (Latitude)
+    
+    let latitudeCardinalDirection = latitudeDegrees >= 0 ? "N" : "S"
+    
+    // Analyzing if it's East or West. (Longitude)
+    
+    let longitudeCardinalDirection = longitudeDegrees >= 0 ? "E" : "W"
+    
+    // Final strings with format <degrees>°<minutes>'<seconds>"<cardinal direction>
+    
+//    let latitudeDescription = String(format:"%.2f-%.2f-%.2f-%@",
+      let latitudeDescription = String(format:"%.0f-%.0f-%.0f-%@",
+                                     abs(latitudeDegrees), abs(latitudeMinutes),
+                                     abs(latitudeSeconds), latitudeCardinalDirection)
+    
+//    let longitudeDescription = String(format:"%.2f-%.2f-%.2f-%@",
+           let longitudeDescription = String(format:"%.0f-%.0f-%.0f-%@",
+                                      abs(longitudeDegrees), abs(longitudeMinutes),
+                                      abs(longitudeSeconds), longitudeCardinalDirection)
+    return (latitudeDescription, longitudeDescription)
+
+    }
+    
     func getLocationDegreesFrom(longitude: Double) -> String {
         var longSeconds = Int(longitude * 3600)
         let longDegrees = longSeconds / 3600
@@ -290,6 +341,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         pin.isEnabled = true
+        orderLabel.text = String(order!)
         currentLocation = locations.first
         let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
         let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
@@ -301,10 +353,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let latValue = self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
             self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
             self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
-            if listOfPoint2Seek.count > 0, order! > 0, order! <  listOfPoint2Seek.count {
+            if listOfPoint2Seek.count > 0, order! <  listOfPoint2Seek.count {
                 let nextWP2S = listOfPoint2Seek[order!]
-                if WP2M[self.latitudeLabel.text! + self.longitudeLabel.text!] != nil {
+                self.debug4.text = "\(WP2M)"
+                if WP2M[latValue + longValue] != nil {
                     let  alert2Post = WP2M[latValue + longValue]
+                    
                     if alert2Post == nextWP2S.name {
                         let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
                         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
@@ -325,7 +379,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         self.orderLabel.text = String(order!)
                         WP2M[latValue + longValue] = nil
                         order? += 1
-                        UIView.animate(withDuration: 4, animations: {
+                        UIView.animate(withDuration: 8, animations: {
                             image2Show.alpha = 0
                             self.hintLabel.alpha = 0
                         }, completion: { (result) in
@@ -492,6 +546,75 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
     }
     
+    private func convert2nB(latitude2D: Double, longitude2D:Double) -> CLLocationCoordinate2D {
+//        let (latitudeDMS, longitudeDMS) = self.getLocationDegreesFromV2(latitude: latitude2D, longitude: longitude2D)
+        let longValue =  self.getLocationDegreesFrom(longitude: (longitude2D))
+        let latValue = self.getLocationDegreesFrom(latitude: (latitude2D))
+//        print("fuck2--> long \(longValue) \(longitudeDMS) lat \(latValue) \(latitudeDMS)")
+       let (latD, longD) = getDigitalFromDegrees(latitude: latValue, longitude: longValue)
+        return CLLocationCoordinate2D(latitude: latD, longitude: longD)
+    }
+    
+    private func doBoxV2(latitude2D: Double, longitude2D: Double) {
+        var coordinates:[CLLocationCoordinate2D] = []
+        var sector:[CLLocationCoordinate2D] = []
+        let lowLeft = latitude2D - Constants.Variable.magic
+        let nearLeft = longitude2D - Constants.Variable.magic
+        var cord2U = CLLocationCoordinate2D(latitude: lowLeft, longitude: nearLeft)
+        let SW = cord2U
+        sector.append(convert2nB(latitude2D: lowLeft, longitude2D: nearLeft))
+//        doPin(cord2D: cord2U, title: "SW")
+        coordinates.append(cord2U)
+        let highLeft = latitude2D + Constants.Variable.magic
+        cord2U = CLLocationCoordinate2D(latitude: highLeft, longitude: nearLeft)
+        let NW = cord2U
+        sector.append(convert2nB(latitude2D: highLeft, longitude2D: nearLeft))
+//        doPin(cord2D: cord2U, title: "NW")
+        coordinates.append(cord2U)
+        let farRight = longitude2D + Constants.Variable.magic
+        cord2U = CLLocationCoordinate2D(latitude: highLeft, longitude: farRight)
+        let NE = cord2U
+        sector.append(convert2nB(latitude2D: highLeft, longitude2D: farRight))
+        doPin(cord2D: cord2U, title: "NE")
+        coordinates.append(cord2U)
+        cord2U = CLLocationCoordinate2D(latitude: lowLeft, longitude: farRight)
+        let SE = cord2U
+        sector.append(convert2nB(latitude2D: lowLeft, longitude2D: farRight))
+//        doPin(cord2D: cord2U, title: "SE")
+        coordinates.append(cord2U)
+        cord2U = CLLocationCoordinate2D(latitude: lowLeft, longitude: nearLeft)
+        sector.append(convert2nB(latitude2D: lowLeft, longitude2D: nearLeft))
+        coordinates.append(cord2U)
+        let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
+        let polyLine2 = MKPolyline(coordinates: &sector, count: sector.count)
+        
+        DispatchQueue.main.async {
+            self.polyColor = UIColor.red
+            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
+            self.polyColor = UIColor.blue
+            self.mapView.add(polyLine2, level: MKOverlayLevel.aboveRoads)
+            let point2M = MKMapPoint(x: NW.latitude, y: NW.longitude)
+            let point2D = MKMapPoint(x: latitude2D, y: longitude2D)
+            
+//            let site2M = MKMapSize(width: 0.0003, height: 0.0003)
+//            let rect2G = MKMapRect(origin: point2M, size: site2M)
+            
+            
+            
+            let rect2G = MKMapRectMake(NE.latitude, NE.longitude, 128, 128)
+            let pointInside = MKMapRectContainsPoint(rect2G, point2D)
+            
+//            let mkcr = MKCoordinateRegionForMapRect(rect2G)
+//            let cgr = self.mapView.convertRegion(mkcr, toRectTo: self.view)
+//            let win2S = UIView(frame: cgr)
+//            win2S.backgroundColor = UIColor.yellow
+//            self.view.addSubview(win2S)
+//            win2S.bringSubview(toFront: self.mapView)
+            
+            print("cgr \(pointInside)")
+        }
+    }
+    
     private func doBox(latitude2S: String, longitude2S: String) {
         var coordinates:[CLLocationCoordinate2D] = []
         print("latitude2S \(latitude2S) longitude2S \(longitude2S)")
@@ -500,6 +623,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         
         let lat2Pplus = Int(latitude2P[2])! + 1
         let lon2Pplus = Int(longitude2P[2])! + 1
+        
+        
 //        let lat2Pminus = Int(latitude2P[2])! - 1
 //        let lon2Pminus = Int(longitude2P[2])! - 1
         
@@ -603,6 +728,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         }
     }
     
+    var polyColor: UIColor = UIColor.red
+    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let overlay = overlay as? MKCircle {
             let circleRenderer = MKCircleRenderer(circle: overlay)
@@ -610,7 +737,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             return circleRenderer
         } else  if overlay is MKPolyline {
             let renderer = MKPolylineRenderer(overlay: overlay)
-            renderer.strokeColor = UIColor.red
+            renderer.strokeColor = polyColor
             renderer.lineWidth = 1
             return renderer
         } else {
@@ -890,7 +1017,7 @@ func getShare() {
         mapView.alpha = 0.7
         listOfPoint2Seek = []
         centerImage.image = UIImage(named: "compassClip")
-        recordZone = CKRecordZone(zoneName: "home")
+        recordZone = CKRecordZone(zoneName: "work")
         recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
@@ -922,7 +1049,11 @@ func getShare() {
     
     let when = DispatchTime.now() + Double(8)
     DispatchQueue.main.asyncAfter(deadline: when){
-        print("listOfPoint2Seek \(listOfPoint2Seek)")
+        for points in listOfPoint2Seek {
+            let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
+            let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
+            print("listOfPoint2Seek \(long) \(lat)")
+        }
         self.lowLabel.isHidden = false
         self.highLabel.isHidden = false
         self.nextLocation2Show()
@@ -946,6 +1077,8 @@ func getShare() {
         self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
         self.nextLocation = CLLocationCoordinate2DMake((nextWP2S.coordinates?.latitude)!, (nextWP2S.coordinates?.longitude)!)
         self.angle2U = self.getBearing(toPoint: self.nextLocation, longitude:  (self.locationManager?.location?.coordinate.longitude)!, latitude:  (self.locationManager?.location?.coordinate.latitude)!)
+        self.hintLabel.text = nextWP2S.hint
+        self.nameLabel.text = nextWP2S.name
     }
     // MARK: Saving to the iPad as JSON
     
@@ -1043,7 +1176,8 @@ func getShare() {
             WP2M[wp2FLat+wp2FLog] = uniqueName
             DispatchQueue.main.async() {
                 self.mapView.addAnnotation(waypoint2)
-                self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
+//                self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
+                self.doBoxV2(latitude2D: coordinate.latitude, longitude2D: coordinate.longitude)
             }
         }
     }
@@ -1195,7 +1329,7 @@ func getShare() {
     }
 
     override func viewDidLoad() {
-//        centerImage.isHidden = true
+        centerImage.alpha = 0.5
         order = 0
         super.viewDidLoad()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -1249,6 +1383,8 @@ func getShare() {
         }
         struct Variable {
             static  let radius = 40
+            // the digital difference between degrees-miniutes-seconds 46-20-41 & 46-20-42.
+            static let magic = 0.00015
         }
     }
 }
