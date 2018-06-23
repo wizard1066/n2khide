@@ -23,6 +23,7 @@ struct wayPoint {
         var hint: String?
         var image: UIImage?
         var order: Int?
+        var boxes:[CLLocation?]?
 //        var imageAsset: CKAsset?
     }
 
