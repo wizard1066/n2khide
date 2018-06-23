@@ -850,17 +850,25 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //                    self.mapRecord?.parent = nil
 //                    self.linksRecord = CKReference(record: self.mapRecord, action: .deleteSelf)
                     self.recordZone = CKRecordZone(zoneName: (textField?.text)!)
-                    self.privateDB.save(self.recordZone, completionHandler: ({returnRecord, error in
-                    if error != nil {
-                        // Zone creation failed
-                        print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
-                    } else {
-                        // Zone creation succeeded
-                        print("The 'privateDB LeZone' was successfully created in the private database.")
-                    }
-                }))
+                    let operation = CKFetchRecordZonesOperation(recordZoneIDs: [self.recordZone.zoneID])
+                    operation.fetchRecordZonesCompletionBlock = { _, error in
+                        if error == nil {
+                            print(error?.localizedDescription.debugDescription)
+                            self.privateDB.save(self.recordZone, completionHandler: ({returnRecord, error in
+                                if error != nil {
+                                    // Zone creation failed
+                                    print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
+                                } else {
+                                    // Zone creation succeeded
+                                    print("The 'privateDB LeZone' was successfully created in the private database.")
+                                }
+                            }))
+                        }
+                }
+                self.privateDB.add(operation)
             }
             }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default,handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
     
