@@ -373,6 +373,11 @@
                                     <action selector="GetParts:" destination="17o-cH-NIh" id="fcK-ll-V4P"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem title="Zones" id="Ibr-gd-DSe">
+                                <connections>
+                                    <action selector="listZones:" destination="17o-cH-NIh" id="NgT-Ok-QvS"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
@@ -488,7 +493,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ASA-lh-Dip" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2769" y="-123"/>
+            <point key="canvasLocation" x="2555" y="-139"/>
         </scene>
     </scenes>
     <resources>

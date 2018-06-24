@@ -54,6 +54,23 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var debug3: UILabel!
     @IBOutlet weak var debug4: UITextView!
     
+
+    
+    
+    @IBAction func listZones(_ sender: Any) {
+    
+        let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
+        operation.fetchRecordZonesCompletionBlock = { records, error in
+            if error != nil {
+                print(error?.localizedDescription.debugDescription)
+            }
+            for rex in records! {
+                print("\(rex.value.zoneID.zoneName)")
+            }
+        }
+        privateDB.add(operation)
+    }
+    
     var geotifications = [Geotification]()
     var locationManager:CLLocationManager? = nil
     

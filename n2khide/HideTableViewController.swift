@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CloudKit
 
 protocol zap  {
     func wayPoint2G(wayPoint2G: String)
@@ -15,6 +16,27 @@ protocol zap  {
 class HideTableViewController: UITableViewController {
     
     var zapperDelegate: zap!
+    private let privateDB = CKContainer.default().privateCloudDatabase
+    
+    @objc func switchTable() {
+        listOfPoint2Seek.removeAll()
+        let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
+        operation.fetchRecordZonesCompletionBlock = { records, error in
+            if error != nil {
+                print(error?.localizedDescription.debugDescription)
+            }
+            for rex in records! {
+                let rex2S = wayPoint(major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil)
+                 listOfPoint2Seek.append(rex2S)
+                print("\(rex.value.zoneID.zoneName)")
+            }
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+        privateDB.add(operation)
+    }
     
 
     override func viewDidLoad() {
@@ -32,6 +54,7 @@ class HideTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
         self.navigationItem.rightBarButtonItem = self.editButtonItem
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(switchTable))
     }
 
     override func didReceiveMemoryWarning() {
