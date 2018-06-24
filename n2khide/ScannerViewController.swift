@@ -53,6 +53,13 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         previewLayer.videoGravity = .resizeAspectFill
         view.layer.addSublayer(previewLayer)
         
+        let instructionView = UITextView(frame: previewLayer.frame)
+        instructionView.text = "I need a QR code, with a UUID code embeded within it"
+        instructionView.textColor = UIColor.red
+        instructionView.backgroundColor = UIColor.clear
+        self.view.addSubview(instructionView)
+        
+        
         captureSession.startRunning()
     }
     

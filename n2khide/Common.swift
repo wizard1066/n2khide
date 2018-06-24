@@ -37,7 +37,7 @@ enum tableViews  {
     case points
 }
 
-var windowView: tableViews!
+var windowView: tableViews = .points
 
 struct way2G: Codable
 {
