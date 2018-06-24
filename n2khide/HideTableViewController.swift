@@ -17,25 +17,38 @@ class HideTableViewController: UITableViewController {
     
     var zapperDelegate: zap!
     private let privateDB = CKContainer.default().privateCloudDatabase
+    private var zoneTable:[String:CKRecordZoneID] = [:]
+    private var shadowTable:[wayPoint?]? = []
     
     @objc func switchTable() {
-        listOfPoint2Seek.removeAll()
-        let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
-        operation.fetchRecordZonesCompletionBlock = { records, error in
-            if error != nil {
-                print(error?.localizedDescription.debugDescription)
+        if windowView == .points {
+            if listOfPoint2Seek.count > 0 {
+                shadowTable = listOfPoint2Seek
             }
-            for rex in records! {
-                let rex2S = wayPoint(major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil)
-                 listOfPoint2Seek.append(rex2S)
-                print("\(rex.value.zoneID.zoneName)")
+            windowView = .zones
+            listOfPoint2Seek.removeAll()
+            let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
+            operation.fetchRecordZonesCompletionBlock = { records, error in
+                if error != nil {
+                    print(error?.localizedDescription.debugDescription)
+                }
+                for rex in records! {
+                    let rex2S = wayPoint(major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil)
+                     listOfPoint2Seek.append(rex2S)
+                    self.zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
+                }
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
             }
-            
+            privateDB.add(operation)
+        } else {
+            windowView = .points
+            listOfPoint2Seek = shadowTable! as! [wayPoint]
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
-        privateDB.add(operation)
     }
     
 
@@ -142,12 +155,22 @@ class HideTableViewController: UITableViewController {
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
         let modifyAction = UIContextualAction(style: .normal, title:  "Delete", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
-            let index2Zap = listOfPoint2Seek[indexPath.row].name
-            self.zapperDelegate.wayPoint2G(wayPoint2G: index2Zap!)
-            wayPoints.removeValue(forKey: index2Zap!)
-            listOfPoint2Seek.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-            success(true)
+            if windowView == .points {
+                let index2Zap = listOfPoint2Seek[indexPath.row].name
+                self.zapperDelegate.wayPoint2G(wayPoint2G: index2Zap!)
+                wayPoints.removeValue(forKey: index2Zap!)
+                listOfPoint2Seek.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+                success(true)
+            }
+            if windowView == .zones {
+                let index2Zap = listOfPoint2Seek[indexPath.row].name
+                let rex2Zap = self.zoneTable[index2Zap!]
+                self.deleteZoneV2(zone2Zap: rex2Zap!)
+                listOfPoint2Seek.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+                success(true)
+            }
         })
         modifyAction.image = UIImage(named: "hammer")
         modifyAction.backgroundColor = .red
@@ -180,5 +203,25 @@ class HideTableViewController: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    // MARK: CloudKit Code$
+    func deleteZoneV2(zone2Zap: CKRecordZoneID) {
+        let deleteOp = CKModifyRecordZonesOperation.init(recordZonesToSave: nil, recordZoneIDsToDelete: [zone2Zap])
+        self.privateDB.add(deleteOp)
+    }
+    
+    func modifyZone(zone2Zap: CKRecordID) {
+        let modifyOp = CKModifyRecordsOperation(recordsToSave:nil, recordIDsToDelete: [zone2Zap])
+        modifyOp.savePolicy = .allKeys
+        modifyOp.perRecordCompletionBlock = {(record,error) in
+        print("error \(error.debugDescription)")
+        }
+        modifyOp.modifyRecordsCompletionBlock = { (record, recordID,
+        error) in
+        if error != nil {
+        print("error \(error.debugDescription)")
+        }}
+        self.privateDB.add(modifyOp)
+    }
 
 }

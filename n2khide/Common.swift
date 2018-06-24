@@ -32,6 +32,12 @@ var listOfPoint2Seek:[wayPoint] = []
 var WP2M:[String:String] = [:]
 var order:Int?  = nil
 
+enum tableViews  {
+    case zones
+    case points
+}
+
+var windowView: tableViews!
 
 struct way2G: Codable
 {
@@ -43,6 +49,7 @@ struct way2G: Codable
 }
 
 var beaconRegion:CLBeaconRegion!
+var currentZone: CKRecordZone!
 
 
 

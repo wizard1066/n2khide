@@ -838,11 +838,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
                 let textField = alert?.textFields![0]
             if textField?.text != "" {
-//                    self.mapRecord = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: self.recordZone.zoneID)
-//                    self.mapRecord.setObject(textField?.text as CKRecordValue?, forKey: Constants.Attribute.mapName)
-//                    self.mapRecord?.parent = nil
-//                    self.linksRecord = CKReference(record: self.mapRecord, action: .deleteSelf)
-                    self.recordZone = CKRecordZone(zoneName: (textField?.text)!)
+                self.recordZone = CKRecordZone(zoneName: (textField?.text)!)
                 self.privateDB.save(self.recordZone, completionHandler: ({returnRecord, error in
                     if error != nil {
                         // Zone creation failed
@@ -856,15 +852,6 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                     operation.fetchRecordZonesCompletionBlock = { _, error in
                         if error != nil {
                             print(error?.localizedDescription.debugDescription)
-//                            self.privateDB.save(self.recordZone, completionHandler: ({returnRecord, error in
-//                                if error != nil {
-//                                    // Zone creation failed
-//                                    print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
-//                                } else {
-//                                    // Zone creation succeeded
-//                                    print("The 'privateDB LeZone' was successfully created in the private database.")
-//                                }
-//                            }))
                         }
                 }
                 self.privateDB.add(operation)
@@ -1082,10 +1069,28 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     var angle2U: Double? = nil
     
 func getShare() {
+        windowView = .points
         mapView.alpha = 0.7
         listOfPoint2Seek = []
         centerImage.image = UIImage(named: "compassClip")
-        recordZone = CKRecordZone(zoneName: "home7")
+    if currentZone == nil {
+        let alert = UIAlertController(title: "Map Name", message: "", preferredStyle: .alert)
+        alert.addTextField { (textField) in
+            textField.placeholder = "Map Name"
+        }
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+            let textField = alert?.textFields![0]
+            if textField?.text != "" {
+                self.share2Load(zoneNamed: (textField?.text)!)
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default,handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    }
+    
+    func share2Load(zoneNamed: String) {
+        recordZone = CKRecordZone(zoneName: zoneNamed)
         recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
@@ -1109,12 +1114,14 @@ func getShare() {
                 let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
                 let wp2S = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil, order: order, boxes: boxes)
                 listOfPoint2Seek.append(wp2S)
-                WP2M[wp2FLat+wp2FLog] = name
+//                WP2M[wp2FLat+wp2FLog] = name
                 DispatchQueue.main.async {
                     for boxes2D in boxes! {
                         self.drawBox(Cords2E: boxes2D.coordinate, boxColor: UIColor.red)
+                        let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
+                        let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
+                         WP2M[wp2FLat+wp2FLog] = name
                     }
-//                    self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
                 }
             }
         }
@@ -1122,7 +1129,6 @@ func getShare() {
     let when = DispatchTime.now() + Double(8)
     DispatchQueue.main.asyncAfter(deadline: when){
 
-        
         for points in listOfPoint2Seek {
             let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
             let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
