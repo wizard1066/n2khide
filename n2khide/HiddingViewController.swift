@@ -1344,7 +1344,12 @@ func getShare() {
     
     private func updateWayname(waypoint2U: MKPointAnnotation, image2U: UIImage?) {
         if image2U != nil {
-            let waypoint2A = wayPoint(major:nil, minor: nil,proximity: nil, coordinates: waypoint2U.coordinate, name: waypoint2U.title, hint: waypoint2U.subtitle, image: image2U, order: wayPoints.count, boxes:nil)
+            let wp2Fix = wayPoints.filter { (arg) -> Bool in
+                let (_, value2U) = arg
+                return value2U.name == waypoint2U.title
+            }
+            let wp2F = wp2Fix.values.first
+            let waypoint2A = wayPoint(major:wp2F?.major, minor: wp2F?.minor,proximity: nil, coordinates: waypoint2U.coordinate, name: wp2F?.name, hint: wp2F?.hint, image: image2U, order: wayPoints.count, boxes:wp2F?.boxes)
             wayPoints[waypoint2U.title!] = waypoint2A
         }
     }
