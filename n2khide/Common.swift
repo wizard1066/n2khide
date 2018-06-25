@@ -51,6 +51,12 @@ enum op {
 
 var usingMode: op = .recording
 
+enum point {
+    case gps
+    case ibeacon
+}
+var trigger: point = .gps
+
 struct way2G: Codable
 {
     var longitude: Double

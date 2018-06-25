@@ -203,17 +203,33 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         print( "Beacon in range")
+     
 //        lblBeaconDetails.hidden = false
     }
     
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         print("No beacons in range")
+        
 //        lblBeaconDetails.hidden = true
     }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
 //        var shouldHideBeaconDetails = true
+        
+        if beacons.count > 0, usingMode == op.recording {
+            if let closestBeacon = beacons[0] as? CLBeacon {
+                let filterMinor2S = listOfPoint2Save?.filter { $0.minor == Int(truncating: closestBeacon.minor) }
+                let filterMajor2S = listOfPoint2Save?.filter { $0.major == Int(truncating: closestBeacon.major) }
+                if filterMinor2S?.count == 0, filterMajor2S?.count == 0 {
+                    trigger = point.ibeacon
+                    let newWayPoint = wayPoint(major:closestBeacon.minor as? Int, minor: closestBeacon.major as? Int, proximity: nil, coordinates: nil, name: nil, hint:nil, image: nil, order: wayPoints.count, boxes: nil)
+                    wayPoints[closestBeacon.proximityUUID.uuidString] = newWayPoint
+                    listOfPoint2Save?.append(newWayPoint)
+                    performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
+                }
+            }
+        }
 
         if beacons.count > 0 {
             if let closestBeacon = beacons[0] as? CLBeacon {
@@ -1277,7 +1293,7 @@ func getShare() {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destination = segue.destination.contents
         let annotationView = sender as? MKAnnotationView
-        if segue.identifier == Constants.EditUserWaypoint {
+        if segue.identifier == Constants.EditUserWaypoint, trigger == point.gps {
             let ewvc = destination as? EditWaypointController
             wayPoints.removeValue(forKey: ((pinViewSelected?.title)!)!)
             ewvc?.nameText = (pinViewSelected?.title)!
@@ -1287,6 +1303,19 @@ func getShare() {
                     ppc.sourceRect = (annotationView?.frame)!
                     ppc.delegate = self
                 }
+        }
+        if segue.identifier == Constants.EditUserWaypoint, trigger == point.ibeacon {
+            let ewvc = destination as? EditWaypointController
+             let wayNames = Array(wayPoints.keys)
+            let uniqueName = "UUID".madeUnique(withRespectTo: wayNames)
+            ewvc?.nameText =  uniqueName
+            ewvc?.hintText = "ibeacon"
+            ewvc?.setWayPoint = self
+            if let ppc = ewvc?.popoverPresentationController {
+                let point2U = mapView.convert( (locationManager?.location?.coordinate)!, toPointTo: mapView)
+                ppc.sourceRect = CGRect(x: point2U.x, y: point2U.y, width: 1, height: 1)
+                ppc.delegate = self
+            }
         }
         if segue.identifier == Constants.TableWaypoint {
             let tbvc = destination as?  HideTableViewController
@@ -1402,7 +1431,7 @@ func getShare() {
             self.spinner.startAnimating()
         }
         share2Source(zoneID: recordZoneID)
-        // fuck
+        
 //        let operation = CKFetchRecordsOperation(recordIDs: [recordID])
 //        operation.perRecordCompletionBlock = { record, _, error in
 //            if error != nil {
@@ -1497,6 +1526,7 @@ func getShare() {
     }
 
     override func viewDidLoad() {
+        trigger = point.gps
         centerImage.alpha = 0.5
         directionLabel.isHidden = true
         nameLabel.isHidden = true
