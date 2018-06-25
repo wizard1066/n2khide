@@ -35,7 +35,7 @@ var parentID: CKReference?
 var zoneTable:[String:CKRecordZoneID] = [:]
 var WP2M:[String:String] = [:]
 var order2Search:Int?  = nil
-var order2Match:Int? = nil
+var order2SaveIndex:Int? = nil
 
 enum tableViews  {
     case zones

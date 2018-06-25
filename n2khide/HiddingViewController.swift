@@ -492,6 +492,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             pinViewSelected?.title = name
             mapView.selectAnnotation(pinViewSelected!, animated: true)
             updateWayname(waypoint2U: pinViewSelected, image2U: nil)
+         } else {
+            // must be a ibeacon
+            let wp2C = listOfPoint2Save?.popLast()
+            let wp2S = wayPoint(major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil)
+            listOfPoint2Save?.append(wp2S)
         }
     }
     
@@ -500,6 +505,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             pinViewSelected?.subtitle = hint
             mapView.selectAnnotation(pinViewSelected!, animated: true)
             updateWayname(waypoint2U: pinViewSelected, image2U: nil)
+        } else {
+            // must be a ibeacon
+            let wp2C = listOfPoint2Save?.popLast()
+            let wp2S = wayPoint(major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: hint, image: wp2C?.image, order: wayPoints.count, boxes: nil)
+            listOfPoint2Save?.append(wp2S)
         }
     }
     
@@ -510,6 +520,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 mapView.selectAnnotation(pinViewSelected!, animated: true)
                 updateWayname(waypoint2U: pinViewSelected, image2U: image)
             }
+        } else {
+            // must be a ibeacon
+            let wp2C = listOfPoint2Save?.popLast()
+            let wp2S = wayPoint(major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: wp2C?.hint, image: image, order: wayPoints.count, boxes: nil)
+            listOfPoint2Save?.append(wp2S)
         }
     }
     
@@ -1172,6 +1187,7 @@ func getShare() {
             for record in records! {
                 self.buildWaypoint(record2U: record)
             }
+            
         }
     
     let when = DispatchTime.now() + Double(4)
@@ -1216,7 +1232,6 @@ func getShare() {
             self.addRadiusOverlay(forGeotification: record2U)
             self.locationManager?.startMonitoring(for: region2M)
             listOfPoint2Seek.append(wp2S)
-            
             DispatchQueue.main.async {
                 for boxes2D in boxes! {
                     self.drawBox(Cords2E: boxes2D.coordinate, boxColor: UIColor.red)
