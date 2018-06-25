@@ -221,9 +221,9 @@
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GHw-WU-YGA">
-                                                <rect key="frame" x="359.5" y="237" width="49" height="33"/>
-                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Heading" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GHw-WU-YGA">
+                                                <rect key="frame" x="360.5" y="256" width="48.5" height="22"/>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -242,7 +242,7 @@
                                                     <constraint firstAttribute="height" constant="32" id="50C-ab-4Zy"/>
                                                     <constraint firstAttribute="width" constant="128" id="C6j-cg-KNm"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="24"/>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -252,27 +252,6 @@
                                                     <constraint firstAttribute="height" constant="35" id="c6B-wF-8fd"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="24"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Debug" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bYg-YS-ptb">
-                                                <rect key="frame" x="576" y="118" width="128" height="21"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Debug" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Gx-ST-ntr">
-                                                <rect key="frame" x="576" y="147" width="128" height="21"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zt8-qy-iqE">
-                                                <rect key="frame" x="486" y="176" width="256" height="21"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -287,7 +266,7 @@
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="Zax-lQ-oNB" firstAttribute="top" secondItem="GHw-WU-YGA" secondAttribute="bottom" constant="16" id="1PO-C7-tF7"/>
+                                            <constraint firstItem="Zax-lQ-oNB" firstAttribute="top" secondItem="GHw-WU-YGA" secondAttribute="bottom" constant="8" id="1PO-C7-tF7"/>
                                             <constraint firstItem="XxX-fC-dMw" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="378-HH-DJD"/>
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="3QL-hm-TyA"/>
                                             <constraint firstItem="8Qb-jJ-lNW" firstAttribute="top" secondItem="9zf-oX-1TL" secondAttribute="bottom" constant="16" id="3iF-2L-QBC"/>
@@ -370,7 +349,7 @@
                             </barButtonItem>
                             <barButtonItem title="Pin" id="5rp-DO-9vb">
                                 <connections>
-                                    <action selector="GetParts:" destination="17o-cH-NIh" id="fcK-ll-V4P"/>
+                                    <action selector="pinButton:" destination="17o-cH-NIh" id="HJf-qv-h5X"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem title="Zones" id="Ibr-gd-DSe">
@@ -383,9 +362,6 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="centerImage" destination="9zf-oX-1TL" id="bHh-L1-ET5"/>
-                        <outlet property="debug1" destination="bYg-YS-ptb" id="xQw-6c-b6C"/>
-                        <outlet property="debug2" destination="1Gx-ST-ntr" id="KvR-Yf-d4w"/>
-                        <outlet property="debug3" destination="zt8-qy-iqE" id="Z1r-b7-jlO"/>
                         <outlet property="debug4" destination="vd8-I4-zsf" id="UuN-FC-S8u"/>
                         <outlet property="directionLabel" destination="GHw-WU-YGA" id="T7w-6J-cHB"/>
                         <outlet property="hideView" destination="ddt-Qx-MRh" id="Nf5-fu-lTm"/>

@@ -53,12 +53,35 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var debug1: UILabel!
     @IBOutlet weak var debug3: UILabel!
     @IBOutlet weak var debug4: UITextView!
-    
+    @IBOutlet weak var pin: UIBarButtonItem!
 
-    
+    @IBAction func pinButton(_ sender: Any) {
+        if currentLocation != nil {
+            let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
+            let wayNames = Array(wayPoints.keys)
+            let uniqueName = "Clue".madeUnique(withRespectTo: wayNames)
+            let waypoint2 = MyPointAnnotation()
+            waypoint2.coordinate  = userLocation
+            waypoint2.title = uniqueName
+            let wp2FLat = self.getLocationDegreesFrom(latitude: waypoint2.coordinate.latitude)
+            let wp2FLog = self.getLocationDegreesFrom(longitude: waypoint2.coordinate.longitude)
+            let hint2D = wp2FLat + wp2FLog
+            waypoint2.subtitle = hint2D
+            waypoint2.pinTintColor = UIColor.green
+            updateWayname(waypoint2U: waypoint2, image2U: nil)
+            mapView.addAnnotation(waypoint2)
+             let boxes = self.doBoxV2(latitude2D: waypoint2.coordinate.latitude, longitude2D: waypoint2.coordinate.longitude, name: uniqueName)
+            let newWayPoint = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil, order: wayPoints.count, boxes:boxes)
+            wayPoints[uniqueName] = newWayPoint
+            listOfPoint2Save?.append(newWayPoint)
+        }
+    }
     
     @IBAction func listZones(_ sender: Any) {
+        let zoneList = listAllZones()
+    }
     
+    private func listAllZones() -> [String:CKRecordZoneID] {
         let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
         operation.fetchRecordZonesCompletionBlock = { records, error in
             if error != nil {
@@ -66,9 +89,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
             for rex in records! {
                 print("\(rex.value.zoneID.zoneName)")
+                zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
             }
         }
         privateDB.add(operation)
+        return zoneTable
     }
     
     var geotifications = [Geotification]()
@@ -84,6 +109,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 let degree2S = self.radiansToDegrees(radians: Double(direction2GN))
                 self.centerImage.transform = tr2
                 self.directionLabel.text = String(Int(degree2S))
+                self.directionLabel.isHidden = false
             }
         }
     }
@@ -314,7 +340,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         pin.isEnabled = true
-        orderLabel.text = String(order!)
+        orderLabel.text = String(order2Search!)
         currentLocation = locations.first
         let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
         let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
@@ -326,8 +352,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let latValue = self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
             self.longitudeLabel.text = self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
             self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
-            if listOfPoint2Seek.count > 0, order! <  listOfPoint2Seek.count {
-                let nextWP2S = listOfPoint2Seek[order!]
+            if listOfPoint2Seek.count > 0, order2Search! <  listOfPoint2Seek.count {
+                let nextWP2S = listOfPoint2Seek[order2Search!]
                 self.debug4.text = "\(WP2M)"
                 if WP2M[latValue + longValue] != nil {
                     let  alert2Post = WP2M[latValue + longValue]
@@ -349,10 +375,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         self.view.addConstraints([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
                         NSLayoutConstraint.activate([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
                         self.hintLabel.text = wayPointRec?.hint
-                        self.orderLabel.text = String(order!)
+                        self.orderLabel.text = String(order2Search!)
 //                        WP2M[latValue + longValue] = nil
                         self.deleteWM2M(key2U: latValue + longValue)
-                        order? += 1
+                        order2Search? += 1
                         UIView.animate(withDuration: 8, animations: {
                             image2Show.alpha = 0
                             self.hintLabel.alpha = 0
@@ -533,7 +559,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 
         let longValue =  self.getLocationDegreesFrom(longitude: (longitude2D))
         let latValue = self.getLocationDegreesFrom(latitude: (latitude2D))
-//        print("fuck2--> long \(longValue) \(longitudeDMS) lat \(latValue) \(latitudeDMS)")
+
        let (latD, longD) = getDigitalFromDegrees(latitude: latValue, longitude: longValue)
         WP2M[latValue + longValue] = name2U
         return CLLocationCoordinate2D(latitude: latD, longitude: longD)
@@ -671,51 +697,51 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         return boxes2R
     }
     
-    private func doBox(latitude2S: String, longitude2S: String) {
-        var coordinates:[CLLocationCoordinate2D] = []
-        print("latitude2S \(latitude2S) longitude2S \(longitude2S)")
-        var latitude2P = latitude2S.split(separator: "-")
-        var longitude2P = longitude2S.split(separator: "-")
-
-        let lat2Pplus = Int(latitude2P[2])! + 1
-        let lon2Pplus = Int(longitude2P[2])! + 1
-
-        //        [(36,22)
-        let start2PLatitude = "\(latitude2P[0])-\(latitude2P[1])-\(latitude2P[2])-\(latitude2P[3])"
-        let (NWLatitude, NWLongitude) = getDigitalFromDegrees(latitude: start2PLatitude, longitude: longitude2S)
-        var cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: NWLongitude)
-        coordinates.append(cord2U)
-
-        //         (37,22)
-        let source2PLatitude = "\(latitude2P[0])-\(latitude2P[1])-\(lat2Pplus)-\(latitude2P[3])"
-        print("source2PLatitude \(source2PLatitude) longitude2S \(longitude2S)")
-        let (SELatitude, SELongitude) = getDigitalFromDegrees(latitude: source2PLatitude, longitude: longitude2S)
-        cord2U = CLLocationCoordinate2D(latitude: SELatitude, longitude: SELongitude)
-        coordinates.append(cord2U)
-
-        //        (37,23)
-        let source2PLongitude = "\(longitude2P[0])-\(longitude2P[1])-\(lon2Pplus)-\(longitude2P[3])"
-        print("source2PLongitude \(source2PLongitude) \(source2PLongitude)")
-        let (SWLatitude, SWLongitude) = getDigitalFromDegrees(latitude: source2PLatitude, longitude: source2PLongitude)
-        cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
-        coordinates.append(cord2U)
+//    private func doBox(latitude2S: String, longitude2S: String) {
+//        var coordinates:[CLLocationCoordinate2D] = []
+//        print("latitude2S \(latitude2S) longitude2S \(longitude2S)")
+//        var latitude2P = latitude2S.split(separator: "-")
+//        var longitude2P = longitude2S.split(separator: "-")
 //
-//        //        (36,23)
-        print("source2PLongitude \(latitude2S) \(source2PLongitude)")
-        let (NELatitude, NELongitude) = getDigitalFromDegrees(latitude: latitude2S, longitude: source2PLongitude)
-        cord2U = CLLocationCoordinate2D(latitude: NELatitude, longitude: NELongitude)
-        coordinates.append(cord2U)
+//        let lat2Pplus = Int(latitude2P[2])! + 1
+//        let lon2Pplus = Int(longitude2P[2])! + 1
 //
-//        //        (36,22)]
-        cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: NWLongitude)
-        coordinates.append(cord2U)
-
-
-        let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
-        DispatchQueue.main.async {
-            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
-        }
-    }
+//        //        [(36,22)
+//        let start2PLatitude = "\(latitude2P[0])-\(latitude2P[1])-\(latitude2P[2])-\(latitude2P[3])"
+//        let (NWLatitude, NWLongitude) = getDigitalFromDegrees(latitude: start2PLatitude, longitude: longitude2S)
+//        var cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: NWLongitude)
+//        coordinates.append(cord2U)
+//
+//        //         (37,22)
+//        let source2PLatitude = "\(latitude2P[0])-\(latitude2P[1])-\(lat2Pplus)-\(latitude2P[3])"
+//        print("source2PLatitude \(source2PLatitude) longitude2S \(longitude2S)")
+//        let (SELatitude, SELongitude) = getDigitalFromDegrees(latitude: source2PLatitude, longitude: longitude2S)
+//        cord2U = CLLocationCoordinate2D(latitude: SELatitude, longitude: SELongitude)
+//        coordinates.append(cord2U)
+//
+//        //        (37,23)
+//        let source2PLongitude = "\(longitude2P[0])-\(longitude2P[1])-\(lon2Pplus)-\(longitude2P[3])"
+//        print("source2PLongitude \(source2PLongitude) \(source2PLongitude)")
+//        let (SWLatitude, SWLongitude) = getDigitalFromDegrees(latitude: source2PLatitude, longitude: source2PLongitude)
+//        cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
+//        coordinates.append(cord2U)
+////
+////        //        (36,23)
+//        print("source2PLongitude \(latitude2S) \(source2PLongitude)")
+//        let (NELatitude, NELongitude) = getDigitalFromDegrees(latitude: latitude2S, longitude: source2PLongitude)
+//        cord2U = CLLocationCoordinate2D(latitude: NELatitude, longitude: NELongitude)
+//        coordinates.append(cord2U)
+////
+////        //        (36,22)]
+//        cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: NWLongitude)
+//        coordinates.append(cord2U)
+//
+//
+//        let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
+//        DispatchQueue.main.async {
+//            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
+//        }
+//    }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         print("mapview region changed")
@@ -838,23 +864,28 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
                 let textField = alert?.textFields![0]
             if textField?.text != "" {
-                self.recordZone = CKRecordZone(zoneName: (textField?.text)!)
-                self.privateDB.save(self.recordZone, completionHandler: ({returnRecord, error in
-                    if error != nil {
-                        // Zone creation failed
-                        print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
-                    } else {
-                        // Zone creation succeeded
-                        print("The 'privateDB LeZone' was successfully created in the private database.")
-                    }
-                }))
-                    let operation = CKFetchRecordZonesOperation(recordZoneIDs: [self.recordZone.zoneID])
-                    operation.fetchRecordZonesCompletionBlock = { _, error in
+                let _ = self.listAllZones()
+                if zoneTable[(textField?.text)!] != nil {
+                    self.share2Load(zoneNamed: (textField?.text)!)
+                } else {
+                    self.recordZone = CKRecordZone(zoneName: (textField?.text)!)
+                    self.privateDB.save(self.recordZone, completionHandler: ({returnRecord, error in
                         if error != nil {
-                            print(error?.localizedDescription.debugDescription)
+                            // Zone creation failed
+                            print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
+                        } else {
+                            // Zone creation succeeded
+                            print("The 'privateDB LeZone' was successfully created in the private database.")
                         }
+                    }))
+                        let operation = CKFetchRecordZonesOperation(recordZoneIDs: [self.recordZone.zoneID])
+                        operation.fetchRecordZonesCompletionBlock = { _, error in
+                            if error != nil {
+                                print(error?.localizedDescription.debugDescription)
+                            }
+                    }
+                    self.privateDB.add(operation)
                 }
-                self.privateDB.add(operation)
             }
             }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default,handler: nil))
@@ -908,11 +939,12 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             return
         }
         sharingApp = true
+        
         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 //       let file2ShareURL = documentsDirectoryURL.appendingPathComponent("image2SaveX")
-        if listOfPoint2Seek.count != wayPoints.count {
-            listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
-        }
+//        if listOfPoint2Seek.count != wayPoints.count {
+//            listOfPoint2Save = Array(wayPoints.values.map{ $0 })
+//        }
         
 //        self.recordZone = CKRecordZone(zoneName: "LeZone")
 //        CKContainer.default().discoverAllIdentities { (users, error) in
@@ -929,7 +961,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         
 //        var rec2Save:[CKRecord] = []
         var p2S = 0
-        for point2Save in listOfPoint2Seek {
+        for point2Save in listOfPoint2Save! {
 //            let operation1 = BlockOperation {
             
                 let ckWayPointRecord = CKRecord(recordType: Constants.Entity.wayPoints, zoneID: self.recordZone.zoneID)
@@ -943,11 +975,11 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //                ckWayPointRecord.setParent(self.mapRecord)
             var image2D: Data!
             if point2Save.image != nil {
-                image2D = UIImageJPEGRepresentation(point2Save.image!, 1.0)
+                image2D = UIImageJPEGRepresentation((point2Save.image!), 1.0)
             } else {
                 image2D = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
             }
-                let file2ShareURL = documentsDirectoryURL.appendingPathComponent(point2Save.name!)
+            let file2ShareURL = documentsDirectoryURL.appendingPathComponent((point2Save.name!))
                 try? image2D?.write(to: file2ShareURL, options: .atomicWrite)
                 let newAsset = CKAsset(fileURL: file2ShareURL)
                 ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
@@ -956,7 +988,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         
         let modifyOp = CKModifyRecordsOperation(recordsToSave:
             records2Share, recordIDsToDelete: nil)
-        modifyOp.savePolicy = .allKeys
+        modifyOp.savePolicy = .ifServerRecordUnchanged
         modifyOp.perRecordCompletionBlock = {(record,error) in
             print("error \(error.debugDescription)")
         }
@@ -969,12 +1001,16 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         
         // new code added for parent setup 2nd try
         
+        
+        if listOfPoint2Seek.count == 0 {
+            sharePoint = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: self.recordZone.zoneID)
+            parentID = CKReference(record: self.sharePoint, action: .none)
+        }
         var recordID2Share:[CKReference] = []
-        sharePoint = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: self.recordZone.zoneID)
         
         for rex in self.records2Share {
-            let parentR = CKReference(record: self.sharePoint, action: .none)
-            rex.parent = parentR
+//            let parentR = CKReference(record: self.parentID, action: .none)
+            rex.parent = parentID
             let childR = CKReference(record: rex, action: .deleteSelf)
             recordID2Share.append(childR)
         }
@@ -1005,7 +1041,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             let share = CKShare(rootRecord: record2S!)
                     share[CKShareTitleKey] = "My Next Share" as CKRecordValue
                     share.publicPermission = .none
-                    
+            
+            DispatchQueue.main.async {
                     let sharingController = UICloudSharingController(preparationHandler: {(UICloudSharingController, handler:
                         @escaping (CKShare?, CKContainer?, Error?) -> Void) in
                         let modifyOp = CKModifyRecordsOperation(recordsToSave:
@@ -1021,7 +1058,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                                                               .allowPrivate]
                     sharingController.delegate = self
                     sharingController.popoverPresentationController?.sourceView = self.view
-                DispatchQueue.main.async {
+            
                     self.present(sharingController, animated:true, completion:nil)
                 }
         }
@@ -1035,26 +1072,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         saveImage()
     }
     
-    @IBOutlet weak var pin: UIBarButtonItem!
-//    @IBAction func GetParts(_ sender: Any) {
-//        if currentLocation != nil {
-//            let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
-//            let wayNames = Array(wayPoints.keys)
-//            let uniqueName = "Clue".madeUnique(withRespectTo: wayNames)
-//            let waypoint2 = MyPointAnnotation()
-//            waypoint2.coordinate  = userLocation
-//            waypoint2.title = uniqueName
-//            let wp2FLat = self.getLocationDegreesFrom(latitude: waypoint2.coordinate.latitude)
-//            let wp2FLog = self.getLocationDegreesFrom(longitude: waypoint2.coordinate.longitude)
-//             let hint2D = wp2FLat + wp2FLog
-//            waypoint2.subtitle = hint2D
-//            waypoint2.pinTintColor = UIColor.green
-//            updateWayname(waypoint2U: waypoint2, image2U: nil)
-//            mapView.addAnnotation(waypoint2)
-//            let newWayPoint = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil, order: wayPoints.count)
-//            wayPoints[uniqueName] = newWayPoint
-//        }
-//    }
+    
     
     func getParticipant() {
 //        CKContainer.default().discoverAllIdentities { (identities, error) in
@@ -1089,9 +1107,45 @@ func getShare() {
     }
     }
     
-    func share2Load(zoneNamed: String) {
-        recordZone = CKRecordZone(zoneName: zoneNamed)
-        recordZoneID = recordZone.zoneID
+    func share2Source(zoneID: CKRecordZoneID?) {
+        windowView = .points
+        DispatchQueue.main.async {
+            self.mapView.alpha = 0.7
+            listOfPoint2Seek = []
+            self.centerImage.image = UIImage(named: "compassClip")
+        }
+        recordZoneID = zoneID
+        let predicate = NSPredicate(value: true)
+//        let predicate = NSPredicate(format: "owningList == %@", recordZoneID)
+        //        let query = CKQuery(recordType: "Waypoints", predicate: predicate)
+        let query = CKQuery(recordType: "Waypoints", predicate: predicate)
+        query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
+        sharedDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
+            if error != nil {
+                print("error \(error)")
+            }
+            for record in records! {
+                self.buildWaypoint(record2U: record)
+            }
+        }
+        
+        let when = DispatchTime.now() + Double(4)
+        DispatchQueue.main.asyncAfter(deadline: when){
+            self.spinner.stopAnimating()
+            for points in listOfPoint2Seek {
+                let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
+                let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
+                
+            }
+            self.lowLabel.isHidden = false
+            self.highLabel.isHidden = false
+            self.nextLocation2Show()
+        }
+    }
+    
+    func share2Load(zoneNamed: String?) {
+            recordZone = CKRecordZone(zoneName: zoneNamed!)
+            recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
         query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
@@ -1100,33 +1154,11 @@ func getShare() {
                 print("error \(error)")
             }
             for record in records! {
-                self.plotPin(pin2P: record)
-                let region2M = self.region(withPins: record)
-                self.addRadiusOverlay(forGeotification: record)
-               self.locationManager?.startMonitoring(for: region2M)
-                let longitude = record.object(forKey:  Constants.Attribute.longitude) as? Double
-                let latitude = record.object(forKey:  Constants.Attribute.latitude) as? Double
-                let name = record.object(forKey:  Constants.Attribute.name) as? String
-                let hint = record.object(forKey:  Constants.Attribute.hint) as? String
-                let order = record.object(forKey:  Constants.Attribute.order) as? Int
-                let boxes = record.object(forKey: Constants.Attribute.boxes) as? [CLLocation]
-                let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
-                let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
-                let wp2S = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil, order: order, boxes: boxes)
-                listOfPoint2Seek.append(wp2S)
-//                WP2M[wp2FLat+wp2FLog] = name
-                DispatchQueue.main.async {
-                    for boxes2D in boxes! {
-                        self.drawBox(Cords2E: boxes2D.coordinate, boxColor: UIColor.red)
-                        let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
-                        let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
-                         WP2M[wp2FLat+wp2FLog] = name
-                    }
-                }
+                self.buildWaypoint(record2U: record)
             }
         }
     
-    let when = DispatchTime.now() + Double(8)
+    let when = DispatchTime.now() + Double(4)
     DispatchQueue.main.asyncAfter(deadline: when){
 
         for points in listOfPoint2Seek {
@@ -1139,7 +1171,7 @@ func getShare() {
         self.nextLocation2Show()
     }
     
-
+        
     
     
 //        let predicate = NSPredicate(format: "owningList == %@", recordID)
@@ -1150,15 +1182,53 @@ func getShare() {
 //        }
     }
     
+    private func buildWaypoint(record2U: CKRecord) {
+        let longitude = record2U.object(forKey:  Constants.Attribute.longitude) as? Double
+        let latitude = record2U.object(forKey:  Constants.Attribute.latitude) as? Double
+        let filterLatitude2S = listOfPoint2Seek.filter { $0.coordinates?.latitude == latitude }
+        let filterLongitude2S = listOfPoint2Seek.filter { $0.coordinates?.longitude == longitude }
+        // Basically if you already find waypoint, don't readd it to the map/database
+        if filterLatitude2S.count == 0, filterLongitude2S.count == 0 {
+            parentID = record2U.parent
+            let name = record2U.object(forKey:  Constants.Attribute.name) as? String
+            let hint = record2U.object(forKey:  Constants.Attribute.hint) as? String
+            let order = record2U.object(forKey:  Constants.Attribute.order) as? Int
+            let boxes = record2U.object(forKey: Constants.Attribute.boxes) as? [CLLocation]
+            let wp2S = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil, order: order, boxes: boxes)
+            self.plotPin(pin2P: record2U)
+            let region2M = self.region(withPins: record2U)
+            self.addRadiusOverlay(forGeotification: record2U)
+            self.locationManager?.startMonitoring(for: region2M)
+            listOfPoint2Seek.append(wp2S)
+            
+            DispatchQueue.main.async {
+                for boxes2D in boxes! {
+                    self.drawBox(Cords2E: boxes2D.coordinate, boxColor: UIColor.red)
+                    let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
+                    let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
+                    WP2M[wp2FLat+wp2FLog] = name
+                }
+            }
+        }
+    }
+    
     private func nextLocation2Show() {
-        if listOfPoint2Seek.count == 0 { return }
-        let nextWP2S = listOfPoint2Seek[(order!)]
-        self.longitudeNextLabel.text = self.getLocationDegreesFrom(longitude: (nextWP2S.coordinates?.longitude)!)
-        self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
-        self.nextLocation = CLLocationCoordinate2DMake((nextWP2S.coordinates?.latitude)!, (nextWP2S.coordinates?.longitude)!)
-        self.angle2U = self.getBearing(toPoint: self.nextLocation, longitude:  (self.locationManager?.location?.coordinate.longitude)!, latitude:  (self.locationManager?.location?.coordinate.latitude)!)
-        self.hintLabel.text = nextWP2S.hint
-        self.nameLabel.text = nextWP2S.name
+        if order2Search == 0, usingMode == op.playing {
+            // do splash
+        }
+        if order2Search! < listOfPoint2Seek.count, usingMode == op.playing {
+            let nextWP2S = listOfPoint2Seek[(order2Search!)]
+            self.longitudeNextLabel.text = self.getLocationDegreesFrom(longitude: (nextWP2S.coordinates?.longitude)!)
+            self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
+            self.nextLocation = CLLocationCoordinate2DMake((nextWP2S.coordinates?.latitude)!, (nextWP2S.coordinates?.longitude)!)
+            self.angle2U = self.getBearing(toPoint: self.nextLocation, longitude:  (self.locationManager?.location?.coordinate.longitude)!, latitude:  (self.locationManager?.location?.coordinate.latitude)!)
+            self.hintLabel.text = nextWP2S.hint
+            self.nameLabel.text = nextWP2S.name
+            self.hintLabel.isHidden = false
+            self.nameLabel.isHidden = false
+        } else {
+            // do finale
+        }
     }
     // MARK: Saving to the iPad as JSON
     
@@ -1260,6 +1330,7 @@ func getShare() {
                 let boxes = self.doBoxV2(latitude2D: coordinate.latitude, longitude2D: coordinate.longitude, name: uniqueName)
                 let newWayPoint = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: wayPoints.count, boxes: boxes)
                 wayPoints[uniqueName] = newWayPoint
+                listOfPoint2Save?.append(newWayPoint)
             }
         }
     }
@@ -1322,7 +1393,7 @@ func getShare() {
     func fetchParent(_ metadata: CKShareMetadata) {
         recordZoneID = metadata.share.recordID.zoneID
         recordID = metadata.share.recordID
-        let record2S =  [metadata.rootRecordID].first
+        let record2S =  [metadata.rootRecordID].last
         DispatchQueue.main.async() {
             self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
             self.spinner = UIActivityIndicatorView(frame: CGRect(x: self.view.center.x, y: self.view.center.y, width: 64, height: 64))
@@ -1330,21 +1401,25 @@ func getShare() {
             self.view.addSubview(self.spinner)
             self.spinner.startAnimating()
         }
-        let operation = CKFetchRecordsOperation(recordIDs: [record2S!])
-        operation.perRecordCompletionBlock = { record, _, error in
-            if error != nil {
-                print(error?.localizedDescription.debugDescription)
-            }
-            if record != nil {
-                let name2S = record?.object(forKey: Constants.Attribute.mapName) as? String
-                DispatchQueue.main.async() {
-                    self.navigationItem.title = name2S
-                }
-                let pins2Plot = record?.object(forKey: Constants.Attribute.wayPointsArray) as? Array<CKReference>
-                self.queryShare(record2S: pins2Plot!)
-                }
-            }
-        sharedDB.add(operation)
+        share2Source(zoneID: recordZoneID)
+        // fuck
+//        let operation = CKFetchRecordsOperation(recordIDs: [recordID])
+//        operation.perRecordCompletionBlock = { record, _, error in
+//            if error != nil {
+//                print(error?.localizedDescription.debugDescription)
+//            }
+//            if record != nil {
+//                let name2S = record?.object(forKey: Constants.Attribute.mapName) as? String
+//                DispatchQueue.main.async() {
+//                    self.navigationItem.title = name2S
+//                }
+//                DispatchQueue.main.async() {
+//                    let pins2Plot = record?.object(forKey: Constants.Attribute.wayPointsArray) as? Array<CKReference>
+//                    self.queryShare(record2S: pins2Plot!)
+//                }
+//                }
+//            }
+//        sharedDB.add(operation)
     }
     
     func queryShare(record2S: [CKReference]) {
@@ -1358,7 +1433,9 @@ func getShare() {
                 print(error?.localizedDescription)
             }
             if record != nil {
-                self.plotPin(pin2P: record!)
+                DispatchQueue.main.async() {
+                    self.plotPin(pin2P: record!)
+                }
 //                let region2M = self.region(withPins: record!)
 //                self.locationManager?.startUpdatingLocation()
 //                self.locationManager?.startUpdatingHeading()
@@ -1421,7 +1498,9 @@ func getShare() {
 
     override func viewDidLoad() {
         centerImage.alpha = 0.5
-        order = 0
+        directionLabel.isHidden = true
+        nameLabel.isHidden = true
+        hintLabel.isHidden = true
         super.viewDidLoad()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         locationManager = appDelegate.locationManager
@@ -1436,6 +1515,7 @@ func getShare() {
         locationManager?.allowsBackgroundLocationUpdates
         locationManager?.requestLocation()
         pin.isEnabled = true
+        _ = self.listAllZones()
     }
 
     override func didReceiveMemoryWarning() {

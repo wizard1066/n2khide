@@ -29,8 +29,13 @@ struct wayPoint {
 
 var wayPoints:[String:wayPoint] = [:]
 var listOfPoint2Seek:[wayPoint] = []
+var listOfPoint2Save:[wayPoint]? = []
+var parentID: CKReference?
+
+var zoneTable:[String:CKRecordZoneID] = [:]
 var WP2M:[String:String] = [:]
-var order:Int?  = nil
+var order2Search:Int?  = nil
+var order2Match:Int? = nil
 
 enum tableViews  {
     case zones
@@ -38,6 +43,13 @@ enum tableViews  {
 }
 
 var windowView: tableViews = .points
+
+enum op {
+    case playing
+    case recording
+}
+
+var usingMode: op = .recording
 
 struct way2G: Codable
 {

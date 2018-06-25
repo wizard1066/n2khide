@@ -17,7 +17,7 @@ class HideTableViewController: UITableViewController {
     
     var zapperDelegate: zap!
     private let privateDB = CKContainer.default().privateCloudDatabase
-    private var zoneTable:[String:CKRecordZoneID] = [:]
+
     private var shadowTable:[wayPoint?]? = []
     
     @objc func switchTable() {
@@ -35,7 +35,7 @@ class HideTableViewController: UITableViewController {
                 for rex in records! {
                     let rex2S = wayPoint(major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil)
                      listOfPoint2Seek.append(rex2S)
-                    self.zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
+                    zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
                 }
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -165,7 +165,7 @@ class HideTableViewController: UITableViewController {
             }
             if windowView == .zones {
                 let index2Zap = listOfPoint2Seek[indexPath.row].name
-                let rex2Zap = self.zoneTable[index2Zap!]
+                let rex2Zap = zoneTable[index2Zap!]
                 self.deleteZoneV2(zone2Zap: rex2Zap!)
                 listOfPoint2Seek.remove(at: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .fade)
