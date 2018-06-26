@@ -258,17 +258,32 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 if let closestBeacon = beacons2S[0] as? CLBeacon {
                      let nextWP2S = listOfPoint2Seek[order2Search!]
                     print("WP2M \(WP2M) Seeking \(listOfPoint2Seek[order2Search!])")
-                    let k2U = String(nextWP2S.minor!) + String(nextWP2S.major!)
+                    let k2U = beacons2S[0].minor.stringValue + beacons2S[0].major.stringValue
                     let  alert2Post = WP2M[k2U]
                     
                     if alert2Post == nextWP2S.name {
                         let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
                         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) in
                             WP2M[k2U] = nil
-                            order2Search! += 1
+                            let image2Show = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+                            image2Show.image = nextWP2S.image
+                            self.mapView.addSubview(image2Show)
+                            image2Show.translatesAutoresizingMaskIntoConstraints  = false
+                            let THighConstraint = NSLayoutConstraint(item: image2Show, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 30)
+                            let TLowConstraint = NSLayoutConstraint(item: image2Show, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
+                            let TLeftConstraint = NSLayoutConstraint(item: image2Show, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1, constant: 0)
+                            let TRightConstraint = NSLayoutConstraint(item: image2Show, attribute: .trailing, relatedBy: .equal, toItem: self.view, attribute: .trailing, multiplier: 1, constant: 0)
+                            self.view.addConstraints([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
+                            NSLayoutConstraint.activate([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
+                            self.hintLabel.text = nextWP2S.hint
+                            self.orderLabel.text = String(order2Search!)
+                            if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
                         }))
                         self.present(alert, animated: true, completion: nil)
                     }
+//                    let wayPointRec = wayPoints[alert2Post!]
+                    //                        self.centerImage.image = wayPointRec?.image
+
                 }
             }
         }
