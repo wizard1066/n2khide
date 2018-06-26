@@ -15,6 +15,7 @@ import CloudKit
 typealias Codable = Decodable & Encodable
 
 struct wayPoint {
+        var UUID: String?
         var major: Int?
         var minor: Int?
         var proximity:  CLProximity?

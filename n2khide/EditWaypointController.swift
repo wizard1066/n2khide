@@ -13,6 +13,7 @@ protocol  setWayPoint  {
     func didSetName(name: String?)
     func didSetHint(hint: String?)
     func didSetImage(image: UIImage?)
+    func resetBeaconSearch()
 }
 
 class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -37,7 +38,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.presentingViewController?.dismiss(animated: true, completion: {
-            // nothing
+            self.setWayPoint.resetBeaconSearch()
         })
     }
     
@@ -49,7 +50,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
             }
         }
         picker.presentingViewController?.dismiss(animated: true, completion: {
-            // nothing
+            self.setWayPoint.resetBeaconSearch()
         })
     }
     

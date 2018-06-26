@@ -38,6 +38,9 @@ extension Double {
 
 
 class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint, CLLocationManagerDelegate {
+    
+
+    
     @IBOutlet weak var longitudeLabel: UILabel!
     @IBOutlet weak var latitudeLabel: UILabel!
     @IBOutlet weak var centerImage: UIImageView!
@@ -59,7 +62,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         if currentLocation != nil {
             let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
             let wayNames = Array(wayPoints.keys)
-            let uniqueName = "Clue".madeUnique(withRespectTo: wayNames)
+            let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
             let waypoint2 = MyPointAnnotation()
             waypoint2.coordinate  = userLocation
             waypoint2.title = uniqueName
@@ -71,7 +74,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             updateWayname(waypoint2U: waypoint2, image2U: nil)
             mapView.addAnnotation(waypoint2)
              let boxes = self.doBoxV2(latitude2D: waypoint2.coordinate.latitude, longitude2D: waypoint2.coordinate.longitude, name: uniqueName)
-            let newWayPoint = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil, order: wayPoints.count, boxes:boxes)
+            let newWayPoint = wayPoint(UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil, order: wayPoints.count, boxes:boxes)
             wayPoints[uniqueName] = newWayPoint
             listOfPoint2Save?.append(newWayPoint)
         }
@@ -214,19 +217,58 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //        lblBeaconDetails.hidden = true
     }
     
+    var ignore4now = false
+    
+    var beaconsInTheBag:[String:Bool?] = [:]
+    var beaconsLogged:[String] = []
+    
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
 //        var shouldHideBeaconDetails = true
         
         if beacons.count > 0, usingMode == op.recording {
-            if let closestBeacon = beacons[0] as? CLBeacon {
-                let filterMinor2S = listOfPoint2Save?.filter { $0.minor == Int(truncating: closestBeacon.minor) }
-                let filterMajor2S = listOfPoint2Save?.filter { $0.major == Int(truncating: closestBeacon.major) }
-                if filterMinor2S?.count == 0, filterMajor2S?.count == 0 {
-                    trigger = point.ibeacon
-                    let newWayPoint = wayPoint(major:closestBeacon.minor as? Int, minor: closestBeacon.major as? Int, proximity: nil, coordinates: nil, name: nil, hint:nil, image: nil, order: wayPoints.count, boxes: nil)
-                    wayPoints[closestBeacon.proximityUUID.uuidString] = newWayPoint
-                    listOfPoint2Save?.append(newWayPoint)
-                    performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
+            let beacons2S = beacons.filter { $0.proximity != CLProximity.unknown }
+            if beacons2S.count > 0 {
+                if let closestBeacon = beacons2S[0] as? CLBeacon {
+                    if !ignore4now {
+//                        ignore4now = true
+                        let k2U = closestBeacon.minor.stringValue + closestBeacon.major.stringValue
+//                        let filterMinor2S = listOfPoint2Save?.filter { $0.minor! as NSNumber == closestBeacon.minor }
+//                        let filterMajor2S = listOfPoint2Save?.filter { $0.major! as NSNumber == closestBeacon.major }
+                        print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)")
+                        if beaconsInTheBag[k2U] == nil {
+                            beaconsInTheBag[k2U] = true
+                            trigger = point.ibeacon
+
+                            let uniqueName = "UUID".madeUnique(withRespectTo: beaconsLogged)
+                            beaconsLogged.append(uniqueName)
+                            let newWayPoint = wayPoint(UUID: globalUUID, major:closestBeacon.major as? Int, minor: closestBeacon.minor as? Int, proximity: nil, coordinates: nil, name: uniqueName, hint:nil, image: nil, order: wayPoints.count, boxes: nil)
+                            wayPoints[closestBeacon.proximityUUID.uuidString] = newWayPoint
+                            listOfPoint2Save?.append(newWayPoint)
+                            print("WTF \(listOfPoint2Save) \(uniqueName)")
+                            performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
+                        }
+                    }
+                }
+            }
+        }
+        
+        if beacons.count > 0, usingMode == op.playing {
+            let beacons2S = beacons.filter { $0.proximity != CLProximity.unknown }
+            if beacons2S.count > 0 {
+                if let closestBeacon = beacons2S[0] as? CLBeacon {
+                     let nextWP2S = listOfPoint2Seek[order2Search!]
+                    print("WP2M \(WP2M) Seeking \(listOfPoint2Seek[order2Search!])")
+                    let k2U = String(nextWP2S.minor!) + String(nextWP2S.major!)
+                    let  alert2Post = WP2M[k2U]
+                    
+                    if alert2Post == nextWP2S.name {
+                        let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) in
+                            WP2M[k2U] = nil
+                            order2Search! += 1
+                        }))
+                        self.present(alert, animated: true, completion: nil)
+                    }
                 }
             }
         }
@@ -240,6 +282,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     switch lastFoundBeacon.proximity {
                     case CLProximity.immediate:
                         proximityMessage = "Very close"
+                        
                     case CLProximity.near:
                         proximityMessage = "Near"
                     case CLProximity.far:
@@ -248,7 +291,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         proximityMessage = "Where's the beacon?"
                     }
 //                    shouldHideBeaconDetails = false
-                    print("Beacon Major = \(closestBeacon.major.intValue) \nMinor \(closestBeacon.minor.intValue) Distance: \(proximityMessage)")
+                    print("Beacon Major = \(closestBeacon.major.intValue) BeaconMinor = \(closestBeacon.minor.intValue) Distance: \(proximityMessage)\n")
+                    debug4.text = proximityMessage
                 }
             }
         
@@ -370,7 +414,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
             if listOfPoint2Seek.count > 0, order2Search! <  listOfPoint2Seek.count {
                 let nextWP2S = listOfPoint2Seek[order2Search!]
-                self.debug4.text = "\(WP2M)"
+//                self.debug4.text = "\(WP2M)"
                 if WP2M[latValue + longValue] != nil {
                     let  alert2Post = WP2M[latValue + longValue]
                     
@@ -487,6 +531,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     // MARK: setWayPoint protocl implementation
     
+    func resetBeaconSearch() {
+        ignore4now = false
+    }
+    
     func didSetName(name: String?) {
          if pinViewSelected != nil, name != nil {
             pinViewSelected?.title = name
@@ -495,7 +543,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
          } else {
             // must be a ibeacon
             let wp2C = listOfPoint2Save?.popLast()
-            let wp2S = wayPoint(major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil)
+            let wp2S = wayPoint(UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil)
             listOfPoint2Save?.append(wp2S)
         }
     }
@@ -508,7 +556,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         } else {
             // must be a ibeacon
             let wp2C = listOfPoint2Save?.popLast()
-            let wp2S = wayPoint(major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: hint, image: wp2C?.image, order: wayPoints.count, boxes: nil)
+            let wp2S = wayPoint(UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: hint, image: wp2C?.image, order: wayPoints.count, boxes: nil)
             listOfPoint2Save?.append(wp2S)
         }
     }
@@ -523,7 +571,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         } else {
             // must be a ibeacon
             let wp2C = listOfPoint2Save?.popLast()
-            let wp2S = wayPoint(major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: wp2C?.hint, image: image, order: wayPoints.count, boxes: nil)
+            let wp2S = wayPoint(UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: wp2C?.hint, image: image, order: wayPoints.count, boxes: nil)
             listOfPoint2Save?.append(wp2S)
         }
     }
@@ -887,7 +935,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     var recordID: CKRecordID!
     
     @IBAction func newMap(_ sender: UIBarButtonItem) {
-
+        usingMode = op.recording
         let alert = UIAlertController(title: "Map Name", message: "", preferredStyle: .alert)
         alert.addTextField { (textField) in
             textField.placeholder = "Map Name"
@@ -1001,6 +1049,9 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 ckWayPointRecord.setObject(point2Save.name as CKRecordValue?, forKey: Constants.Attribute.name)
                 ckWayPointRecord.setObject(point2Save.hint as CKRecordValue?, forKey: Constants.Attribute.hint)
                 ckWayPointRecord.setObject(point2Save.boxes as CKRecordValue?, forKey:  Constants.Attribute.boxes)
+                ckWayPointRecord.setObject(point2Save.major as CKRecordValue?, forKey:  Constants.Attribute.major)
+                ckWayPointRecord.setObject(point2Save.minor as CKRecordValue?, forKey:  Constants.Attribute.minor)
+                ckWayPointRecord.setObject(point2Save.UUID as CKRecordValue?, forKey: Constants.Attribute.UUID)
                 ckWayPointRecord.setObject(p2S as CKRecordValue?, forKey: Constants.Attribute.order)
                 p2S += 1
 //                ckWayPointRecord.setParent(self.mapRecord)
@@ -1010,11 +1061,13 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             } else {
                 image2D = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
             }
-            let file2ShareURL = documentsDirectoryURL.appendingPathComponent((point2Save.name!))
+            if let _ = point2Save.name {
+                let file2ShareURL = documentsDirectoryURL.appendingPathComponent(point2Save.name!)
                 try? image2D?.write(to: file2ShareURL, options: .atomicWrite)
                 let newAsset = CKAsset(fileURL: file2ShareURL)
                 ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
-                self.records2Share.append(ckWayPointRecord)
+           }
+            self.records2Share.append(ckWayPointRecord)
         }
         
         let modifyOp = CKModifyRecordsOperation(recordsToSave:
@@ -1118,6 +1171,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     var angle2U: Double? = nil
     
 func getShare() {
+        usingMode = op.playing
         windowView = .points
         mapView.alpha = 0.7
         listOfPoint2Seek = []
@@ -1193,11 +1247,11 @@ func getShare() {
     let when = DispatchTime.now() + Double(4)
     DispatchQueue.main.asyncAfter(deadline: when){
 
-        for points in listOfPoint2Seek {
-            let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
-            let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
-            print("listOfPoint2Seek \(long) \(lat)")
-        }
+//        for points in listOfPoint2Seek {
+//            let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
+//            let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
+//            print("listOfPoint2Seek \(long) \(lat)")
+//        }
         self.lowLabel.isHidden = false
         self.highLabel.isHidden = false
         self.nextLocation2Show()
@@ -1217,46 +1271,81 @@ func getShare() {
     private func buildWaypoint(record2U: CKRecord) {
         let longitude = record2U.object(forKey:  Constants.Attribute.longitude) as? Double
         let latitude = record2U.object(forKey:  Constants.Attribute.latitude) as? Double
+        let major = record2U.object(forKey: Constants.Attribute.major) as? Int
+        let minor = record2U.object(forKey: Constants.Attribute.minor) as? Int
+        globalUUID = record2U.object(forKey: Constants.Attribute.UUID) as? String
+        // need to make an allowance if not a gps, but a ibeacon
+        let filterMajor2S = listOfPoint2Seek.filter { $0.major == major }
+        let filterMinor2S = listOfPoint2Seek.filter { $0.minor == minor }
         let filterLatitude2S = listOfPoint2Seek.filter { $0.coordinates?.latitude == latitude }
         let filterLongitude2S = listOfPoint2Seek.filter { $0.coordinates?.longitude == longitude }
         // Basically if you already find waypoint, don't readd it to the map/database
-        if filterLatitude2S.count == 0, filterLongitude2S.count == 0 {
+        if filterLatitude2S.count == 0 || filterMajor2S.count == 0, filterLongitude2S.count == 0 || filterMinor2S.count == 0 {
             parentID = record2U.parent
             let name = record2U.object(forKey:  Constants.Attribute.name) as? String
             let hint = record2U.object(forKey:  Constants.Attribute.hint) as? String
             let order = record2U.object(forKey:  Constants.Attribute.order) as? Int
             let boxes = record2U.object(forKey: Constants.Attribute.boxes) as? [CLLocation]
-            let wp2S = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil, order: order, boxes: boxes)
+            if major == nil {
+                let wp2S = wayPoint(UUID: nil, major:major, minor: minor, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil, order: order, boxes: boxes)
+                 listOfPoint2Seek.append(wp2S)
+            } else {
+                let wp2S = wayPoint(UUID: globalUUID, major:major, minor: minor, proximity: nil, coordinates: nil, name: name, hint: hint, image: nil, order: order, boxes: nil)
+                listOfPoint2Seek.append(wp2S)
+                // set this just in case you want to define more ibeacons
+                let k2U = String(minor!) + String(major!)
+                beaconsInTheBag[k2U] = true
+                WP2M[k2U] = name
+            }
             self.plotPin(pin2P: record2U)
-            let region2M = self.region(withPins: record2U)
-            self.addRadiusOverlay(forGeotification: record2U)
-            self.locationManager?.startMonitoring(for: region2M)
-            listOfPoint2Seek.append(wp2S)
+//            let region2M = self.region(withPins: record2U)
+//            self.addRadiusOverlay(forGeotification: record2U)
+//            self.locationManager?.startMonitoring(for: region2M)
+           
             DispatchQueue.main.async {
-                for boxes2D in boxes! {
-                    self.drawBox(Cords2E: boxes2D.coordinate, boxColor: UIColor.red)
-                    let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
-                    let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
-                    WP2M[wp2FLat+wp2FLog] = name
+                if boxes != nil {
+                    for boxes2D in boxes! {
+                        self.drawBox(Cords2E: boxes2D.coordinate, boxColor: UIColor.red)
+                        let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
+                        let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
+                        WP2M[wp2FLat+wp2FLog] = name
+                    }
                 }
             }
         }
     }
     
     private func nextLocation2Show() {
+        
         if order2Search == 0, usingMode == op.playing {
             // do splash
         }
         if order2Search! < listOfPoint2Seek.count, usingMode == op.playing {
             let nextWP2S = listOfPoint2Seek[(order2Search!)]
-            self.longitudeNextLabel.text = self.getLocationDegreesFrom(longitude: (nextWP2S.coordinates?.longitude)!)
-            self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
-            self.nextLocation = CLLocationCoordinate2DMake((nextWP2S.coordinates?.latitude)!, (nextWP2S.coordinates?.longitude)!)
-            self.angle2U = self.getBearing(toPoint: self.nextLocation, longitude:  (self.locationManager?.location?.coordinate.longitude)!, latitude:  (self.locationManager?.location?.coordinate.latitude)!)
-            self.hintLabel.text = nextWP2S.hint
-            self.nameLabel.text = nextWP2S.name
-            self.hintLabel.isHidden = false
-            self.nameLabel.isHidden = false
+            if nextWP2S.UUID == "" {
+                self.longitudeNextLabel.text = self.getLocationDegreesFrom(longitude: (nextWP2S.coordinates?.longitude)!)
+                self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
+                self.nextLocation = CLLocationCoordinate2DMake((nextWP2S.coordinates?.latitude)!, (nextWP2S.coordinates?.longitude)!)
+                self.angle2U = self.getBearing(toPoint: self.nextLocation, longitude:  (self.locationManager?.location?.coordinate.longitude)!, latitude:  (self.locationManager?.location?.coordinate.latitude)!)
+                self.hintLabel.text = nextWP2S.hint
+                self.nameLabel.text = nextWP2S.name
+                self.hintLabel.isHidden = false
+                self.nameLabel.isHidden = false
+                self.latitudeNextLabel.isHidden = false
+                self.longitudeNextLabel.isHidden = false
+                self.highLabel.text = "[You need to be here]"
+                self.centerImage.image = UIImage(named: "compassClip")
+            } else {
+                    // you have a beacon record
+                    self.centerImage.image = UIImage(named: "ibeacon-logo")
+                    self.hintLabel.text = nextWP2S.hint
+                    self.nameLabel.text = nextWP2S.name
+                    self.hintLabel.isHidden = false
+                    self.nameLabel.isHidden = false
+                    self.latitudeNextLabel.isHidden = true
+                    self.longitudeNextLabel.isHidden = true
+                    self.highLabel.text = "<You need to search>"
+                }
         } else {
             // do finale
         }
@@ -1322,7 +1411,7 @@ func getShare() {
         if segue.identifier == Constants.EditUserWaypoint, trigger == point.ibeacon {
             let ewvc = destination as? EditWaypointController
              let wayNames = Array(wayPoints.keys)
-            let uniqueName = "UUID".madeUnique(withRespectTo: wayNames)
+            let uniqueName = "UUID".madeUnique(withRespectTo: beaconsLogged)
             ewvc?.nameText =  uniqueName
             ewvc?.hintText = "ibeacon"
             ewvc?.setWayPoint = self
@@ -1349,7 +1438,7 @@ func getShare() {
                 return value2U.name == waypoint2U.title
             }
             let wp2F = wp2Fix.values.first
-            let waypoint2A = wayPoint(major:wp2F?.major, minor: wp2F?.minor,proximity: nil, coordinates: waypoint2U.coordinate, name: wp2F?.name, hint: wp2F?.hint, image: image2U, order: wayPoints.count, boxes:wp2F?.boxes)
+            let waypoint2A = wayPoint(UUID: wp2F?.UUID, major:wp2F?.major, minor: wp2F?.minor,proximity: nil, coordinates: waypoint2U.coordinate, name: wp2F?.name, hint: wp2F?.hint, image: image2U, order: wayPoints.count, boxes:wp2F?.boxes)
             wayPoints[waypoint2U.title!] = waypoint2A
         }
     }
@@ -1358,7 +1447,7 @@ func getShare() {
         if sender.state == .began {
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
             let wayNames = Array(wayPoints.keys)
-            let uniqueName = "Clue".madeUnique(withRespectTo: wayNames)
+            let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
            let waypoint2 = MKPointAnnotation()
           waypoint2.coordinate  = coordinate
           waypoint2.title = uniqueName
@@ -1377,7 +1466,7 @@ func getShare() {
                 self.mapView.addAnnotation(waypoint2)
 //                self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
                 let boxes = self.doBoxV2(latitude2D: coordinate.latitude, longitude2D: coordinate.longitude, name: uniqueName)
-                let newWayPoint = wayPoint(major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: wayPoints.count, boxes: boxes)
+                let newWayPoint = wayPoint(UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: wayPoints.count, boxes: boxes)
                 wayPoints[uniqueName] = newWayPoint
                 listOfPoint2Save?.append(newWayPoint)
             }
@@ -1387,6 +1476,7 @@ func getShare() {
     // MARK: Popover Delegate
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+        ignore4now = false
     }
     
      @IBOutlet weak var hideView: HideView!
@@ -1505,6 +1595,8 @@ func getShare() {
     }
     
     private func plotPin(pin2P: CKRecord) {
+        let UUID = pin2P.object(forKey:  Constants.Attribute.UUID) as? String
+        if UUID == "" {
         DispatchQueue.main.async() {
             let longitude = pin2P.object(forKey:  Constants.Attribute.longitude) as? Double
             let latitude = pin2P.object(forKey:  Constants.Attribute.latitude) as? Double
@@ -1531,7 +1623,7 @@ func getShare() {
                 self.mapView.addAnnotation(waypoint)
             }
         }
-        
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -1589,6 +1681,7 @@ func getShare() {
             static let mapLinks = "mapLinks"
         }
         struct Attribute {
+            static let UUID = "UUID"
             static let minor = "minor"
             static let major = "major"
             static let proximity = "proximity"
