@@ -224,12 +224,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
 //        var shouldHideBeaconDetails = true
-        
+        print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)\n")
         if beacons.count > 0, usingMode == op.recording {
             let beacons2S = beacons.filter { $0.proximity != CLProximity.unknown }
             if beacons2S.count > 0 {
                 if let closestBeacon = beacons2S[0] as? CLBeacon {
-                    if !ignore4now {
+//                    if !ignore4now {
 //                        ignore4now = true
                         let k2U = closestBeacon.minor.stringValue + closestBeacon.major.stringValue
 //                        let filterMinor2S = listOfPoint2Save?.filter { $0.minor! as NSNumber == closestBeacon.minor }
@@ -249,7 +249,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         }
                     }
                 }
-            }
+//            }
         }
         
         if beacons.count > 0, usingMode == op.playing {
@@ -1039,6 +1039,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         operationQueue.waitUntilAllOperationsAreFinished()
         
 //        var rec2Save:[CKRecord] = []
+        print("fcuk26062018 listOfPoint2Save \(listOfPoint2Save)")
         var p2S = 0
         for point2Save in listOfPoint2Save! {
 //            let operation1 = BlockOperation {
@@ -1210,6 +1211,7 @@ func getShare() {
                 print("error \(error)")
             }
             for record in records! {
+                print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
             }
         }
@@ -1239,6 +1241,7 @@ func getShare() {
                 print("error \(error)")
             }
             for record in records! {
+                print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
             }
             
@@ -1275,12 +1278,12 @@ func getShare() {
         let minor = record2U.object(forKey: Constants.Attribute.minor) as? Int
         globalUUID = record2U.object(forKey: Constants.Attribute.UUID) as? String
         // need to make an allowance if not a gps, but a ibeacon
-        let filterMajor2S = listOfPoint2Seek.filter { $0.major == major }
-        let filterMinor2S = listOfPoint2Seek.filter { $0.minor == minor }
+//        let filterMajor2S = listOfPoint2Seek.filter { $0.major == major }
+//        let filterMinor2S = listOfPoint2Seek.filter { $0.minor == minor }
         let filterLatitude2S = listOfPoint2Seek.filter { $0.coordinates?.latitude == latitude }
         let filterLongitude2S = listOfPoint2Seek.filter { $0.coordinates?.longitude == longitude }
         // Basically if you already find waypoint, don't readd it to the map/database
-        if filterLatitude2S.count == 0 || filterMajor2S.count == 0, filterLongitude2S.count == 0 || filterMinor2S.count == 0 {
+//        if filterLatitude2S.count == 0 , filterLongitude2S.count == 0 {
             parentID = record2U.parent
             let name = record2U.object(forKey:  Constants.Attribute.name) as? String
             let hint = record2U.object(forKey:  Constants.Attribute.hint) as? String
@@ -1311,7 +1314,7 @@ func getShare() {
                         WP2M[wp2FLat+wp2FLog] = name
                     }
                 }
-            }
+//            }
         }
     }
     
