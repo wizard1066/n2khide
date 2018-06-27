@@ -318,43 +318,38 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="5Hf-VB-lXi">
                         <leftBarButtonItems>
-                            <barButtonItem title="View" id="8SY-yb-OLF">
+                            <barButtonItem systemItem="organize" id="8SY-yb-OLF">
                                 <connections>
                                     <segue destination="Uiy-VE-yg6" kind="popoverPresentation" identifier="Table Waypoint" popoverAnchorBarButtonItem="8SY-yb-OLF" id="AJ9-fT-sgz">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                                     </segue>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="New" id="7Tj-8q-gGU">
+                            <barButtonItem systemItem="add" id="7Tj-8q-gGU">
                                 <connections>
                                     <action selector="newMap:" destination="17o-cH-NIh" id="gFJ-wp-SDu"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Scan" id="gau-6O-lj9">
+                            <barButtonItem systemItem="camera" id="gau-6O-lj9">
                                 <connections>
                                     <segue destination="D55-Yg-gKr" kind="show" identifier="Scan VC" id="lDr-mI-aY8"/>
                                 </connections>
                             </barButtonItem>
                         </leftBarButtonItems>
                         <rightBarButtonItems>
-                            <barButtonItem title="Share" id="hBl-mB-9A3">
+                            <barButtonItem systemItem="action" id="hBl-mB-9A3">
                                 <connections>
                                     <action selector="ShareButton2:" destination="17o-cH-NIh" id="0Vk-FL-SrB"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Play" id="HSj-4F-8zi">
+                            <barButtonItem systemItem="play" id="HSj-4F-8zi">
                                 <connections>
                                     <action selector="FetchShare:" destination="17o-cH-NIh" id="hGt-zJ-ZlS"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Pin" id="5rp-DO-9vb">
+                            <barButtonItem systemItem="compose" id="5rp-DO-9vb">
                                 <connections>
                                     <action selector="pinButton:" destination="17o-cH-NIh" id="HJf-qv-h5X"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem title="Zones" id="Ibr-gd-DSe">
-                                <connections>
-                                    <action selector="listZones:" destination="17o-cH-NIh" id="NgT-Ok-QvS"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
