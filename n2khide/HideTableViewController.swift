@@ -21,7 +21,18 @@ class HideTableViewController: UITableViewController {
     private var shadowTable:[wayPoint?]? = []
     
     @objc func switchTable() {
+        print("switchin")
         if windowView == .points {
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage (named: "map_marker"), for: .normal)
+            button.frame = CGRect(x: 0.0, y: 0.0, width: 35.0, height: 35.0)
+            button.addTarget(self, action: #selector(switchTable), for: .touchUpInside)
+            
+            let barButtonItem = UIBarButtonItem(customView: button)
+            
+            self.navigationItem.leftBarButtonItems = [barButtonItem]
+            
+            
             if listOfPoint2Seek.count > 0 {
                 shadowTable = listOfPoint2Seek
             }
@@ -44,6 +55,18 @@ class HideTableViewController: UITableViewController {
             privateDB.add(operation)
         } else {
             windowView = .points
+            
+//            let closeButtonImage = UIImage(named: "ic_close_white")
+//            navigationItem.rightBarButtonItem = UIBarButtonItem(image: closeButtonImage, style: .plain, target: self, action:  #selector(ResetPasswordViewController.barButtonDidTap(_:)))
+
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage (named: "marker"), for: .normal)
+            button.frame = CGRect(x: 0.0, y: 0.0, width: 35.0, height: 35.0)
+            button.addTarget(self, action: #selector(switchTable), for: .touchUpInside)
+            
+            let barButtonItem = UIBarButtonItem(customView: button)
+            
+            self.navigationItem.leftBarButtonItems = [barButtonItem]
             listOfPoint2Seek = shadowTable! as! [wayPoint]
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -67,7 +90,15 @@ class HideTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
         self.navigationItem.rightBarButtonItem = self.editButtonItem
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(switchTable))
+//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(switchTable))
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage (named: "marker"), for: .normal)
+        button.frame = CGRect(x: 0.0, y: 0.0, width: 35.0, height: 35.0)
+        button.addTarget(self, action: #selector(switchTable), for: .touchUpInside)
+
+        let barButtonItem = UIBarButtonItem(customView: button)
+        
+        self.navigationItem.leftBarButtonItems = [barButtonItem]
     }
 
     override func didReceiveMemoryWarning() {
