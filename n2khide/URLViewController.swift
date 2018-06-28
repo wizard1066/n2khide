@@ -9,10 +9,12 @@
 import UIKit
 import WebKit
 
-class URLViewController: UIViewController, WKNavigationDelegate, UISearchBarDelegate {
+class URLViewController: UIViewController, WKNavigationDelegate, UISearchBarDelegate, UIWebViewDelegate, WKUIDelegate {
     
     weak var firstViewController: HiddingViewController?
     
+    
+
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -36,7 +38,11 @@ class URLViewController: UIViewController, WKNavigationDelegate, UISearchBarDele
     override func viewDidLoad() {
         super.viewDidLoad()
         webView.navigationDelegate = self
+        webView.uiDelegate = self
         searchBar.delegate = self
+        
+        webView.configuration.preferences.javaScriptEnabled = true
+        
         
         let rightBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(save))
         navigationItem.rightBarButtonItem = rightBarButton
@@ -46,6 +52,10 @@ class URLViewController: UIViewController, WKNavigationDelegate, UISearchBarDele
 //        webView.allowsBackForwardNavigationGestures = true
 
         // Do any additional setup after loading the view.
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print(error)
     }
 
     override func didReceiveMemoryWarning() {

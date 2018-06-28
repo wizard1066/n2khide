@@ -121,29 +121,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <wkWebView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="W5e-LP-vLV">
-                                <rect key="frame" x="20" y="118" width="728" height="886"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <wkWebViewConfiguration key="configuration">
-                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                    <wkPreferences key="preferences"/>
-                                </wkWebViewConfiguration>
-                            </wkWebView>
-                            <wkWebView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y8w-15-jeW">
-                                <rect key="frame" x="20" y="118" width="728" height="886"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <wkWebViewConfiguration key="configuration">
-                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                                    <wkPreferences key="preferences"/>
-                                </wkWebViewConfiguration>
-                            </wkWebView>
                             <searchBar contentMode="redraw" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2RJ-nT-yo2">
                                 <rect key="frame" x="0.0" y="62" width="768" height="56"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
+                            <wkWebView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cy8-AZ-Hbp">
+                                <rect key="frame" x="126" y="132" width="516" height="512"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="SFv-gW-Ajv"/>
@@ -152,7 +143,7 @@
                     <connections>
                         <outlet property="searchBar" destination="2RJ-nT-yo2" id="ork-Ak-BLU"/>
                         <outlet property="searchDisplayController" destination="leu-n9-U0b" id="xdx-8d-ZMM"/>
-                        <outlet property="webView" destination="Y8w-15-jeW" id="bbl-kW-vHF"/>
+                        <outlet property="webView" destination="cy8-AZ-Hbp" id="Q57-e2-b5B"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lYi-Et-1PP" userLabel="First Responder" sceneMemberID="firstResponder"/>
