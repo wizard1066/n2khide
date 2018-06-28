@@ -63,14 +63,17 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
             let wayNames = Array(wayPoints.keys)
             let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
+            
             let waypoint2 = MyPointAnnotation()
             waypoint2.coordinate  = userLocation
             waypoint2.title = uniqueName
+            MKPinAnnotationView.greenPinColor()
+            
             let wp2FLat = self.getLocationDegreesFrom(latitude: waypoint2.coordinate.latitude)
             let wp2FLog = self.getLocationDegreesFrom(longitude: waypoint2.coordinate.longitude)
             let hint2D = wp2FLat + wp2FLog
             waypoint2.subtitle = hint2D
-            waypoint2.pinTintColor = UIColor.green
+            
             updateWayname(waypoint2U: waypoint2, image2U: nil)
             mapView.addAnnotation(waypoint2)
              let boxes = self.doBoxV2(latitude2D: waypoint2.coordinate.latitude, longitude2D: waypoint2.coordinate.longitude, name: uniqueName)
@@ -78,10 +81,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             wayPoints[uniqueName] = newWayPoint
             listOfPoint2Save?.append(newWayPoint)
         }
-    }
-    
-    @IBAction func listZones(_ sender: Any) {
-        let zoneList = listAllZones()
     }
     
     private func listAllZones() -> [String:CKRecordZoneID] {
@@ -158,10 +157,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     
     private func doPin(cord2D: CLLocationCoordinate2D, title: String) {
-        let pin = MyPointAnnotation()
-        pin.coordinate  = cord2D
-        pin.title = title
-        mapView.addAnnotation(pin)
+        DispatchQueue.main.async() {
+            let pin = MyPointAnnotation()
+            pin.coordinate  = cord2D
+            pin.title = title
+            self.mapView.addAnnotation(pin)
+        }
     }
     
     // MARK: // iBeacon code
@@ -278,6 +279,15 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                             self.hintLabel.text = nextWP2S.hint
                             self.orderLabel.text = String(order2Search!)
                             if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
+                            UIView.animate(withDuration: 8, animations: {
+                                image2Show.alpha = 0
+                                self.hintLabel.alpha = 0
+                            }, completion: { (result) in
+                                image2Show.removeFromSuperview()
+                                self.hintLabel.text = ""
+                                self.hintLabel.alpha = 1
+                                self.nextLocation2Show()
+                            })
                         }))
                         self.present(alert, animated: true, completion: nil)
                     }
@@ -855,29 +865,42 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     }
     
     class MyPointAnnotation : MKPointAnnotation {
-        var pinTintColor: UIColor?
+//        var pinColor: UIColor
+//
+//        init(pinColor: UIColor) {
+//            self.pinColor = pinColor
+//            super.init()
+//        }
+        var tintColor: UIColor?
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         //check annotation is not user location
-        let userLongitude = mapView.userLocation.coordinate.longitude
-        let userLatitiude = mapView.userLocation.coordinate.latitude
-        if annotation.coordinate.longitude == userLongitude, annotation.coordinate.latitude == userLatitiude {
+//        let userLongitude = mapView.userLocation.coordinate.longitude
+//        let userLatitiude = mapView.userLocation.coordinate.latitude
+//        if annotation.coordinate.longitude == userLongitude, annotation.coordinate.latitude == userLatitiude {
+//            return nil
+//        }
+        if annotation is MKUserLocation {
             return nil
         }
-    
-        var view: MKAnnotationView! = mapView.dequeueReusableAnnotationView(withIdentifier: Constants.AnnotationViewReuseIdentifier)
+        var view: MKAnnotationView! = mapView.dequeueReusableAnnotationView(withIdentifier: Constants.AnnotationViewReuseIdentifier) as? MKPinAnnotationView
         if view == nil {
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: Constants.AnnotationViewReuseIdentifier)
-
             view.canShowCallout = true
+//            let colorPointAnnotation = annotation as! MyPointAnnotation
+            view.tintColor = .blue
+            
         } else {
             view.annotation = annotation
+            view?.tintColor = .green
         }
         view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
         view.leftCalloutAccessoryView  = UIButton(frame: Constants.LeftCalloutFrame)
+        
      
         view.isDraggable = true
+        
         return view
     }
     
@@ -1304,11 +1327,16 @@ func getShare() {
             let hint = record2U.object(forKey:  Constants.Attribute.hint) as? String
             let order = record2U.object(forKey:  Constants.Attribute.order) as? Int
             let boxes = record2U.object(forKey: Constants.Attribute.boxes) as? [CLLocation]
+            let file : CKAsset? = record2U.object(forKey: Constants.Attribute.imageData) as? CKAsset
+            var image2D: UIImage!
+            if let data = NSData(contentsOf: (file?.fileURL)!) {
+                image2D = UIImage(data: data as Data)
+            }
             if major == nil {
-                let wp2S = wayPoint(UUID: nil, major:major, minor: minor, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: nil, order: order, boxes: boxes)
+                let wp2S = wayPoint(UUID: nil, major:major, minor: minor, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: image2D, order: order, boxes: boxes)
                  listOfPoint2Seek.append(wp2S)
             } else {
-                let wp2S = wayPoint(UUID: globalUUID, major:major, minor: minor, proximity: nil, coordinates: nil, name: name, hint: hint, image: nil, order: order, boxes: nil)
+                let wp2S = wayPoint(UUID: globalUUID, major:major, minor: minor, proximity: nil, coordinates: nil, name: name, hint: hint, image: image2D, order: order, boxes: nil)
                 listOfPoint2Seek.append(wp2S)
                 // set this just in case you want to define more ibeacons
                 let k2U = String(minor!) + String(major!)
@@ -1466,20 +1494,18 @@ func getShare() {
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
             let wayNames = Array(wayPoints.keys)
             let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
-           let waypoint2 = MKPointAnnotation()
+//           let waypoint2 = MKPointAnnotation()
+            let waypoint2 = MyPointAnnotation()
           waypoint2.coordinate  = coordinate
           waypoint2.title = uniqueName
+            waypoint2.tintColor = .purple
             let wp2FLat = self.getLocationDegreesFrom(latitude: coordinate.latitude)
             let wp2FLog = self.getLocationDegreesFrom(longitude: coordinate.longitude)
           waypoint2.subtitle = wp2FLat + wp2FLog
             updateWayname(waypoint2U: waypoint2, image2U: nil)
             
             let hint2D = wp2FLat + wp2FLog
-            
-            
-//            let wp2FLat = getLocationDegreesFrom(latitude: coordinate.latitude)
-//            let wp2FLog = getLocationDegreesFrom(longitude: coordinate.longitude)
-//            WP2M[wp2FLat+wp2FLog] = uniqueName
+
             DispatchQueue.main.async() {
                 self.mapView.addAnnotation(waypoint2)
 //                self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
@@ -1681,6 +1707,39 @@ func getShare() {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        // do something
+        return traitCollection.horizontalSizeClass == .compact ? UIModalPresentationStyle.overFullScreen : .none
+    }
+    
+    @objc func byebye() {
+        self.dismiss(animated: true, completion: nil)
+    }
+  
+    
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        
+        if style == .fullScreen || style == .overFullScreen {
+            let navcon = UINavigationController(rootViewController: controller.presentedViewController)
+//            let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))
+//            visualEffectView.frame = navcon.view.bounds
+//            visualEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//            visualEffectView.backgroundColor = UIColor.clear
+//            navcon.view.insertSubview(visualEffectView, at: 0)
+            
+            let maskView = UIView()
+            maskView.backgroundColor = UIColor(white: 1,  alpha: 0.5) //you can modify this to whatever you need
+            maskView.frame = navcon.view.bounds
+            maskView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            navcon.view.insertSubview(maskView, at: 0)
+             let rightBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(byebye))
+            controller.presentedViewController.navigationItem.rightBarButtonItem = rightBarButton
+            return navcon
+        } else {
+            return nil
+        }
     }
     
     

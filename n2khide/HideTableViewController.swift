@@ -87,9 +87,27 @@ class HideTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
+    @objc func byebye() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    override func setEditing (_ editing:Bool, animated:Bool)
+    {
+        super.setEditing(editing,animated:animated)
+        if(self.isEditing)
+        {
+            self.editButtonItem.title = "Back"
+        } else {
+            self.editButtonItem.title = "Reorder"
+        }
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
-        self.navigationItem.rightBarButtonItem = self.editButtonItem
+        
+         let doneBarB = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(byebye))
+        self.editButtonItem.title = "Reorder"
+        self.navigationItem.rightBarButtonItems = [ doneBarB , self.editButtonItem]
 //        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(switchTable))
         let button = UIButton(type: .custom)
         button.setImage(UIImage (named: "marker"), for: .normal)
@@ -97,7 +115,7 @@ class HideTableViewController: UITableViewController {
         button.addTarget(self, action: #selector(switchTable), for: .touchUpInside)
 
         let barButtonItem = UIBarButtonItem(customView: button)
-        
+        self.navigationItem.rightBarButtonItem!.title = "Back"
         self.navigationItem.leftBarButtonItems = [barButtonItem]
     }
 
