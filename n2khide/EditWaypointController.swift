@@ -13,7 +13,6 @@ protocol  setWayPoint  {
     func didSetName(name: String?)
     func didSetHint(hint: String?)
     func didSetImage(image: UIImage?)
-    func resetBeaconSearch()
 }
 
 class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -22,11 +21,16 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     
     //MARK: Camera and Library routines
 
+    @IBAction func webButton(_ sender: Any) {
+        performSegue(withIdentifier: "URLWindow", sender: view)
+    }
+    
     @IBOutlet weak var CameraButton: UIButton! {
         didSet {
             CameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         }
     }
+    
     @IBAction func Camera(_ sender: Any) {
         let picker = UIImagePickerController()
         picker.sourceType = .camera
@@ -38,7 +42,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.presentingViewController?.dismiss(animated: true, completion: {
-            self.setWayPoint.resetBeaconSearch()
+            // code
         })
     }
     
@@ -50,7 +54,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
             }
         }
         picker.presentingViewController?.dismiss(animated: true, completion: {
-            self.setWayPoint.resetBeaconSearch()
+            // code
         })
     }
     

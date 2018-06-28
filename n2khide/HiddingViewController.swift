@@ -218,7 +218,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //        lblBeaconDetails.hidden = true
     }
     
-    var ignore4now = false
     
     var beaconsInTheBag:[String:Bool?] = [:]
     var beaconsLogged:[String] = []
@@ -230,11 +229,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let beacons2S = beacons.filter { $0.proximity != CLProximity.unknown }
             if beacons2S.count > 0 {
                 if let closestBeacon = beacons2S[0] as? CLBeacon {
-//                    if !ignore4now {
-//                        ignore4now = true
                         let k2U = closestBeacon.minor.stringValue + closestBeacon.major.stringValue
-//                        let filterMinor2S = listOfPoint2Save?.filter { $0.minor! as NSNumber == closestBeacon.minor }
-//                        let filterMajor2S = listOfPoint2Save?.filter { $0.major! as NSNumber == closestBeacon.major }
                         print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)")
                         if beaconsInTheBag[k2U] == nil {
                             beaconsInTheBag[k2U] = true
@@ -250,7 +245,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         }
                     }
                 }
-//            }
         }
         
         if beacons.count > 0, usingMode == op.playing {
@@ -264,7 +258,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     
                     if alert2Post == nextWP2S.name {
                         let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
-                        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) in
+//                        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) in
                             WP2M[k2U] = nil
                             let image2Show = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
                             image2Show.image = nextWP2S.image
@@ -288,7 +282,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                                 self.hintLabel.alpha = 1
                                 self.nextLocation2Show()
                             })
-                        }))
+//                        }))
+                            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                         self.present(alert, animated: true, completion: nil)
                     }
 //                    let wayPointRec = wayPoints[alert2Post!]
@@ -556,9 +551,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     // MARK: setWayPoint protocl implementation
     
-    func resetBeaconSearch() {
-        ignore4now = false
-    }
     
     func didSetName(name: String?) {
          if pinViewSelected != nil, name != nil {
@@ -1475,6 +1467,10 @@ func getShare() {
             let svc = destination as? ScannerViewController
             svc?.firstViewController = self
         }
+        if segue.identifier == Constants.URLViewController {
+            let uvc = destination as? URLViewController
+                uvc?.firstViewController = self
+        }
     }
     
     private func updateWayname(waypoint2U: MKPointAnnotation, image2U: UIImage?) {
@@ -1520,7 +1516,7 @@ func getShare() {
     // MARK: Popover Delegate
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-        ignore4now = false
+        // code
     }
     
      @IBOutlet weak var hideView: HideView!
@@ -1715,7 +1711,10 @@ func getShare() {
     }
     
     @objc func byebye() {
-        self.dismiss(animated: true, completion: nil)
+//        self.dismiss(animated: true, completion: nil)
+        presentingViewController?.dismiss(animated: true, completion: {
+            // code
+        })
     }
   
     
@@ -1752,6 +1751,7 @@ func getShare() {
         static let EditUserWaypoint = "Edit Waypoint"
         static let TableWaypoint = "Table Waypoint"
         static let ScannerViewController = "Scan VC"
+        static let URLViewController = "URLWindow"
         
         struct Entity {
             static let wayPoints = "wayPoints"
