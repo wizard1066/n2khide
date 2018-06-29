@@ -36,6 +36,7 @@ var parentID: CKReference?
 
 var zoneTable:[String:CKRecordZoneID] = [:]
 var WP2M:[String:String] = [:]
+var WP2P:[String:MKOverlay] = [:]
 var order2Search:Int?  = nil
 var order2SaveIndex:Int? = nil
 

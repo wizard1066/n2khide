@@ -59,7 +59,16 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 
  
     @IBOutlet weak var pin: UIBarButtonItem!
-
+    @IBAction func debug(_ sender: Any) {
+        // fuck
+        for overlays in mapView.overlays {
+            print("fcuk2962018 overlay \(overlays.coordinate)\n")
+        }
+        for (k2U, V2U) in WP2P {
+            print("\(k2U) \(V2U.coordinate.longitude) \(V2U.coordinate.latitude)\n")
+        }
+    }
+    
     @IBAction func pinButton(_ sender: Any) {
         if currentLocation != nil {
             let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
@@ -678,32 +687,42 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latD, longitude: longD)
     }
     
-    private func drawBox(Cords2E: CLLocationCoordinate2D,  boxColor: UIColor) {
+    private func drawBox(Cords2E: CLLocationCoordinate2D,  boxColor: UIColor) -> MKOverlay {
         var cords2D:[CLLocationCoordinate2D] = []
+        
         let SWLatitude = Cords2E.latitude - Constants.Variable.magic
         let SWLongitude = Cords2E.longitude - Constants.Variable.magic
         var cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
+        
         //        doPin(cord2D: cord2U, title: "SW")
         cords2D.append(cord2U)
         let NWLatitude = Cords2E.latitude + Constants.Variable.magic
         cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: SWLongitude)
+       
         //        doPin(cord2D: cord2U, title: "NW")
         cords2D.append(cord2U)
         let NELongitude = Cords2E.longitude + Constants.Variable.magic
         cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: NELongitude)
+        
 //        doPin(cord2D: cord2U, title: "NE")
         cords2D.append(cord2U)
         cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: NELongitude)
         //        doPin(cord2D: cord2U, title: "SE")
+        
         cords2D.append(cord2U)
         cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
         cords2D.append(cord2U)
-        let polyLine = MKPolyline(coordinates: &cords2D, count: cords2D.count)
+        
+        let polyLine:MKOverlay = MKPolyline(coordinates: &cords2D, count: cords2D.count)
+//        let polygon:MKOverlay = MKPolygon(coordinates: &cords2D, count: cords2D.count)
         
         DispatchQueue.main.async {
             self.polyColor = boxColor
             self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
+//            self.mapView.add(polygon, level: MKOverlayLevel.aboveRoads)
         }
+        return polyLine
+//        return polygon
     }
     
     private func doBoxV2(latitude2D: Double, longitude2D: Double, name: String) -> [CLLocation]
@@ -714,42 +733,56 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         if latitude2D + (Constants.Variable.magic/2)  > latitude2D {
             var cords2U = convert2nB(latitude2D: latitude2D + (Constants.Variable.magic*1.5), longitude2D: longitude2D, name2U: name)
             var cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
+            
             boxes2R.append(cords2F)
-            drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
+            var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
+       WP2P["blue"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D, name2U: name)
            cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
-            boxes2R.append(cords2F)
-            drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
             
+            boxes2R.append(cords2F)
+            poly2F =  drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
+WP2P["orange"] = poly2F
         } else {
             var cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D, name2U: name)
             var cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
+           
             boxes2R.append(cords2F)
-            drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
+             var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
+WP2P["yellow"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D - (Constants.Variable.magic * 1.5), longitude2D: longitude2D, name2U: name)
             cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
+            
             boxes2R.append(cords2F)
-            drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
-
+             poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
+WP2P["red"] = poly2F
         }
         if longitude2D + (Constants.Variable.magic/2) > longitude2D  {
             var cords2U = convert2nB(latitude2D: latitude2D + Constants.Variable.magic * 1.5, longitude2D: longitude2D + Constants.Variable.magic * 1.5, name2U: name)
             var cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
+            
             boxes2R.append(cords2F)
-            drawBox(Cords2E: cords2U, boxColor: UIColor.green)
+             var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.green)
+WP2P["purple"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D + Constants.Variable.magic * 1.5, name2U: name)
             cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
+           
             boxes2R.append(cords2F)
-            drawBox(Cords2E: cords2U, boxColor: UIColor.red)
+                poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.red)
+WP2P["pink"] = poly2F
         } else {
             var cords2U = convert2nB(latitude2D: latitude2D - Constants.Variable.magic * 1.5, longitude2D: longitude2D - Constants.Variable.magic * 1.5, name2U: name)
             var cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
+            
             boxes2R.append(cords2F)
-            drawBox(Cords2E: cords2U, boxColor: UIColor.green)
+             var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.green)
+            WP2P["cyan"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D - Constants.Variable.magic * 1.5, name2U: name)
+            
             cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
             boxes2R.append(cords2F)
-            drawBox(Cords2E: cords2U, boxColor: UIColor.red)
+             poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.red)
+WP2P["brown"] = poly2F
         }
         
 //        let SWLatitude = latitude2D - Constants.Variable.magic
@@ -855,6 +888,10 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
 //        }
 //    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, didChange newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+        let pinMoving = view.annotation?.title
+    }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         print("mapview region changed")
@@ -1559,6 +1596,7 @@ func getShare() {
                 self.mapView.addAnnotation(waypoint2)
 //                self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
                 let boxes = self.doBoxV2(latitude2D: coordinate.latitude, longitude2D: coordinate.longitude, name: uniqueName)
+                
                 let newWayPoint = wayPoint(UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: wayPoints.count, boxes: boxes, challenge: nil)
                 wayPoints[uniqueName] = newWayPoint
                 print("fcuk29062018 \(wayPoints) \(uniqueName)")
