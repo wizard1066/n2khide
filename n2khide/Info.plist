@@ -60,10 +60,10 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
+		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>swisseducation.com</key>
+			<key>apple.com</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
 				<true/>
@@ -72,5 +72,7 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSAllowsArbitraryLoadsInWebContent</key>
+	<true/>
 </dict>
 </plist>

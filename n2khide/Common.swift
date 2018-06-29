@@ -25,6 +25,7 @@ struct wayPoint {
         var image: UIImage?
         var order: Int?
         var boxes:[CLLocation?]?
+        var challenge: String?
 //        var imageAsset: CKAsset?
     }
 

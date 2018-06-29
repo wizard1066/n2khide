@@ -44,7 +44,7 @@ class HideTableViewController: UITableViewController {
                     print(error?.localizedDescription.debugDescription)
                 }
                 for rex in records! {
-                    let rex2S = wayPoint(UUID: nil, major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil)
+                    let rex2S = wayPoint(UUID: nil, major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil, challenge: nil)
                      listOfPoint2Seek.append(rex2S)
                     zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
                 }

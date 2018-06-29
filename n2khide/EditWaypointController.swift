@@ -11,8 +11,9 @@ import MobileCoreServices
 
 protocol  setWayPoint  {
     func didSetName(name: String?)
-    func didSetHint(hint: String?)
-    func didSetImage(image: UIImage?)
+    func didSetHint(name: String?, hint: String?)
+    func didSetImage(name: String?, image: UIImage?)
+    func didSetChallenge(name: String?, challenge: String?)
 }
 
 class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -20,10 +21,6 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     var setWayPoint: setWayPoint!
     
     //MARK: Camera and Library routines
-
-    @IBAction func webButton(_ sender: Any) {
-        performSegue(withIdentifier: "URLWindow", sender: view)
-    }
     
     @IBOutlet weak var CameraButton: UIButton! {
         didSet {
@@ -50,7 +47,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
         if let image = (info[UIImagePickerControllerEditedImage] as? UIImage ?? info[UIImagePickerControllerOriginalImage] as? UIImage) {
             DispatchQueue.main.async {
                 self.updateImage(image2U: image)
-                self.setWayPoint.didSetImage(image: image)
+                self.setWayPoint.didSetImage(name: self.nameTextField.text, image: image)
             }
         }
         picker.presentingViewController?.dismiss(animated: true, completion: {
@@ -69,9 +66,11 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var hintTextField: UITextField!
+    @IBOutlet weak var challengeTextField: UITextField!
     
     var nameText: String?
     var hintText: String?
+    var challengeText: String?
     
     // MARK: View Methods
 
@@ -79,6 +78,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
         super.viewDidLoad()
         nameTextField.text = nameText
         hintTextField.text = hintText
+        challengeTextField.text = challengeText
         nameTextField.becomeFirstResponder()
         // Do any additional setup after loading the view.
     }
@@ -102,6 +102,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     
     private var namedObserver: NSObjectProtocol!
     private var hintObserver: NSObjectProtocol!
+    private var challengeObserver: NSObjectProtocol!
     
     private func listenToTextFields() {
 //        weak var presentingController = self.presentingViewController as? HiddingViewController
@@ -112,8 +113,12 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
                 self.setWayPoint.didSetName(name: self.nameTextField.text)
         }
         hintObserver = center.addObserver(forName: alert2Monitor, object: hintTextField, queue: queue) { (notification) in
-            self.setWayPoint.didSetHint(hint: self.hintTextField.text)
+            self.setWayPoint.didSetHint(name: self.nameTextField.text,hint: self.hintTextField.text)
         }
+        challengeObserver = center.addObserver(forName: alert2Monitor, object: challengeTextField, queue: queue) { (notification) in
+            self.setWayPoint.didSetChallenge(name: self.nameTextField.text, challenge: self.challengeTextField.text)
+        }
+        
     }
     
     private func stopListeningToTextFields() {
@@ -123,6 +128,9 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
         }
         if hintObserver != nil {
             center.removeObserver(hintObserver)
+        }
+        if challengeObserver != nil {
+            center.removeObserver(challengeObserver)
         }
     }
 
@@ -171,7 +179,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
         imageFetcher = ImageFetcher() { (url, image) in
             DispatchQueue.main.async {
                self.updateImage(image2U: image)
-                self.setWayPoint.didSetImage(image: image)
+                self.setWayPoint.didSetImage(name: self.nameTextField.text, image: image)
             }
         }
         
