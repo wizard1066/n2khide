@@ -62,11 +62,20 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBAction func debug(_ sender: Any) {
         // fuck
         for overlays in mapView.overlays {
-            print("fcuk2962018 overlay \(overlays.coordinate)\n")
+            
+            let latitude = overlays.coordinate.latitude
+            let longitude = overlays.coordinate.longitude
+           
+            var box2M: String!
+            for (k2U, V2U) in WP2P {
+//                print("\(k2U) \(V2U.coordinate.longitude) \(V2U.coordinate.latitude)")
+                if V2U.coordinate.longitude == longitude, V2U.coordinate.latitude == latitude {
+                    box2M = k2U
+                }
+            }
+            print("fcuk2962018 overlay \(overlays.coordinate) \(latitude) \(longitude) \(box2M)")
         }
-        for (k2U, V2U) in WP2P {
-            print("\(k2U) \(V2U.coordinate.longitude) \(V2U.coordinate.latitude)\n")
-        }
+        
     }
     
     @IBAction func pinButton(_ sender: Any) {
@@ -891,6 +900,10 @@ WP2P["brown"] = poly2F
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, didChange newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         let pinMoving = view.annotation?.title
+        print("fcuk30062018 pinMoving \(pinMoving) \(newState.rawValue) \(oldState.rawValue) ")
+        if newState == MKAnnotationViewDragState.ending {
+            print("Yahoo")
+        }
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
