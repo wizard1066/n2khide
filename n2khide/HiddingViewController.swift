@@ -726,23 +726,20 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
         cords2D.append(cord2U)
         
-        let polyLine:MKOverlay = MKPolyline(coordinates: &cords2D, count: cords2D.count)
-//        let polygon:MKOverlay = MKPolygon(coordinates: &cords2D, count: cords2D.count)
+//        let polyLine:MKOverlay = MKPolyline(coordinates: &cords2D, count: cords2D.count)
+        let polygon:MKOverlay = MKPolygon(coordinates: &cords2D, count: cords2D.count)
         
         DispatchQueue.main.async {
             self.polyColor = boxColor
-            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
-//            self.mapView.add(polygon, level: MKOverlayLevel.aboveRoads)
+//            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
+            self.mapView.add(polygon, level: MKOverlayLevel.aboveRoads)
         }
-        return polyLine
-//        return polygon
+//        return polyLine
+        return polygon
     }
     
-//    private func doBoxV2(latitude2D: Double, longitude2D: Double, name: String) -> [CLLocation]
     private func doBoxV2(latitude2D: Double, longitude2D: Double, name: String) -> [MKOverlay]
     {
-//        var coordinates:[CLLocationCoordinate2D] = []
-//        var sector:[CLLocationCoordinate2D] = []
         var boxes2R:[CLLocation] = []
         var boxes2S:[MKOverlay] = []
         if latitude2D + (Constants.Variable.magic/2)  > latitude2D {
@@ -752,14 +749,14 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             boxes2R.append(cords2F)
             var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
             boxes2S.append(poly2F)
-       WP2P["blue"] = poly2F
+            WP2P["blue"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D, name2U: name)
            cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
             
             boxes2R.append(cords2F)
             poly2F =  drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
             boxes2S.append(poly2F)
-WP2P["orange"] = poly2F
+            WP2P["orange"] = poly2F
         } else {
             var cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D, name2U: name)
             var cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
@@ -767,14 +764,14 @@ WP2P["orange"] = poly2F
             boxes2R.append(cords2F)
              var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
             boxes2S.append(poly2F)
-WP2P["yellow"] = poly2F
+            WP2P["yellow"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D - (Constants.Variable.magic * 1.5), longitude2D: longitude2D, name2U: name)
             cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
             
             boxes2R.append(cords2F)
              poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
             boxes2S.append(poly2F)
-WP2P["red"] = poly2F
+            WP2P["red"] = poly2F
         }
         if longitude2D + (Constants.Variable.magic/2) > longitude2D  {
             var cords2U = convert2nB(latitude2D: latitude2D + Constants.Variable.magic * 1.5, longitude2D: longitude2D + Constants.Variable.magic * 1.5, name2U: name)
@@ -783,15 +780,14 @@ WP2P["red"] = poly2F
             boxes2R.append(cords2F)
              var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.green)
             boxes2S.append(poly2F)
-WP2P["purple"] = poly2F
+            WP2P["purple"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D + Constants.Variable.magic * 1.5, name2U: name)
             cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
            
             boxes2R.append(cords2F)
                 poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.red)
             boxes2S.append(poly2F)
-WP2P["pink"] = poly2F
-            
+            WP2P["pink"] = poly2F
         } else {
             var cords2U = convert2nB(latitude2D: latitude2D - Constants.Variable.magic * 1.5, longitude2D: longitude2D - Constants.Variable.magic * 1.5, name2U: name)
             var cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
@@ -806,7 +802,7 @@ WP2P["pink"] = poly2F
             boxes2R.append(cords2F)
              poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.red)
             boxes2S.append(poly2F)
-WP2P["brown"] = poly2F
+            WP2P["brown"] = poly2F
         }
         
 //        let SWLatitude = latitude2D - Constants.Variable.magic
@@ -1032,6 +1028,11 @@ WP2P["brown"] = poly2F
             return circleRenderer
         } else  if overlay is MKPolyline {
             let renderer = MKPolylineRenderer(overlay: overlay)
+            renderer.strokeColor = polyColor
+            renderer.lineWidth = 1
+            return renderer
+        } else if overlay is MKPolygon {
+            let renderer = MKPolygonRenderer(overlay: overlay)
             renderer.strokeColor = polyColor
             renderer.lineWidth = 1
             return renderer
