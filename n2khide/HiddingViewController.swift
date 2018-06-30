@@ -60,7 +60,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
  
     @IBOutlet weak var pin: UIBarButtonItem!
     @IBAction func debug(_ sender: Any) {
-        // fuck
+        
         for overlays in mapView.overlays {
             
             let latitude = overlays.coordinate.latitude
@@ -97,7 +97,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //            updateWayname(waypoint2U: waypoint2, image2U: nil)
             mapView.addAnnotation(waypoint2)
              let boxes = self.doBoxV2(latitude2D: waypoint2.coordinate.latitude, longitude2D: waypoint2.coordinate.longitude, name: uniqueName)
-            let newWayPoint = wayPoint(UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil, order: wayPoints.count, boxes:boxes, challenge: nil)
+            var box2F:[CLLocation] = []
+            for box in boxes {
+                box2F.append(CLLocation(latitude: box.coordinate.latitude, longitude: box.coordinate.longitude))
+            }
+            let newWayPoint = wayPoint(UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil, order: wayPoints.count, boxes:box2F, challenge: nil)
             wayPoints[uniqueName] = newWayPoint
             listOfPoint2Save?.append(newWayPoint)
         }
@@ -734,23 +738,27 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //        return polygon
     }
     
-    private func doBoxV2(latitude2D: Double, longitude2D: Double, name: String) -> [CLLocation]
+//    private func doBoxV2(latitude2D: Double, longitude2D: Double, name: String) -> [CLLocation]
+    private func doBoxV2(latitude2D: Double, longitude2D: Double, name: String) -> [MKOverlay]
     {
 //        var coordinates:[CLLocationCoordinate2D] = []
 //        var sector:[CLLocationCoordinate2D] = []
         var boxes2R:[CLLocation] = []
+        var boxes2S:[MKOverlay] = []
         if latitude2D + (Constants.Variable.magic/2)  > latitude2D {
             var cords2U = convert2nB(latitude2D: latitude2D + (Constants.Variable.magic*1.5), longitude2D: longitude2D, name2U: name)
             var cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
             
             boxes2R.append(cords2F)
             var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
+            boxes2S.append(poly2F)
        WP2P["blue"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D, name2U: name)
            cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
             
             boxes2R.append(cords2F)
             poly2F =  drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
+            boxes2S.append(poly2F)
 WP2P["orange"] = poly2F
         } else {
             var cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D, name2U: name)
@@ -758,12 +766,14 @@ WP2P["orange"] = poly2F
            
             boxes2R.append(cords2F)
              var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.blue)
+            boxes2S.append(poly2F)
 WP2P["yellow"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D - (Constants.Variable.magic * 1.5), longitude2D: longitude2D, name2U: name)
             cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
             
             boxes2R.append(cords2F)
              poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.orange)
+            boxes2S.append(poly2F)
 WP2P["red"] = poly2F
         }
         if longitude2D + (Constants.Variable.magic/2) > longitude2D  {
@@ -772,25 +782,30 @@ WP2P["red"] = poly2F
             
             boxes2R.append(cords2F)
              var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.green)
+            boxes2S.append(poly2F)
 WP2P["purple"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D + Constants.Variable.magic * 1.5, name2U: name)
             cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
            
             boxes2R.append(cords2F)
                 poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.red)
+            boxes2S.append(poly2F)
 WP2P["pink"] = poly2F
+            
         } else {
             var cords2U = convert2nB(latitude2D: latitude2D - Constants.Variable.magic * 1.5, longitude2D: longitude2D - Constants.Variable.magic * 1.5, name2U: name)
             var cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
             
             boxes2R.append(cords2F)
              var poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.green)
+            boxes2S.append(poly2F)
             WP2P["cyan"] = poly2F
             cords2U = convert2nB(latitude2D: latitude2D, longitude2D: longitude2D - Constants.Variable.magic * 1.5, name2U: name)
             
             cords2F = CLLocation(latitude: cords2U.latitude, longitude: cords2U.longitude)
             boxes2R.append(cords2F)
              poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.red)
+            boxes2S.append(poly2F)
 WP2P["brown"] = poly2F
         }
         
@@ -849,7 +864,8 @@ WP2P["brown"] = poly2F
 ////
 ////            print("cgr \(pointInside)")
 //        }
-        return boxes2R
+//        return boxes2R
+        return boxes2S
     }
     
 //    private func doBox(latitude2S: String, longitude2S: String) {
@@ -901,8 +917,30 @@ WP2P["brown"] = poly2F
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, didChange newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         let pinMoving = view.annotation?.title
         print("fcuk30062018 pinMoving \(pinMoving) \(newState.rawValue) \(oldState.rawValue) ")
+        if newState == MKAnnotationViewDragState.starting {
+            let wP2E = wayPoints[((view.annotation?.title)!)!]
+            print("fcuk30112018 \(wP2E)")
+            let boxes2D = wP2E?.boxes
+            for overlays in mapView.overlays {
+                let latitude = overlays.coordinate.latitude
+                let longitude = overlays.coordinate.longitude
+                for boxes in boxes2D! {
+                    let long2C:Double = ((boxes?.coordinate.longitude)!)
+                    let lat2C:Double = (boxes?.coordinate.latitude)!
+                    print("\(long2C) \(lat2C) \(longitude) \(latitude)")
+                    if long2C == longitude, lat2C == latitude {
+                        mapView.remove(overlays)
+                    }
+                }
+            }
+        }
         if newState == MKAnnotationViewDragState.ending {
-            print("Yahoo")
+            let boxes = self.doBoxV2(latitude2D: (view.annotation?.coordinate.latitude)!, longitude2D: (view.annotation?.coordinate.longitude)!, name: ((view.annotation?.title)!)!)
+            var box2F:[CLLocation] = []
+            for box in boxes {
+                box2F.append(CLLocation(latitude: box.coordinate.latitude, longitude: box.coordinate.longitude))
+            }
+            wayPoints[((view.annotation?.title)!)!]?.boxes = box2F
         }
     }
     
@@ -1609,8 +1647,11 @@ func getShare() {
                 self.mapView.addAnnotation(waypoint2)
 //                self.doBox(latitude2S: wp2FLat, longitude2S: wp2FLog)
                 let boxes = self.doBoxV2(latitude2D: coordinate.latitude, longitude2D: coordinate.longitude, name: uniqueName)
-                
-                let newWayPoint = wayPoint(UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: wayPoints.count, boxes: boxes, challenge: nil)
+                var box2F:[CLLocation] = []
+                for box in boxes {
+                    box2F.append(CLLocation(latitude: box.coordinate.latitude, longitude: box.coordinate.longitude))
+                }
+                let newWayPoint = wayPoint(UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: wayPoints.count, boxes: box2F, challenge: nil)
                 wayPoints[uniqueName] = newWayPoint
                 print("fcuk29062018 \(wayPoints) \(uniqueName)")
                 listOfPoint2Save?.append(newWayPoint)
