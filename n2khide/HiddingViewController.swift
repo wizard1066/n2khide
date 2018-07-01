@@ -107,6 +107,51 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
+    private func selectSet(set2U:[MKOverlay], type2U: Int, size2R: Int) -> Double {
+        print("fcuk01072018 selectSet \(set2U)")
+        var selectedCord:Double!
+        switch size2R {
+            case size2U.min:
+                selectedCord = Double(MAXFLOAT)
+            case size2U.max:
+                selectedCord = -Double(MAXFLOAT)
+            default:
+                break
+        }
+        var selectedSet:CLLocationCoordinate2D!
+        for cord in set2U {
+            if size2R == size2U.min, type2U == axis.longitude {
+                selectedCord = Double.minimum(cord.coordinate.longitude , selectedCord)
+                if cord.coordinate.longitude == selectedCord {
+                    selectedCord = cord.coordinate.longitude
+                    selectedSet = CLLocationCoordinate2D(latitude: cord.coordinate.latitude, longitude: cord.coordinate.longitude)
+                }
+            }
+            if size2R == size2U.max, type2U == axis.longitude {
+                selectedCord = Double.maximum(cord.coordinate.longitude , selectedCord)
+                if cord.coordinate.longitude == selectedCord {
+                    selectedCord = cord.coordinate.longitude
+                    selectedSet = CLLocationCoordinate2D(latitude: cord.coordinate.latitude, longitude: cord.coordinate.longitude)
+                }
+            }
+            if size2R == size2U.min, type2U == axis.latitude {
+                selectedCord = Double.minimum(cord.coordinate.latitude , selectedCord)
+                if cord.coordinate.latitude == selectedCord {
+                    selectedCord = cord.coordinate.latitude
+                    selectedSet = CLLocationCoordinate2D(latitude: cord.coordinate.latitude, longitude: cord.coordinate.longitude)
+                }
+            }
+            if size2R == size2U.max, type2U == axis.latitude {
+                selectedCord = Double.maximum(cord.coordinate.latitude , selectedCord)
+                if cord.coordinate.latitude == selectedCord {
+                    selectedCord = cord.coordinate.latitude
+                    selectedSet = CLLocationCoordinate2D(latitude: cord.coordinate.latitude, longitude: cord.coordinate.longitude)
+                }
+            }
+        }
+        return selectedCord
+    }
+    
     private func listAllZones() -> [String:CKRecordZoneID] {
         let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
         operation.fetchRecordZonesCompletionBlock = { records, error in
@@ -803,7 +848,30 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
              poly2F = drawBox(Cords2E: cords2U, boxColor: UIColor.red)
             boxes2S.append(poly2F)
             WP2P["brown"] = poly2F
+            
+            
         }
+        
+        // newcode to draw around 4 smaller boxes
+        // struct axis and size2U
+        var cords2D:[CLLocationCoordinate2D] = []
+        let maxLongitude = selectSet(set2U: boxes2S, type2U: axis.longitude, size2R: size2U.max)
+        let minLongitude = selectSet(set2U: boxes2S, type2U: axis.longitude, size2R: size2U.min)
+        let maxLatitude = selectSet(set2U: boxes2S, type2U: axis.latitude, size2R: size2U.max)
+        let minLatitude = selectSet(set2U: boxes2S, type2U: axis.latitude, size2R: size2U.min)
+        let nwCord = CLLocationCoordinate2D(latitude: minLatitude, longitude: minLongitude)
+        let neCord = CLLocationCoordinate2D(latitude: maxLatitude, longitude: minLongitude)
+        let seCord = CLLocationCoordinate2D(latitude: maxLatitude, longitude: maxLongitude)
+        let swCord = CLLocationCoordinate2D(latitude: minLatitude, longitude: maxLongitude)
+        cords2D = [nwCord,neCord,seCord,swCord,nwCord]
+        for cord1D in cords2D {
+            print("fcuk01072018 cords2D \(cord1D.longitude) \(cord1D.latitude)")
+        }
+//        DispatchQueue.main.async {
+////            self.polyColor = UIColor.black
+////            let polygon:MKOverlay = MKPolygon(coordinates: &cords2D, count: cords2D.count)
+////            self.mapView.add(polygon, level: MKOverlayLevel.aboveRoads)
+//        }
         
 //        let SWLatitude = latitude2D - Constants.Variable.magic
 //        let SWLongitude = longitude2D - Constants.Variable.magic
@@ -1679,6 +1747,8 @@ func getShare() {
             let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
             self.mapView.setRegion(region, animated: true)
             self.regionHasBeenCentered = true
+            
+            
         }
 
         let center = NotificationCenter.default
@@ -1891,6 +1961,16 @@ func getShare() {
     
     
     // MARK: Constants
+    
+    private struct axis {
+        static let longitude = 0
+        static let latitude =  1
+    }
+    
+    private struct size2U {
+        static let min = 0
+        static let max = 1
+    }
     
     private struct Constants {
         static let LeftCalloutFrame = CGRect(x: 0, y: 0, width: 59, height: 59)
