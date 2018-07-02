@@ -13,7 +13,26 @@ protocol zap  {
     func wayPoint2G(wayPoint2G: String)
 }
 
-class HideTableViewController: UITableViewController {
+class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPresentationControllerDelegate {
+    
+    func didSetName(name: String?) {
+        // code
+    }
+    
+    func didSetHint(name: String?, hint: String?) {
+        // code
+    }
+    
+    func didSetImage(name: String?, image: UIImage?) {
+        // code
+    }
+    
+    func didSetChallenge(name: String?, challenge: String?) {
+        // code
+    }
+    
+    
+
     
     var zapperDelegate: zap!
     private let privateDB = CKContainer.default().privateCloudDatabase
@@ -103,7 +122,7 @@ class HideTableViewController: UITableViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
+//        listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
         
          let doneBarB = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(byebye))
         self.editButtonItem.title = "Reorder"
@@ -145,6 +164,7 @@ class HideTableViewController: UITableViewController {
             let waypoint = listOfPoint2Seek[indexPath.row]
             cell.detailTextLabel?.text = waypoint.hint
             cell.textLabel? .text = waypoint.name
+    
             return cell
         } else {
             return cell
@@ -184,13 +204,19 @@ class HideTableViewController: UITableViewController {
 
         // To check for correctness enable: self.tableView.reloadData()
     }
+    
+    var classIndexPath: IndexPath!
+    var rowView: UIView!
 
     
     override func tableView(_ tableView: UITableView,
                    leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
-        let closeAction = UIContextualAction(style: .normal, title:  "Show", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
+        let closeAction = UIContextualAction(style: .normal, title:  "Update", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
             print("OK, marked as Closed")
+            self.classIndexPath = indexPath
+            self.rowView = view
+            self.performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
             success(true)
         })
         closeAction.image = UIImage(named: "tick")
@@ -271,6 +297,71 @@ class HideTableViewController: UITableViewController {
         print("error \(error.debugDescription)")
         }}
         self.privateDB.add(modifyOp)
+    }
+    
+    // MARK: Segue Code
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destination = segue.destination.contents
+        if segue.identifier == Constants.EditUserWaypoint {
+            let ewvc = destination as? EditWaypointController
+            ewvc?.nameText = listOfPoint2Seek[classIndexPath.row].name
+            ewvc?.hintText = listOfPoint2Seek[classIndexPath.row].hint
+            ewvc?.challengeText = listOfPoint2Seek[classIndexPath.row].challenge
+            ewvc?.setWayPoint = self
+            if let ppc = ewvc?.popoverPresentationController {
+                ppc.sourceRect = (rowView.frame)
+                ppc.delegate = self
+            }
+        }
+//        if segue.identifier == Constants.EditUserWaypoint, trigger == point.ibeacon {
+//            let ewvc = destination as? EditWaypointController
+//            let uniqueName = "UUID"
+//            ewvc?.nameText =  uniqueName
+//            ewvc?.hintText = "ibeacon"
+//            ewvc?.setWayPoint = self
+//            if let ppc = ewvc?.popoverPresentationController {
+//                ppc.sourceRect = tableView.frame
+//                ppc.delegate = self
+//            }
+//        }
+    }
+    
+    private struct Constants {
+        static let LeftCalloutFrame = CGRect(x: 0, y: 0, width: 59, height: 59)
+        static let AnnotationViewReuseIdentifier = "waypoint"
+        static let ShowImageSegue = "Show Image"
+        static let EditUserWaypoint = "Edit Waypoint"
+        static let TableWaypoint = "Table Waypoint"
+        static let ScannerViewController = "Scan VC"
+        
+        
+        struct Entity {
+            static let wayPoints = "wayPoints"
+            static let mapLinks = "mapLinks"
+        }
+        struct Attribute {
+            static let UUID = "UUID"
+            static let minor = "minor"
+            static let major = "major"
+            static let proximity = "proximity"
+            static let longitude = "longitude"
+            static let  latitude = "latitude"
+            static let  name = "name"
+            static let hint = "hint"
+            static let order = "order"
+            static let  imageData = "image"
+            static let mapName = "mapName"
+            static let linkReference = "linkReference"
+            static let wayPointsArray = "wayPointsArray"
+            static let boxes = "boxes"
+            static let challenge = "challenge"
+        }
+        struct Variable {
+            static  let radius = 40
+            // the digital difference between degrees-miniutes-seconds 46-20-41 & 46-20-42.
+            static let magic = 0.00015
+        }
     }
 
 }

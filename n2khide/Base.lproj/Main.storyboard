@@ -480,10 +480,15 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="nhM-Vm-QIc"/>
+                    <connections>
+                        <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="Vli-Hw-GnB" id="hFW-Ay-RwD">
+                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                        </segue>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WqC-w5-X9s" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3540" y="-124"/>
+            <point key="canvasLocation" x="3573" y="-320"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="UFo-ba-4Gn">
@@ -548,4 +553,7 @@
         <image name="picture" width="30" height="30"/>
         <image name="qr_code" width="30" height="30"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="hFW-Ay-RwD"/>
+    </inferredMetricsTieBreakers>
 </document>
