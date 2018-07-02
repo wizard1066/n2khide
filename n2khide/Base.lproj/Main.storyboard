@@ -250,7 +250,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="sLL-BY-qSg">
-                                                <rect key="frame" x="-370" y="72" width="768" height="916"/>
+                                                <rect key="frame" x="-416" y="85" width="768" height="916"/>
                                                 <gestureRecognizers/>
                                                 <connections>
                                                     <outletCollection property="gestureRecognizers" destination="UVg-oV-eg7" appends="YES" id="3Ao-zu-coc"/>
@@ -554,6 +554,6 @@
         <image name="qr_code" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="hFW-Ay-RwD"/>
+        <segue reference="RQi-Wn-jN8"/>
     </inferredMetricsTieBreakers>
 </document>

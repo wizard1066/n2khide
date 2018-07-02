@@ -15,24 +15,45 @@ protocol zap  {
 
 class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPresentationControllerDelegate {
     
+    func didSetChallenge(name: String?, challenge: String?) {
+        if challenge != nil {
+                let wp2F =  listOfPoint2Seek[classIndexPath.row]
+                let wp2A = wayPoint(UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: wp2F.name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: challenge)
+                listOfPoint2Seek[classIndexPath.row] = wp2A
+                tableView.reloadData()
+        }
+    }
+    
     func didSetName(name: String?) {
-        // code
+        if name != nil {
+            let wp2F =  listOfPoint2Seek[classIndexPath.row]
+            let wp2A = wayPoint(UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
+            listOfPoint2Seek[classIndexPath.row] = wp2A
+            tableView.reloadData()
+        }
     }
     
     func didSetHint(name: String?, hint: String?) {
-        // code
+        if name != nil {
+            let wp2F =  listOfPoint2Seek[classIndexPath.row]
+            let wp2A = wayPoint(UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
+            listOfPoint2Seek[classIndexPath.row] = wp2A
+            tableView.reloadData()
+        }
     }
     
     func didSetImage(name: String?, image: UIImage?) {
-        // code
+        if image != nil {
+            let wp2F =  listOfPoint2Seek[classIndexPath.row]
+            let wp2A = wayPoint(UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
+            listOfPoint2Seek[classIndexPath.row] = wp2A
+            tableView.reloadData()
+        }
     }
     
-    func didSetChallenge(name: String?, challenge: String?) {
-        // code
-    }
+   
     
-    
-
+    // MARK: main code
     
     var zapperDelegate: zap!
     private let privateDB = CKContainer.default().privateCloudDatabase
@@ -106,6 +127,28 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        // do something
+        return traitCollection.horizontalSizeClass == .compact ? UIModalPresentationStyle.overFullScreen : .none
+    }
+    
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        
+        if style == .fullScreen || style == .overFullScreen {
+            let navcon = UINavigationController(rootViewController: controller.presentedViewController)
+            let maskView = UIView()
+            maskView.backgroundColor = UIColor(white: 1,  alpha: 0.5) //you can modify this to whatever you need
+            maskView.frame = navcon.view.bounds
+            maskView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            navcon.view.insertSubview(maskView, at: 0)
+            let rightBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(byebye))
+            controller.presentedViewController.navigationItem.rightBarButtonItem = rightBarButton
+            return navcon
+        } else {
+            return nil
+        }
+    }
+    
     @objc func byebye() {
         self.dismiss(animated: true, completion: nil)
     }
@@ -164,7 +207,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
             let waypoint = listOfPoint2Seek[indexPath.row]
             cell.detailTextLabel?.text = waypoint.hint
             cell.textLabel? .text = waypoint.name
-    
+            cell.imageView?.image = waypoint.image
             return cell
         } else {
             return cell

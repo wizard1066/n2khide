@@ -56,8 +56,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var hintLabel: UILabel!
     @IBOutlet weak var orderLabel: UILabel!
     @IBOutlet weak var nameLabel: UILabel!
-
- 
+    @IBOutlet weak var loadingSV: UIStackView!
+    
     @IBOutlet weak var pin: UIBarButtonItem!
     @IBAction func debug(_ sender: Any) {
         
@@ -1367,6 +1367,8 @@ func getShare() {
             for record in records! {
                 print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
+                
+            
             }
         }
         
@@ -1885,7 +1887,7 @@ func getShare() {
     
     @objc func byebye() {
 //        self.dismiss(animated: true, completion: nil)
-        presentingViewController?.dismiss(animated: true, completion: {
+        dismiss(animated: true, completion: {
             // code
         })
     }
