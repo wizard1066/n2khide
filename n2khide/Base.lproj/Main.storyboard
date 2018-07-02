@@ -137,6 +137,42 @@
             </objects>
             <point key="canvasLocation" x="2800.78125" y="543.75"/>
         </scene>
+        <!--Image View Controller-->
+        <scene sceneID="W0r-LP-Fxv">
+            <objects>
+                <viewController id="afq-bh-0gB" customClass="ImageViewController" customModule="n2khide" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="k3m-Ii-HSv">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="P4J-lO-AEc">
+                                <rect key="frame" x="0.0" y="64" width="768" height="960"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="00K-FN-zRP" firstAttribute="trailing" secondItem="P4J-lO-AEc" secondAttribute="trailing" id="P1B-aO-mzJ"/>
+                            <constraint firstItem="00K-FN-zRP" firstAttribute="bottom" secondItem="P4J-lO-AEc" secondAttribute="bottom" id="XVR-u2-Fep"/>
+                            <constraint firstItem="P4J-lO-AEc" firstAttribute="leading" secondItem="00K-FN-zRP" secondAttribute="leading" id="iVR-wm-l1s"/>
+                            <constraint firstItem="P4J-lO-AEc" firstAttribute="top" secondItem="00K-FN-zRP" secondAttribute="top" id="w6N-hI-2hz"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="00K-FN-zRP"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="rpK-kB-ee7">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="ID8-T8-4bl">
+                            <connections>
+                                <action selector="doneButton:" destination="afq-bh-0gB" id="uD7-zV-g3h"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="imageArea" destination="P4J-lO-AEc" id="DJc-Z0-kZP"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="b4J-LB-PEK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3322.65625" y="1367.578125"/>
+        </scene>
         <!--Scanner View Controller-->
         <scene sceneID="jQP-q9-cgE">
             <objects>
@@ -150,7 +186,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2uS-l6-AxE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1878.90625" y="-124.21874999999999"/>
+            <point key="canvasLocation" x="1883" y="-195"/>
         </scene>
         <!--Hidding View Controller-->
         <scene sceneID="1MW-og-wL4">
@@ -392,6 +428,7 @@
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="SvD-CE-nLV" id="RQi-Wn-jN8">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
+                        <segue destination="UWw-Ec-h7I" kind="presentation" identifier="Show Image" modalPresentationStyle="overFullScreen" modalTransitionStyle="crossDissolve" id="2dH-Bg-VfP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tGh-Ta-aAu" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -483,6 +520,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ASA-lh-Dip" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2801" y="-195"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ytb-TA-NZm">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="UWw-Ec-h7I" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="bZy-mQ-qLo">
+                        <rect key="frame" x="0.0" y="20" width="768" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="afq-bh-0gB" kind="relationship" relationship="rootViewController" id="bx1-gb-8OB"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YdJ-Zf-PDM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2611" y="1269"/>
         </scene>
     </scenes>
     <resources>

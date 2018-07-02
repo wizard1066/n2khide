@@ -292,6 +292,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     var beaconsInTheBag:[String:Bool?] = [:]
     var beaconsLogged:[String] = []
     
+    
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
 //        var shouldHideBeaconDetails = true
         print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)\n")
@@ -321,44 +322,22 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             let beacons2S = beacons.filter { $0.proximity != CLProximity.unknown }
             if beacons2S.count > 0 {
                 if let closestBeacon = beacons2S[0] as? CLBeacon {
-                     let nextWP2S = listOfPoint2Seek[order2Search!]
-                    print("WP2M \(WP2M) Seeking \(listOfPoint2Seek[order2Search!])")
-                    let k2U = beacons2S[0].minor.stringValue + beacons2S[0].major.stringValue
-                    let  alert2Post = WP2M[k2U]
-                    
-                    if alert2Post == nextWP2S.name {
-                        let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
-//                        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) in
-                            WP2M[k2U] = nil
-                            let image2Show = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-                            image2Show.image = nextWP2S.image
-                            self.mapView.addSubview(image2Show)
-                            image2Show.translatesAutoresizingMaskIntoConstraints  = false
-                            let THighConstraint = NSLayoutConstraint(item: image2Show, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 30)
-                            let TLowConstraint = NSLayoutConstraint(item: image2Show, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
-                            let TLeftConstraint = NSLayoutConstraint(item: image2Show, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1, constant: 0)
-                            let TRightConstraint = NSLayoutConstraint(item: image2Show, attribute: .trailing, relatedBy: .equal, toItem: self.view, attribute: .trailing, multiplier: 1, constant: 0)
-                            self.view.addConstraints([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
-                            NSLayoutConstraint.activate([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
-                            self.hintLabel.text = nextWP2S.hint
-                            self.orderLabel.text = String(order2Search!)
-                            if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
-                            UIView.animate(withDuration: 8, animations: {
-                                image2Show.alpha = 0
-                                self.hintLabel.alpha = 0
-                            }, completion: { (result) in
-                                image2Show.removeFromSuperview()
-                                self.hintLabel.text = ""
-                                self.hintLabel.alpha = 1
+                    if order2Search! < listOfPoint2Seek.count {
+                         let nextWP2S = listOfPoint2Seek[order2Search!]
+                        print("WP2M \(WP2M) Seeking \(listOfPoint2Seek[order2Search!])")
+                        let k2U = beacons2S[0].minor.stringValue + beacons2S[0].major.stringValue
+                        let  alert2Post = WP2M[k2U]
+                        // fuck
+                        if alert2Post == nextWP2S.name {
+                            if presentedViewController != ImageViewController() {
+                                print("present")
+                                performSegue(withIdentifier: Constants.ShowImageSegue, sender: view)
+                                self.orderLabel.text = String(order2Search!)
+                                if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
                                 self.nextLocation2Show()
-                            })
-//                        }))
-                            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                        self.present(alert, animated: true, completion: nil)
+                            }
+                        }
                     }
-//                    let wayPointRec = wayPoints[alert2Post!]
-                    //                        self.centerImage.image = wayPointRec?.image
-
                 }
             }
         }
@@ -630,9 +609,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             updateChallenge(waypoint2U: pinViewSelected, challenge: challenge)
         } else {
             // must be a ibeacon
+            
             let wp2C = listOfPoint2Save?.popLast()
-            let wp2S = wayPoint(UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge:wp2C?.challenge)
+            let wp2S = wayPoint(UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge:challenge)
             listOfPoint2Save?.append(wp2S)
+            print("fcuk02072018 listOfPoint2Save \(listOfPoint2Save)" )
         }
     }
     
@@ -1210,9 +1191,10 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         operationQueue.waitUntilAllOperationsAreFinished()
         
 //        var rec2Save:[CKRecord] = []
-        print("fcuk26062018 listOfPoint2Save \(listOfPoint2Save)")
+//        print("fcuk26062018 listOfPoint2Save \(listOfPoint2Save)")
         var p2S = 0
         for point2Save in listOfPoint2Save! {
+            print("fcuk02072018 challenge \(point2Save.challenge)")
 //            let operation1 = BlockOperation {
             
                 let ckWayPointRecord = CKRecord(recordType: Constants.Entity.wayPoints, zoneID: self.recordZone.zoneID)
@@ -1224,6 +1206,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 ckWayPointRecord.setObject(point2Save.major as CKRecordValue?, forKey:  Constants.Attribute.major)
                 ckWayPointRecord.setObject(point2Save.minor as CKRecordValue?, forKey:  Constants.Attribute.minor)
                 ckWayPointRecord.setObject(point2Save.UUID as CKRecordValue?, forKey: Constants.Attribute.UUID)
+                ckWayPointRecord.setObject(point2Save.challenge as CKRecordValue?, forKey: Constants.Attribute.challenge)
                 ckWayPointRecord.setObject(p2S as CKRecordValue?, forKey: Constants.Attribute.order)
                 p2S += 1
 //                ckWayPointRecord.setParent(self.mapRecord)
@@ -1611,6 +1594,15 @@ func getShare() {
             let svc = destination as? ScannerViewController
             svc?.firstViewController = self
         }
+        if segue.identifier == Constants.ShowImageSegue {
+            let svc = destination as? ImageViewController
+            let nextWP2S = listOfPoint2Seek[order2Search!]
+            if nextWP2S.image != nil {
+                svc?.image2S = nextWP2S.image
+                svc?.challenge2A = nextWP2S.challenge
+            }
+            svc?.callingViewController = self
+        }
     }
     
     private func updateHint(waypoint2U: MKPointAnnotation, hint: String?) {
@@ -1659,6 +1651,7 @@ func getShare() {
     
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
         if sender.state == .began {
+            trigger = point.gps
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
             let wayNames = Array(wayPoints.keys)
             let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)

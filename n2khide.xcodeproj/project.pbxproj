@@ -24,6 +24,7 @@
 		EF897B7420D3A43400C0D2D9 /* America.gpx in Resources */ = {isa = PBXBuildFile; fileRef = EF897B7320D3A43400C0D2D9 /* America.gpx */; };
 		EF897B7620D3E2D800C0D2D9 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF897B7520D3E2D700C0D2D9 /* UserNotifications.framework */; };
 		EF8E3B2320D1481800F6C6CD /* Geotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8E3B2220D1481800F6C6CD /* Geotification.swift */; };
+		EFBA662920EA198E0093D662 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA662820EA198E0093D662 /* ImageViewController.swift */; };
 		EFF07FB020C03B160018C8C7 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF07FAF20C03B160018C8C7 /* Common.swift */; };
 /* End PBXBuildFile section */
 
@@ -48,6 +49,7 @@
 		EF897B7320D3A43400C0D2D9 /* America.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = America.gpx; sourceTree = "<group>"; };
 		EF897B7520D3E2D700C0D2D9 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		EF8E3B2220D1481800F6C6CD /* Geotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geotification.swift; sourceTree = "<group>"; };
+		EFBA662820EA198E0093D662 /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		EFF07FAF20C03B160018C8C7 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -106,6 +108,7 @@
 				EFF07FAF20C03B160018C8C7 /* Common.swift */,
 				EF56461720BD9A4C00F500F6 /* AppDelegate.swift */,
 				EF56461B20BD9A4C00F500F6 /* Main.storyboard */,
+				EFBA662820EA198E0093D662 /* ImageViewController.swift */,
 				EF0C63A320D9472B00A65CC0 /* BeaconCode.swift */,
 				EF897B7320D3A43400C0D2D9 /* America.gpx */,
 				EF8E3B2220D1481800F6C6CD /* Geotification.swift */,
@@ -220,6 +223,7 @@
 				EF8586A220BEE09C00A21777 /* EditWaypointController.swift in Sources */,
 				EF40AAB620C6F83100CF6B3E /* CustomItem.swift in Sources */,
 				EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */,
+				EFBA662920EA198E0093D662 /* ImageViewController.swift in Sources */,
 				EFF07FB020C03B160018C8C7 /* Common.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

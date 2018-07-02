@@ -108,7 +108,7 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
             self.firstViewController?.globalUUID = code
             self.navigationController?.popViewController(animated: true)
         }))
-        ac.addAction(UIAlertAction(title: "No", style: .cancel))
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(ac, animated: true)
     }
     
