@@ -1150,7 +1150,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     }
     
     func itemTitle(for csc: UICloudSharingController) -> String? {
-        return "My First Share"
+        return recordZone.zoneID.zoneName
     }
     
     func itemThumbnailData(for: UICloudSharingController) -> Data? {
@@ -1378,6 +1378,7 @@ func getShare() {
             let textField = alert?.textFields![0]
             if textField?.text != "" {
                 self.share2Load(zoneNamed: (textField?.text)!)
+                self.zoneRecord2Load(zoneNamed: (textField?.text)!)
             }
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default,handler: nil))
@@ -1484,9 +1485,7 @@ func getShare() {
     }
     
     private func buildWaypoint(record2U: CKRecord) {
-        if record2U.parent != nil, sharePoint != nil  {
-            sharePoint = record2U
-        }
+
         let longitude = record2U.object(forKey:  Constants.Attribute.longitude) as? Double
         let latitude = record2U.object(forKey:  Constants.Attribute.latitude) as? Double
         let major = record2U.object(forKey: Constants.Attribute.major) as? Int
