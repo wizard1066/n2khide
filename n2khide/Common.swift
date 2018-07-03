@@ -38,6 +38,7 @@ struct wayPoint {
 var wayPoints:[String:wayPoint] = [:]
 var listOfPoint2Seek:[wayPoint] = []
 var listOfPoint2Save:[wayPoint]? = []
+var listOfZones:[String] = []
 var parentID: CKReference?
 
 var recordZone: CKRecordZone!

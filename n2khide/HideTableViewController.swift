@@ -13,6 +13,15 @@ protocol zap  {
     func wayPoint2G(wayPoint2G: String)
 }
 
+protocol save2Cloud {
+    func save2Cloud(rex2S: [wayPoint]?, rex2D: [CKRecordID]?, sharing: Bool)
+}
+
+protocol table2Map {
+    func deleteAllWayPointsInPlace()
+    func share2Load(zoneNamed: String?)
+}
+
 class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPresentationControllerDelegate {
     
     private var edited: Bool = false
@@ -58,6 +67,9 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     // MARK: main code
     
     var zapperDelegate: zap!
+    var save2CloudDelegate: save2Cloud!
+    var table2MapDelegate: table2Map!
+    
     private let privateDB = CKContainer.default().privateCloudDatabase
 
     private var shadowTable:[wayPoint?]? = []
@@ -79,15 +91,17 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
                 shadowTable = listOfPoint2Seek
             }
             windowView = .zones
-            listOfPoint2Seek.removeAll()
+//            listOfPoint2Seek.removeAll()
+            listOfZones.removeAll()
             let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
             operation.fetchRecordZonesCompletionBlock = { records, error in
                 if error != nil {
                     print(error?.localizedDescription.debugDescription)
                 }
                 for rex in records! {
-                    let rex2S = wayPoint(recordID:nil, UUID: nil, major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil, challenge: nil)
-                     listOfPoint2Seek.append(rex2S)
+//                    let rex2S = wayPoint(recordID:nil, UUID: nil, major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil, challenge: nil)
+//                     listOfPoint2Seek.append(rex2S)
+                    listOfZones.append(rex.value.zoneID.zoneName)
                     zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
                 }
                 DispatchQueue.main.async {
@@ -106,7 +120,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
             let barButtonItem = UIBarButtonItem(customView: button)
             
             self.navigationItem.leftBarButtonItems = [barButtonItem]
-            listOfPoint2Seek = shadowTable! as! [wayPoint]
+            
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
@@ -183,9 +197,10 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     
     override func viewWillDisappear(_ animated: Bool) {
         if edited, windowView == .points {
-//                saveTable()
+            save2CloudDelegate.save2Cloud(rex2S: listOfPoint2Seek, rex2D: wp2D, sharing: false)
         }
     }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -201,7 +216,11 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-         return listOfPoint2Seek.count
+        if windowView == .points {
+            return listOfPoint2Seek.count
+        } else {
+            return listOfZones.count
+        }
     }
 
     
@@ -209,15 +228,18 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
         let cell = tableView.dequeueReusableCell(withIdentifier: "RuleCell", for: indexPath)
 
         // Configure the cell...
-        if listOfPoint2Seek.count > 0 {
+        if windowView == .points, listOfPoint2Seek.count > 0 {
             let waypoint = listOfPoint2Seek[indexPath.row]
             cell.detailTextLabel?.text = waypoint.hint
             cell.textLabel? .text = waypoint.name
             cell.imageView?.image = waypoint.image
             return cell
-        } else {
+        }
+        if windowView == .zones, listOfZones.count > 0 {
+            cell.detailTextLabel?.text = listOfZones[indexPath.row]
             return cell
         }
+        return cell
     }
  
     @IBAction func newRule(_ sender: Any) {
@@ -247,9 +269,16 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     }
     
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let movedObject = listOfPoint2Seek[sourceIndexPath.row]
-        listOfPoint2Seek.remove(at: sourceIndexPath.row)
-        listOfPoint2Seek.insert(movedObject, at: destinationIndexPath.row)
+        if windowView == .points {
+            let movedObject = listOfPoint2Seek[sourceIndexPath.row]
+            listOfPoint2Seek.remove(at: sourceIndexPath.row)
+            listOfPoint2Seek.insert(movedObject, at: destinationIndexPath.row)
+        }
+        if windowView == .zones {
+            let movedObject = listOfZones[sourceIndexPath.row]
+            listOfZones.remove(at: sourceIndexPath.row)
+            listOfZones.insert(movedObject, at: destinationIndexPath.row)
+        }
 
         // To check for correctness enable: self.tableView.reloadData()
     }
@@ -261,22 +290,29 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     override func tableView(_ tableView: UITableView,
                    leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
-        if windowView == .points {
             let closeAction = UIContextualAction(style: .normal, title:  "Update", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
-                print("OK, marked as Closed")
-                self.classIndexPath = indexPath
-                self.rowView = view
-                self.performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
-                success(true)
+                 if windowView == .points {
+                    print("OK, marked as Closed")
+                    self.classIndexPath = indexPath
+                    self.rowView = view
+                    self.performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
+                    success(true)
+                }
+                if windowView == .zones {
+                    self.table2MapDelegate.deleteAllWayPointsInPlace()
+                    let zone2Seek = listOfZones[indexPath.row]
+                    self.table2MapDelegate.share2Load(zoneNamed: zone2Seek)
+                    success(true)
+                    // load points from updated zone
+                }
             })
-            closeAction.image = UIImage(named: "tick")
-            closeAction.backgroundColor = .blue
-            
-            return UISwipeActionsConfiguration(actions: [closeAction])
-        } else {
-            return nil
-        }
+        closeAction.image = UIImage(named: "tick")
+        closeAction.backgroundColor = .blue
+        
+        return UISwipeActionsConfiguration(actions: [closeAction])
     }
+    
+    var wp2D:[CKRecordID] = []
     
     override func tableView(_ tableView: UITableView,
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
@@ -285,6 +321,9 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
                 if windowView == .points {
                     self.edited = true
                     let index2Zap = listOfPoint2Seek[indexPath.row].name
+                    if let r2D2 = listOfPoint2Seek[indexPath.row].recordID {
+                        self.wp2D.append(r2D2)
+                    }
                     self.zapperDelegate.wayPoint2G(wayPoint2G: index2Zap!)
                     wayPoints.removeValue(forKey: index2Zap!)
                     listOfPoint2Seek.remove(at: indexPath.row)
@@ -293,10 +332,10 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
                 }
                 if windowView == .zones {
                     self.edited = true
-                    let index2Zap = listOfPoint2Seek[indexPath.row].name
-                    let rex2Zap = zoneTable[index2Zap!]
+                    let index2Zap = listOfZones[indexPath.row]
+                    let rex2Zap = zoneTable[index2Zap]
                     self.deleteZoneV2(zone2Zap: rex2Zap!)
-                    listOfPoint2Seek.remove(at: indexPath.row)
+                    listOfZones.remove(at: indexPath.row)
                     tableView.deleteRows(at: [indexPath], with: .fade)
                     success(true)
                 }

@@ -37,7 +37,16 @@ extension Double {
 
 
 
-class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint, CLLocationManagerDelegate {
+class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint, CLLocationManagerDelegate,save2Cloud, table2Map {
+ 
+    
+
+    
+
+    
+   
+  
+    
 
     
     
@@ -593,6 +602,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     // MARK: delete waypoints by name
     
+    func deleteAllWayPointsInPlace() {
+        for wayP in mapView.annotations {
+                mapView.removeAnnotation(wayP)
+        }
+    }
+    
     func wayPoint2G(wayPoint2G: String) {
         for wayP in mapView.annotations {
             if wayP.title == wayPoint2G {
@@ -1098,6 +1113,10 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 let _ = self.listAllZones()
                 if zoneTable[(textField?.text)!] != nil {
                     self.share2Load(zoneNamed: (textField?.text)!)
+                    if listOfPoint2Seek.count == 0 {
+                        // if you have no records in a zone, you need to go get the zone
+                        self.zoneRecord2Load(zoneNamed: (textField?.text)!)
+                    }
                 } else {
                     recordZone = CKRecordZone(zoneName: (textField?.text)!)
                     self.privateDB.save(recordZone, completionHandler: ({returnRecord, error in
@@ -1165,7 +1184,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     private var records2Share:[CKRecord] = []
     private var sharePoint: CKRecord!
     
-    func save2Cloud(rex2S:[wayPoint]?, rex2D:[wayPoint]?) {
+    func save2Cloud(rex2S:[wayPoint]?, rex2D:[CKRecordID]?, sharing: Bool) {
         if recordZone == nil {
             newMap(UIBarButtonItem())
             return
@@ -1216,7 +1235,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         }
         
         let modifyOp = CKModifyRecordsOperation(recordsToSave:
-            records2Share, recordIDsToDelete: nil)
+            records2Share, recordIDsToDelete: rex2D)
         modifyOp.savePolicy = .ifServerRecordUnchanged
         modifyOp.perRecordCompletionBlock = {(record,error) in
             print("error \(error.debugDescription)")
@@ -1227,7 +1246,9 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 print("error \(error.debugDescription)")
             }
 //            self.doshare(rexShared: record!)
-            self.sharing(record2S: self.sharePoint)
+            if sharing {
+                self.sharing(record2S: self.sharePoint)
+            }
         }
         
         self.privateDB.add(modifyOp)
@@ -1403,7 +1424,25 @@ func getShare() {
         }
     }
     
+    func zoneRecord2Load(zoneNamed: String?) {
+        recordZone = CKRecordZone(zoneName: zoneNamed!)
+        recordZoneID = recordZone.zoneID
+        let predicate = NSPredicate(value: true)
+        let query = CKQuery(recordType: "mapLinks", predicate: predicate)
+        privateDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
+            if error != nil {
+                print("error \(error)")
+            }
+            for record in records! {
+                print("fcuk26062018 record \(record)")
+                // there is always only a single record here!!
+                self.sharePoint = record
+            }
+        }
+    }
+    
     func share2Load(zoneNamed: String?) {
+        print("fcuk03072018 \(zoneNamed)")
             recordZone = CKRecordZone(zoneName: zoneNamed!)
             recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
@@ -1445,18 +1484,15 @@ func getShare() {
     }
     
     private func buildWaypoint(record2U: CKRecord) {
+        if record2U.parent != nil, sharePoint != nil  {
+            sharePoint = record2U
+        }
         let longitude = record2U.object(forKey:  Constants.Attribute.longitude) as? Double
         let latitude = record2U.object(forKey:  Constants.Attribute.latitude) as? Double
         let major = record2U.object(forKey: Constants.Attribute.major) as? Int
         let minor = record2U.object(forKey: Constants.Attribute.minor) as? Int
         globalUUID = record2U.object(forKey: Constants.Attribute.UUID) as? String
-        // need to make an allowance if not a gps, but a ibeacon
-//        let filterMajor2S = listOfPoint2Seek.filter { $0.major == major }
-//        let filterMinor2S = listOfPoint2Seek.filter { $0.minor == minor }
-        let filterLatitude2S = listOfPoint2Seek.filter { $0.coordinates?.latitude == latitude }
-        let filterLongitude2S = listOfPoint2Seek.filter { $0.coordinates?.longitude == longitude }
-        // Basically if you already find waypoint, don't readd it to the map/database
-//        if filterLatitude2S.count == 0 , filterLongitude2S.count == 0 {
+
             parentID = record2U.parent
             let name = record2U.object(forKey:  Constants.Attribute.name) as? String
             let hint = record2U.object(forKey:  Constants.Attribute.hint) as? String
@@ -1493,7 +1529,6 @@ func getShare() {
                         WP2M[wp2FLat+wp2FLog] = name
                     }
                 }
-//            }
         }
     }
     
@@ -1504,6 +1539,7 @@ func getShare() {
         }
         if order2Search! < listOfPoint2Seek.count, usingMode == op.playing {
             let nextWP2S = listOfPoint2Seek[(order2Search!)]
+            print("nextWP2S nextWP2S.UUID \(nextWP2S.UUID)")
             if nextWP2S.UUID == nil {
                 self.longitudeNextLabel.text = self.getLocationDegreesFrom(longitude: (nextWP2S.coordinates?.longitude)!)
                 self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
@@ -1570,7 +1606,7 @@ func getShare() {
 }
     
     @IBAction func ShareButton2(_ sender: UIBarButtonItem) {
-       save2Cloud(rex2S: listOfPoint2Save, rex2D: nil)
+        save2Cloud(rex2S: listOfPoint2Save, rex2D: nil, sharing: true)
         
 //        saveImage()
     }
@@ -1609,6 +1645,8 @@ func getShare() {
         if segue.identifier == Constants.TableWaypoint {
             let tbvc = destination as?  HideTableViewController
             tbvc?.zapperDelegate = self
+            tbvc?.save2CloudDelegate = self
+            tbvc?.table2MapDelegate = self
         }
         if segue.identifier == Constants.ScannerViewController {
             let svc = destination as? ScannerViewController

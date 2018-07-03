@@ -54,11 +54,17 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         view.layer.addSublayer(previewLayer)
         
         let instructionView = UITextView(frame: previewLayer.frame)
-        instructionView.text = "I need a QR code, with a UUID code embeded within it"
+        instructionView.text = "QR code of the ibeacon UUID you need search for ... "
+        instructionView.font = UIFont(name: "StarStrella", size: 32)
         instructionView.textColor = UIColor.red
         instructionView.backgroundColor = UIColor.clear
+        instructionView.textAlignment = .center
         self.view.addSubview(instructionView)
-        
+        instructionView.translatesAutoresizingMaskIntoConstraints  = false
+        instructionView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        instructionView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        instructionView.heightAnchor.constraint(equalToConstant: 64).isActive = true
+        instructionView.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
         
         captureSession.startRunning()
     }
