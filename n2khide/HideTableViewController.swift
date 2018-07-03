@@ -15,10 +15,12 @@ protocol zap  {
 
 class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPresentationControllerDelegate {
     
+    private var edited: Bool = false
+    
     func didSetChallenge(name: String?, challenge: String?) {
         if challenge != nil {
                 let wp2F =  listOfPoint2Seek[classIndexPath.row]
-                let wp2A = wayPoint(UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: wp2F.name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: challenge)
+                let wp2A = wayPoint(recordID: wp2F.recordID, UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: wp2F.name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: challenge)
                 listOfPoint2Seek[classIndexPath.row] = wp2A
                 tableView.reloadData()
         }
@@ -27,7 +29,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     func didSetName(name: String?) {
         if name != nil {
             let wp2F =  listOfPoint2Seek[classIndexPath.row]
-            let wp2A = wayPoint(UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
+            let wp2A = wayPoint(recordID:wp2F.recordID, UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
             listOfPoint2Seek[classIndexPath.row] = wp2A
             tableView.reloadData()
         }
@@ -36,7 +38,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     func didSetHint(name: String?, hint: String?) {
         if name != nil {
             let wp2F =  listOfPoint2Seek[classIndexPath.row]
-            let wp2A = wayPoint(UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
+            let wp2A = wayPoint(recordID:wp2F.recordID,UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
             listOfPoint2Seek[classIndexPath.row] = wp2A
             tableView.reloadData()
         }
@@ -45,7 +47,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     func didSetImage(name: String?, image: UIImage?) {
         if image != nil {
             let wp2F =  listOfPoint2Seek[classIndexPath.row]
-            let wp2A = wayPoint(UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
+            let wp2A = wayPoint(recordID:wp2F.recordID,UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
             listOfPoint2Seek[classIndexPath.row] = wp2A
             tableView.reloadData()
         }
@@ -84,7 +86,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
                     print(error?.localizedDescription.debugDescription)
                 }
                 for rex in records! {
-                    let rex2S = wayPoint(UUID: nil, major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil, challenge: nil)
+                    let rex2S = wayPoint(recordID:nil, UUID: nil, major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil, challenge: nil)
                      listOfPoint2Seek.append(rex2S)
                     zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
                 }
@@ -95,9 +97,6 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
             privateDB.add(operation)
         } else {
             windowView = .points
-            
-//            let closeButtonImage = UIImage(named: "ic_close_white")
-//            navigationItem.rightBarButtonItem = UIBarButtonItem(image: closeButtonImage, style: .plain, target: self, action:  #selector(ResetPasswordViewController.barButtonDidTap(_:)))
 
             let button = UIButton(type: .custom)
             button.setImage(UIImage (named: "marker"), for: .normal)
@@ -114,7 +113,8 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
         }
     }
     
-
+    // MARK: View management
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.dataSource = self
@@ -179,6 +179,12 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
         let barButtonItem = UIBarButtonItem(customView: button)
         self.navigationItem.rightBarButtonItem!.title = "Back"
         self.navigationItem.leftBarButtonItems = [barButtonItem]
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        if edited, windowView == .points {
+//                saveTable()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -255,45 +261,50 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     override func tableView(_ tableView: UITableView,
                    leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
-        let closeAction = UIContextualAction(style: .normal, title:  "Update", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
-            print("OK, marked as Closed")
-            self.classIndexPath = indexPath
-            self.rowView = view
-            self.performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
-            success(true)
-        })
-        closeAction.image = UIImage(named: "tick")
-        closeAction.backgroundColor = .blue
-        
-        return UISwipeActionsConfiguration(actions: [closeAction])
-        
+        if windowView == .points {
+            let closeAction = UIContextualAction(style: .normal, title:  "Update", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
+                print("OK, marked as Closed")
+                self.classIndexPath = indexPath
+                self.rowView = view
+                self.performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
+                success(true)
+            })
+            closeAction.image = UIImage(named: "tick")
+            closeAction.backgroundColor = .blue
+            
+            return UISwipeActionsConfiguration(actions: [closeAction])
+        } else {
+            return nil
+        }
     }
     
     override func tableView(_ tableView: UITableView,
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
-        let modifyAction = UIContextualAction(style: .normal, title:  "Delete", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
-            if windowView == .points {
-                let index2Zap = listOfPoint2Seek[indexPath.row].name
-                self.zapperDelegate.wayPoint2G(wayPoint2G: index2Zap!)
-                wayPoints.removeValue(forKey: index2Zap!)
-                listOfPoint2Seek.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .fade)
-                success(true)
-            }
-            if windowView == .zones {
-                let index2Zap = listOfPoint2Seek[indexPath.row].name
-                let rex2Zap = zoneTable[index2Zap!]
-                self.deleteZoneV2(zone2Zap: rex2Zap!)
-                listOfPoint2Seek.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .fade)
-                success(true)
-            }
-        })
-        modifyAction.image = UIImage(named: "hammer")
-        modifyAction.backgroundColor = .red
-        
-        return UISwipeActionsConfiguration(actions: [modifyAction])
+            let modifyAction = UIContextualAction(style: .normal, title:  "Delete", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
+                if windowView == .points {
+                    self.edited = true
+                    let index2Zap = listOfPoint2Seek[indexPath.row].name
+                    self.zapperDelegate.wayPoint2G(wayPoint2G: index2Zap!)
+                    wayPoints.removeValue(forKey: index2Zap!)
+                    listOfPoint2Seek.remove(at: indexPath.row)
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                    success(true)
+                }
+                if windowView == .zones {
+                    self.edited = true
+                    let index2Zap = listOfPoint2Seek[indexPath.row].name
+                    let rex2Zap = zoneTable[index2Zap!]
+                    self.deleteZoneV2(zone2Zap: rex2Zap!)
+                    listOfPoint2Seek.remove(at: indexPath.row)
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                    success(true)
+                }
+            })
+            modifyAction.image = UIImage(named: "hammer")
+            modifyAction.backgroundColor = .red
+            
+            return UISwipeActionsConfiguration(actions: [modifyAction])
     }
     
 

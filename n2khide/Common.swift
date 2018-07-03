@@ -14,7 +14,13 @@ import CloudKit
 
 typealias Codable = Decodable & Encodable
 
+func updateWayP(recordID: CKRecordID?, UUID: String?, major: Int?, minor: Int?, proximity:  CLProximity?, coordinates: CLLocationCoordinate2D?, name: String?, hint: String?, image: UIImage?, order: Int?, boxes:[CLLocation?]?, challenge: String?) -> wayPoint {
+    let newWayPoint = wayPoint(recordID: recordID, UUID: UUID, major:major, minor: minor, proximity: proximity, coordinates: coordinates, name: name, hint:hint, image: image, order: order, boxes: boxes, challenge: challenge)
+    return newWayPoint
+}
+
 struct wayPoint {
+        var recordID: CKRecordID?
         var UUID: String?
         var major: Int?
         var minor: Int?
@@ -34,6 +40,7 @@ var listOfPoint2Seek:[wayPoint] = []
 var listOfPoint2Save:[wayPoint]? = []
 var parentID: CKReference?
 
+var recordZone: CKRecordZone!
 var zoneTable:[String:CKRecordZoneID] = [:]
 var WP2M:[String:String] = [:]
 var WP2P:[String:MKOverlay] = [:]
