@@ -14,11 +14,13 @@ protocol  setWayPoint  {
     func didSetHint(name: String?, hint: String?)
     func didSetImage(name: String?, image: UIImage?)
     func didSetChallenge(name: String?, challenge: String?)
+    func didSetURL(name: String?, URL:String?)
 }
 
 class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var setWayPoint: setWayPoint!
+    var me:HiddingViewController!
     
     //MARK: Camera and Library routines
     
@@ -26,6 +28,11 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
         didSet {
             CameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         }
+    }
+    
+    
+    @IBAction func WebBrowser(_ sender: Any) {
+        performSegue(withIdentifier: Constants.WebViewController, sender: view)
     }
     
     @IBAction func Camera(_ sender: Any) {
@@ -96,6 +103,16 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         preferredContentSize = view.systemLayoutSizeFitting(UILayoutFittingCompressedSize)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destination = segue.destination.contents
+        if segue.identifier == Constants.WebViewController {
+            let svc = destination as? WebViewController
+            svc?.firstViewController = self
+            svc?.secondViewController = me
+            svc?.nameOfNode = nameText
+        }
     }
     
     // MARK: Observers
@@ -193,6 +210,46 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
             if let image = images.first as? UIImage {
                 self.imageFetcher.backup = image
             }
+        }
+    }
+    
+    
+    
+    private struct Constants {
+        static let LeftCalloutFrame = CGRect(x: 0, y: 0, width: 59, height: 59)
+        static let AnnotationViewReuseIdentifier = "waypoint"
+        static let ShowImageSegue = "Show Image"
+        static let EditUserWaypoint = "Edit Waypoint"
+        static let TableWaypoint = "Table Waypoint"
+        static let ScannerViewController = "Scan VC"
+        static let WebViewController = "WebViewController"
+        
+        
+        struct Entity {
+            static let wayPoints = "wayPoints"
+            static let mapLinks = "mapLinks"
+        }
+        struct Attribute {
+            static let UUID = "UUID"
+            static let minor = "minor"
+            static let major = "major"
+            static let proximity = "proximity"
+            static let longitude = "longitude"
+            static let  latitude = "latitude"
+            static let  name = "name"
+            static let hint = "hint"
+            static let order = "order"
+            static let  imageData = "image"
+            static let mapName = "mapName"
+            static let linkReference = "linkReference"
+            static let wayPointsArray = "wayPointsArray"
+            static let boxes = "boxes"
+            static let challenge = "challenge"
+        }
+        struct Variable {
+            static  let radius = 40
+            // the digital difference between degrees-miniutes-seconds 46-20-41 & 46-20-42.
+            static let magic = 0.00015
         }
     }
     

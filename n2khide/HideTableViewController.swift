@@ -26,10 +26,14 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     
     private var edited: Bool = false
     
+    func didSetURL(name: String?, URL: String?) {
+        // do nothing
+    }
+    
     func didSetChallenge(name: String?, challenge: String?) {
         if challenge != nil {
                 let wp2F =  listOfPoint2Seek[classIndexPath.row]
-                let wp2A = wayPoint(recordID: wp2F.recordID, UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: wp2F.name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: challenge)
+            let wp2A = wayPoint(recordID: wp2F.recordID, UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: wp2F.name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: challenge, URL: wp2F.URL)
                 listOfPoint2Seek[classIndexPath.row] = wp2A
                 tableView.reloadData()
         }
@@ -38,7 +42,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     func didSetName(name: String?) {
         if name != nil {
             let wp2F =  listOfPoint2Seek[classIndexPath.row]
-            let wp2A = wayPoint(recordID:wp2F.recordID, UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
+            let wp2A = wayPoint(recordID:wp2F.recordID, UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge, URL: wp2F.URL)
             listOfPoint2Seek[classIndexPath.row] = wp2A
             tableView.reloadData()
         }
@@ -47,7 +51,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     func didSetHint(name: String?, hint: String?) {
         if name != nil {
             let wp2F =  listOfPoint2Seek[classIndexPath.row]
-            let wp2A = wayPoint(recordID:wp2F.recordID,UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
+            let wp2A = wayPoint(recordID:wp2F.recordID,UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge, URL: wp2F.URL)
             listOfPoint2Seek[classIndexPath.row] = wp2A
             tableView.reloadData()
         }
@@ -56,7 +60,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     func didSetImage(name: String?, image: UIImage?) {
         if image != nil {
             let wp2F =  listOfPoint2Seek[classIndexPath.row]
-            let wp2A = wayPoint(recordID:wp2F.recordID,UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge)
+            let wp2A = wayPoint(recordID:wp2F.recordID,UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge, URL: wp2F.URL)
             listOfPoint2Seek[classIndexPath.row] = wp2A
             tableView.reloadData()
         }

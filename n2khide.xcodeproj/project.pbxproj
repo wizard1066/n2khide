@@ -26,6 +26,7 @@
 		EF8E3B2320D1481800F6C6CD /* Geotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8E3B2220D1481800F6C6CD /* Geotification.swift */; };
 		EFBA662920EA198E0093D662 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA662820EA198E0093D662 /* ImageViewController.swift */; };
 		EFF07FB020C03B160018C8C7 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF07FAF20C03B160018C8C7 /* Common.swift */; };
+		EFFE6EF920ECB91800D5D904 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFE6EF820ECB91800D5D904 /* WebViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 		EF8E3B2220D1481800F6C6CD /* Geotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geotification.swift; sourceTree = "<group>"; };
 		EFBA662820EA198E0093D662 /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		EFF07FAF20C03B160018C8C7 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		EFFE6EF820ECB91800D5D904 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 				EFF07FAF20C03B160018C8C7 /* Common.swift */,
 				EF56461720BD9A4C00F500F6 /* AppDelegate.swift */,
 				EF56461B20BD9A4C00F500F6 /* Main.storyboard */,
+				EFFE6EF820ECB91800D5D904 /* WebViewController.swift */,
 				EFBA662820EA198E0093D662 /* ImageViewController.swift */,
 				EF0C63A320D9472B00A65CC0 /* BeaconCode.swift */,
 				EF897B7320D3A43400C0D2D9 /* America.gpx */,
@@ -224,6 +227,7 @@
 				EF40AAB620C6F83100CF6B3E /* CustomItem.swift in Sources */,
 				EF56461820BD9A4C00F500F6 /* AppDelegate.swift in Sources */,
 				EFBA662920EA198E0093D662 /* ImageViewController.swift in Sources */,
+				EFFE6EF920ECB91800D5D904 /* WebViewController.swift in Sources */,
 				EFF07FB020C03B160018C8C7 /* Common.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
