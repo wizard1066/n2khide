@@ -331,14 +331,25 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         print("WP2M \(WP2M) Seeking \(listOfPoint2Seek[order2Search!])")
                         let k2U = beacons2S[0].minor.stringValue + beacons2S[0].major.stringValue
                         let  alert2Post = WP2M[k2U]
-                        // fuck
+                        
                         if alert2Post == nextWP2S.name {
-                            if presentedViewController != ImageViewController() {
-                                print("present")
-                                performSegue(withIdentifier: Constants.ShowImageSegue, sender: view)
-                                self.orderLabel.text = String(order2Search!)
-                                if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
-                                self.nextLocation2Show()
+                            if nextWP2S.URL != nil {
+                                if presentedViewController?.contents != WebViewController() {
+                                    let url = URL(string: nextWP2S.URL! )
+                                    let svc = SFSafariViewController(url: url!)
+                                    present(svc, animated: true, completion: nil)
+                                    self.orderLabel.text = String(order2Search!)
+                                    if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
+                                    self.nextLocation2Show()
+                                }
+                            } else {
+                                if presentedViewController?.contents != ImageViewController() {
+                                    print("present")
+                                    performSegue(withIdentifier: Constants.ShowImageSegue, sender: view)
+                                    self.orderLabel.text = String(order2Search!)
+                                    if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
+                                    self.nextLocation2Show()
+                                }
                             }
                         }
                     }
@@ -491,36 +502,54 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 if WP2M[latValue + longValue] != nil {
                     let  alert2Post = WP2M[latValue + longValue]
                     
-                    if alert2Post == nextWP2S.name {
-                        let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                        self.present(alert, animated: true, completion: nil)
-                        let wayPointRec = wayPoints[alert2Post!]
-//                        self.centerImage.image = wayPointRec?.image
-                        let image2Show = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-                        image2Show.image = wayPointRec?.image
-                        self.mapView.addSubview(image2Show)
-                        image2Show.translatesAutoresizingMaskIntoConstraints  = false
-                        let THighConstraint = NSLayoutConstraint(item: image2Show, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 30)
-                        let TLowConstraint = NSLayoutConstraint(item: image2Show, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
-                        let TLeftConstraint = NSLayoutConstraint(item: image2Show, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1, constant: 0)
-                        let TRightConstraint = NSLayoutConstraint(item: image2Show, attribute: .trailing, relatedBy: .equal, toItem: self.view, attribute: .trailing, multiplier: 1, constant: 0)
-                        self.view.addConstraints([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
-                        NSLayoutConstraint.activate([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
-                        self.hintLabel.text = wayPointRec?.hint
-                        self.orderLabel.text = String(order2Search!)
-//                        WP2M[latValue + longValue] = nil
-                        self.deleteWM2M(key2U: latValue + longValue)
-                        order2Search? += 1
-                        UIView.animate(withDuration: 8, animations: {
-                            image2Show.alpha = 0
-                            self.hintLabel.alpha = 0
-                        }, completion: { (result) in
-                            image2Show.removeFromSuperview()
-                            self.hintLabel.text = ""
-                            self.hintLabel.alpha = 1
-                            self.nextLocation2Show()
-                        })
+                    if alert2Post == nextWP2S.name, usingMode == op.playing {
+                        if nextWP2S.URL != nil {
+                            if self.presentedViewController?.contents != WebViewController() {
+                                let url = URL(string: nextWP2S.URL! )
+                                let svc = SFSafariViewController(url: url!)
+                                self.present(svc, animated: true, completion: nil)
+                                self.orderLabel.text = String(order2Search!)
+                                if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
+                                self.nextLocation2Show()
+                            }
+                        } else {
+                            if self.presentedViewController?.contents != ImageViewController() {
+                                print("present")
+                                self.performSegue(withIdentifier: Constants.ShowImageSegue, sender: self.view)
+                                self.orderLabel.text = String(order2Search!)
+                                if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
+                                self.nextLocation2Show()
+                            }
+                        }
+//                        let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
+//                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+//                        self.present(alert, animated: true, completion: nil)
+//                        let wayPointRec = wayPoints[alert2Post!]
+////                        self.centerImage.image = wayPointRec?.image
+//                        let image2Show = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+//                        image2Show.image = wayPointRec?.image
+//                        self.mapView.addSubview(image2Show)
+//                        image2Show.translatesAutoresizingMaskIntoConstraints  = false
+//                        let THighConstraint = NSLayoutConstraint(item: image2Show, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 30)
+//                        let TLowConstraint = NSLayoutConstraint(item: image2Show, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
+//                        let TLeftConstraint = NSLayoutConstraint(item: image2Show, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1, constant: 0)
+//                        let TRightConstraint = NSLayoutConstraint(item: image2Show, attribute: .trailing, relatedBy: .equal, toItem: self.view, attribute: .trailing, multiplier: 1, constant: 0)
+//                        self.view.addConstraints([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
+//                        NSLayoutConstraint.activate([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
+//                        self.hintLabel.text = wayPointRec?.hint
+//                        self.orderLabel.text = String(order2Search!)
+////                        WP2M[latValue + longValue] = nil
+//                        self.deleteWM2M(key2U: latValue + longValue)
+//                        order2Search? += 1
+//                        UIView.animate(withDuration: 8, animations: {
+//                            image2Show.alpha = 0
+//                            self.hintLabel.alpha = 0
+//                        }, completion: { (result) in
+//                            image2Show.removeFromSuperview()
+//                            self.hintLabel.text = ""
+//                            self.hintLabel.alpha = 1
+//                            self.nextLocation2Show()
+//                        })
                     }
                 }
             }
@@ -1220,6 +1249,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 ckWayPointRecord.setObject(point2Save.minor as CKRecordValue?, forKey:  Constants.Attribute.minor)
                 ckWayPointRecord.setObject(point2Save.UUID as CKRecordValue?, forKey: Constants.Attribute.UUID)
                 ckWayPointRecord.setObject(point2Save.challenge as CKRecordValue?, forKey: Constants.Attribute.challenge)
+                ckWayPointRecord.setObject(point2Save.URL as CKRecordValue?, forKey: Constants.Attribute.URL)
                 ckWayPointRecord.setObject(p2S as CKRecordValue?, forKey: Constants.Attribute.order)
                 ckWayPointRecord.setParent(sharePoint)
                 p2S += 1
@@ -1499,6 +1529,7 @@ func getShare() {
         globalUUID = record2U.object(forKey: Constants.Attribute.UUID) as? String
 
             parentID = record2U.parent
+            let url2U = record2U.object(forKey: Constants.Attribute.URL) as? String
             let name = record2U.object(forKey:  Constants.Attribute.name) as? String
             let hint = record2U.object(forKey:  Constants.Attribute.hint) as? String
             let order = record2U.object(forKey:  Constants.Attribute.order) as? Int
@@ -1510,10 +1541,10 @@ func getShare() {
                 image2D = UIImage(data: data as Data)
             }
             if major == nil {
-                let wp2S = wayPoint(recordID: record2U.recordID, UUID: nil, major:major, minor: minor, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: image2D, order: order, boxes: boxes, challenge: challenge, URL: nil)
+                let wp2S = wayPoint(recordID: record2U.recordID, UUID: nil, major:major, minor: minor, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: image2D, order: order, boxes: boxes, challenge: challenge, URL: url2U)
                  listOfPoint2Seek.append(wp2S)
             } else {
-                let wp2S = wayPoint(recordID: record2U.recordID,UUID: globalUUID, major:major, minor: minor, proximity: nil, coordinates: nil, name: name, hint: hint, image: image2D, order: order, boxes: nil, challenge: challenge, URL: nil)
+                let wp2S = wayPoint(recordID: record2U.recordID,UUID: globalUUID, major:major, minor: minor, proximity: nil, coordinates: nil, name: name, hint: hint, image: image2D, order: order, boxes: nil, challenge: challenge, URL: url2U)
                 listOfPoint2Seek.append(wp2S)
                 // set this just in case you want to define more ibeacons
                 let k2U = String(minor!) + String(major!)
@@ -1642,6 +1673,7 @@ func getShare() {
             ewvc?.nameText =  uniqueName
             ewvc?.hintText = "ibeacon"
             ewvc?.setWayPoint = self
+             ewvc?.me = self
             if let ppc = ewvc?.popoverPresentationController {
                 let point2U = mapView.convert( (locationManager?.location?.coordinate)!, toPointTo: mapView)
                 ppc.sourceRect = CGRect(x: point2U.x, y: point2U.y, width: 1, height: 1)
@@ -1690,7 +1722,6 @@ func getShare() {
         if  URL != nil {
             let wp2Fix = wayPoints.filter { (arg) -> Bool in
                 let (_, value2U) = arg
-                print("fcuk29062018 updateURL\(arg)")
                 return value2U.name == waypoint2U.title
             }
             print("fcuk29062018 updateURL \(wp2Fix)")
@@ -2048,6 +2079,7 @@ func getShare() {
             static let wayPointsArray = "wayPointsArray"
             static let boxes = "boxes"
             static let challenge = "challenge"
+            static let URL = "URL"
         }
         struct Variable {
             static  let radius = 40
