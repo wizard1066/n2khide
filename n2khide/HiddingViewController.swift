@@ -1446,18 +1446,18 @@ func getShare() {
             }
         }
         
-        let when = DispatchTime.now() + Double(2)
-        DispatchQueue.main.asyncAfter(deadline: when){
-            self.spinner.stopAnimating()
-            for points in listOfPoint2Seek {
-                let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
-                let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
-                
-            }
-            self.lowLabel.isHidden = false
-            self.highLabel.isHidden = false
-            self.nextLocation2Show()
-        }
+//        let when = DispatchTime.now() + Double(8)
+//        DispatchQueue.main.asyncAfter(deadline: when){
+//            self.spinner.stopAnimating()
+//            for points in listOfPoint2Seek {
+//                let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
+//                let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
+//
+//            }
+//            self.lowLabel.isHidden = false
+//            self.highLabel.isHidden = false
+//            self.nextLocation2Show()
+//        }
     }
     
     func zoneRecord2Load(zoneNamed: String?) {
