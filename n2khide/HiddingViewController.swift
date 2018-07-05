@@ -1143,8 +1143,19 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //    var records2MaybeDelete:[CKRecordID] = []
     
     @IBAction func newMap(_ sender: UIBarButtonItem) {
+        nouveauMap(source: true)
+    }
+    
+    private func nouveauMap(source: Bool) {
+        print("nouveauMap listOfPoint2Save \(listOfPoint2Save?.count) listOfPoint2Seek \(listOfPoint2Seek.count)")
         usingMode = op.recording
-        let alert = UIAlertController(title: "Map Name", message: "", preferredStyle: .alert)
+        var alert2U: String!
+        if source {
+            alert2U = "Map Name"
+        } else {
+            alert2U = "You NEED to define a Map Name first, nothing SAVED or SHARED"
+        }
+        let alert = UIAlertController(title: "Map Name", message: alert2U, preferredStyle: .alert)
         alert.addTextField { (textField) in
             textField.placeholder = "Map Name"
         }
@@ -1172,14 +1183,6 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                             self.doshare(rexShared: nil)
                         }
                     }))
-//                        let operation = CKFetchRecordZonesOperation(recordZoneIDs: [recordZone.zoneID])
-//                        operation.fetchRecordZonesCompletionBlock = { _, error in
-//                            if error != nil {
-//                                print(error?.localizedDescription.debugDescription)
-//                            }
-//                            self.doshare(rexShared: nil)
-//                    }
-//                    self.privateDB.add(operation)
                 }
             }
             }))
@@ -1230,7 +1233,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     
     func save2Cloud(rex2S:[wayPoint]?, rex2D:[CKRecordID]?, sharing: Bool) {
         if recordZone == nil {
-            newMap(UIBarButtonItem())
+            nouveauMap(source: false)
             return
         }
         sharingApp = true
@@ -1504,17 +1507,21 @@ func getShare() {
                 
 //                self.records2MaybeDelete.append(record.recordID)
             }
+            let when = DispatchTime.now() + Double(0)
+            DispatchQueue.main.asyncAfter(deadline: when){
+                self.countLabel.text  = String(listOfPoint2Seek.count)
+                
+                self.lowLabel.isHidden = false
+                self.highLabel.isHidden = false
+                self.nextLocation2Show()
+            }
         }
         
     
 //    let when = DispatchTime.now() + Double(4)
 //    DispatchQueue.main.asyncAfter(deadline: when){
 //            self.countLabel.text  = String(listOfPoint2Seek.count)
-////        for points in listOfPoint2Seek {
-////            let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
-////            let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
-////            print("listOfPoint2Seek \(long) \(lat)")
-////        }
+//
 //        self.lowLabel.isHidden = false
 //        self.highLabel.isHidden = false
 //        self.nextLocation2Show()
