@@ -65,24 +65,26 @@
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wt2-lW-vZs">
                                                 <rect key="frame" x="80" y="8" width="64" height="56"/>
+                                                <color key="backgroundColor" red="0.83741801979999997" green="0.83743780850000005" blue="0.83742713930000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="64" id="SEQ-Gk-I3f"/>
                                                     <constraint firstAttribute="height" constant="56" id="eYm-eM-MZe"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="11"/>
                                                 <state key="normal" title="&lt;DragDrop&gt;">
-                                                    <color key="titleColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="alN-3G-3Xl">
                                                 <rect key="frame" x="160" y="8" width="64" height="56"/>
+                                                <color key="backgroundColor" red="0.83741801979999997" green="0.83743780850000005" blue="0.83742713930000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="64" id="0oN-Ww-2Nn"/>
                                                     <constraint firstAttribute="height" constant="56" id="9sQ-Rr-1uR"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="13"/>
                                                 <state key="normal" title="&lt;Library&gt;">
-                                                    <color key="titleColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
                                                 <connections>
                                                     <action selector="Library:" destination="89x-Hb-n98" eventType="touchUpInside" id="g9P-TU-oxr"/>
@@ -90,13 +92,14 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6b7-1o-tNs">
                                                 <rect key="frame" x="232" y="8" width="64" height="56"/>
+                                                <color key="backgroundColor" red="0.92143100499999997" green="0.92145264149999995" blue="0.92144101860000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="56" id="Rax-oQ-EXT"/>
                                                     <constraint firstAttribute="width" constant="64" id="snn-Bm-GjI"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="13"/>
                                                 <state key="normal" title="&lt;Browser&gt;">
-                                                    <color key="titleColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
                                                 <connections>
                                                     <action selector="WebBrowser:" destination="89x-Hb-n98" eventType="touchUpInside" id="edb-Dq-YuO"/>
@@ -104,6 +107,7 @@
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x1i-WY-DjV">
                                                 <rect key="frame" x="8" y="8" width="64" height="56"/>
+                                                <color key="backgroundColor" red="0.75406885150000003" green="0.75408679249999999" blue="0.75407713649999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="64" id="V1G-Ny-CzD"/>
                                                     <constraint firstAttribute="height" constant="56" id="uTl-uC-bfp"/>
@@ -111,7 +115,7 @@
                                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="13"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="0.0"/>
                                                 <state key="normal" title="&lt;Camera&gt;">
-                                                    <color key="titleColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
                                                 <connections>
                                                     <action selector="Camera:" destination="89x-Hb-n98" eventType="touchUpInside" id="Hvt-hd-6Fw"/>
@@ -437,14 +441,12 @@
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I98-se-byU">
-                                                <rect key="frame" x="714" y="51" width="46" height="30"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <state key="normal" title="Debug"/>
-                                                <connections>
-                                                    <action selector="debug:" destination="17o-cH-NIh" eventType="touchUpInside" id="4Ad-ek-17u"/>
-                                                </connections>
-                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="436-V8-9AS">
+                                                <rect key="frame" x="357.5" y="226" width="53.5" height="22"/>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="16"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -456,6 +458,7 @@
                                             <constraint firstItem="rws-ci-FeV" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="D8O-9N-yfl"/>
                                             <constraint firstItem="rws-ci-FeV" firstAttribute="top" secondItem="Zax-lQ-oNB" secondAttribute="bottom" constant="4" id="HSb-aO-zYZ"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerY" secondItem="sLL-BY-qSg" secondAttribute="centerY" id="I7Q-2n-NZT"/>
+                                            <constraint firstItem="436-V8-9AS" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="I9X-s4-Jaj"/>
                                             <constraint firstItem="H9l-Jh-LRi" firstAttribute="top" secondItem="SvD-CE-nLV" secondAttribute="top" constant="8" id="Ige-5Y-98z"/>
                                             <constraint firstItem="mxa-CI-Jfg" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" constant="8" id="L9Q-0t-pwT"/>
                                             <constraint firstItem="iIv-Br-KVR" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="Mdh-6X-9L4"/>
@@ -467,6 +470,7 @@
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="top" secondItem="SvD-CE-nLV" secondAttribute="top" id="XtS-pi-euW"/>
                                             <constraint firstItem="Shq-1A-DO9" firstAttribute="top" secondItem="rws-ci-FeV" secondAttribute="bottom" constant="8" id="YhJ-2z-Ihy"/>
                                             <constraint firstItem="H9l-Jh-LRi" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" constant="8" id="aWg-Zf-Ako"/>
+                                            <constraint firstItem="GHw-WU-YGA" firstAttribute="top" secondItem="436-V8-9AS" secondAttribute="bottom" constant="8" id="bHL-9H-QiH"/>
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="top" secondItem="XxX-fC-dMw" secondAttribute="bottom" constant="4" id="bwl-gt-EZT"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="leading" secondItem="SvD-CE-nLV" secondAttribute="leading" id="emq-tz-5Sh"/>
                                             <constraint firstItem="Zax-lQ-oNB" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="gkR-qF-ZUh"/>
@@ -560,6 +564,7 @@
                         <outlet property="pin" destination="5rp-DO-9vb" id="qgw-05-E2y"/>
                         <outlet property="plusButton" destination="7Tj-8q-gGU" id="wUA-mb-34e"/>
                         <outlet property="scanButton" destination="gau-6O-lj9" id="fs9-QC-2y5"/>
+                        <outlet property="timerLabel" destination="436-V8-9AS" id="o6k-Mf-u0P"/>
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="SvD-CE-nLV" id="RQi-Wn-jN8">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
@@ -706,6 +711,6 @@
         <image name="qr_code" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="hFW-Ay-RwD"/>
+        <segue reference="RQi-Wn-jN8"/>
     </inferredMetricsTieBreakers>
 </document>

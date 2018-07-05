@@ -58,6 +58,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var pin: UIBarButtonItem!
     @IBOutlet weak var scanButton: UIBarButtonItem!
     @IBOutlet weak var plusButton: UIBarButtonItem!
+    @IBOutlet weak var timerLabel: UILabel!
+    
+    private var savedMap: Bool = true
     
     @IBAction func searchButton(_ sender: Any) {
         let url = URL(string: "https://elearning.swisseducation.com")
@@ -87,6 +90,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         if usingMode == op.playing {
             return
         }
+        savedMap = false
         if currentLocation != nil {
             let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
             let wayNames = Array(wayPoints.keys)
@@ -1160,7 +1164,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             textField.placeholder = "Map Name"
         }
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
-                let textField = alert?.textFields![0]
+            let textField = alert?.textFields![0]
             if textField?.text != "" {
                 let _ = self.listAllZones()
                 if zoneTable[(textField?.text)!] != nil {
@@ -1171,18 +1175,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                     }
                 } else {
                     recordZone = CKRecordZone(zoneName: (textField?.text)!)
-                    self.privateDB.save(recordZone, completionHandler: ({returnRecord, error in
-                        if error != nil {
-                            // Zone creation failed
-                            print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
-                        } else {
-                            // Zone creation succeeded
-                            DispatchQueue.main.async {
-                                print("The 'privateDB \((textField?.text)!) was successfully created in the private database.")
-                            }
-                            self.doshare(rexShared: nil)
-                        }
-                    }))
+                    self.saveZone(zone2S: recordZone)
                 }
             }
             }))
@@ -1191,6 +1184,21 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     }
     
     // MARK: CloudSharing delegate
+    
+    func saveZone(zone2S: CKRecordZone) {
+        self.privateDB.save(zone2S, completionHandler: ({returnRecord, error in
+            if error != nil {
+                // Zone creation failed
+                print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
+            } else {
+                // Zone creation succeeded
+                DispatchQueue.main.async {
+                    print("The 'privateDB \(zone2S.zoneID.zoneName) was successfully created in the private database.")
+                }
+                self.doshare(rexShared: nil)
+            }
+        }))
+    }
     
     func cloudSharingController(_ csc: UICloudSharingController, failedToSaveShareWithError error: Error) {
         print(error)
@@ -1237,6 +1245,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             return
         }
         sharingApp = true
+        savedMap = true
         
         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 
@@ -1807,6 +1816,7 @@ func getShare() {
         if usingMode == op.playing {
             return
         }
+        savedMap = false
         if sender.state == .began {
             trigger = point.gps
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
@@ -1850,6 +1860,8 @@ func getShare() {
     private var pinObserver: NSObjectProtocol!
     private var regionObserver: NSObjectProtocol!
     
+    var timer: Timer!
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let when = DispatchTime.now() + Double(8)
@@ -1859,8 +1871,16 @@ func getShare() {
             let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
             self.mapView.setRegion(region, animated: true)
             self.regionHasBeenCentered = true
-            
-            
+            var timeCount:TimeInterval = 0.0
+            let timeInterval:TimeInterval = 0.05
+            var timer = Timer.scheduledTimer(withTimeInterval: timeInterval,
+                                             repeats: true) {
+                                                timer in
+                                                self.timerLabel.text = self.timeString(time: timeCount)
+                                                timeCount += 1
+                                                print("frr")
+            }
+            timer.fire()
         }
 
         let center = NotificationCenter.default
@@ -1996,8 +2016,17 @@ func getShare() {
         }
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+        super.viewDidDisappear(animated)
+        if !savedMap {
+            save2Cloud(rex2S: listOfPoint2Save, rex2D: nil, sharing: true)
+        }
+ 
          let center = NotificationCenter.default
         if pinObserver != nil {
             center.removeObserver(pinObserver)
@@ -2027,7 +2056,20 @@ func getShare() {
         locationManager?.allowsBackgroundLocationUpdates
         locationManager?.requestLocation()
 //        pin.isEnabled = true
-        _ = self.listAllZones()
+        var rex2C = self.listAllZones()
+       // Makes a big MESS skip 4 now
+//        if rex2C["Saved"] == nil {
+//             recordZone = CKRecordZone(zoneName: "Saved")
+//            saveZone(zone2S: recordZone)
+//        }
+        
+    }
+    
+    func timeString(time:TimeInterval) -> String {
+        let minutes = Int(time) / 60
+        let seconds = time - Double(minutes) * 60
+        let secondsFraction = seconds - Double(Int(seconds))
+        return String(format:"%02i:%02i.%01i",minutes,Int(seconds),Int(secondsFraction * 10.0))
     }
 
     override func didReceiveMemoryWarning() {
