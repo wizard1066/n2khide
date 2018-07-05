@@ -165,7 +165,16 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         return selectedSet
     }
     
-    private func listAllZones() -> [String:CKRecordZoneID] {
+   var  zonesReturned = false {
+        didSet {
+            if zoneTable["Saved"] == nil {
+                    print("fcuk05072018 \(zoneTable)")
+                    saveZone(zone2S: CKRecordZone(zoneName: "Saved"))
+            }
+        }
+    }
+    
+    private func listAllZones()  {
         let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
         operation.fetchRecordZonesCompletionBlock = { records, error in
             if error != nil {
@@ -175,9 +184,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 print("\(rex.value.zoneID.zoneName)")
                 zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
             }
+            self.zonesReturned = true
         }
         privateDB.add(operation)
-        return zoneTable
     }
     
     var geotifications = [Geotification]()
@@ -1192,6 +1201,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
             } else {
                 // Zone creation succeeded
+                recordZone = returnRecord
                 DispatchQueue.main.async {
                     print("The 'privateDB \(zone2S.zoneID.zoneName) was successfully created in the private database.")
                 }
@@ -1878,7 +1888,6 @@ func getShare() {
                                                 timer in
                                                 self.timerLabel.text = self.timeString(time: timeCount)
                                                 timeCount += 1
-                                                print("frr")
             }
             timer.fire()
         }
@@ -2055,14 +2064,7 @@ func getShare() {
         locationManager?.activityType = CLActivityType.fitness
         locationManager?.allowsBackgroundLocationUpdates
         locationManager?.requestLocation()
-//        pin.isEnabled = true
-        var rex2C = self.listAllZones()
-       // Makes a big MESS skip 4 now
-//        if rex2C["Saved"] == nil {
-//             recordZone = CKRecordZone(zoneName: "Saved")
-//            saveZone(zone2S: recordZone)
-//        }
-        
+        self.listAllZones()
     }
     
     func timeString(time:TimeInterval) -> String {
