@@ -12,9 +12,9 @@ class HideView: UIView {
     
     var backgroundImage: UIImage? {didSet { setNeedsDisplay() } }
     
-    override func draw(_ rect: CGRect) {
-        backgroundImage?.draw(in: rect)
-    }
+//    override func draw(_ rect: CGRect) {
+//        backgroundImage?.draw(in: rect)
+//    }
 
     /*
     // Only override draw() if you perform custom drawing.

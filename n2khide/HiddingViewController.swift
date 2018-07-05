@@ -56,6 +56,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var loadingSV: UIStackView!
     @IBOutlet weak var countLabel: UILabel!
     @IBOutlet weak var pin: UIBarButtonItem!
+    @IBOutlet weak var scanButton: UIBarButtonItem!
+    @IBOutlet weak var plusButton: UIBarButtonItem!
     
     @IBAction func searchButton(_ sender: Any) {
         let url = URL(string: "https://elearning.swisseducation.com")
@@ -82,6 +84,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
     
     @IBAction func pinButton(_ sender: Any) {
+        if usingMode == op.playing {
+            return
+        }
         if currentLocation != nil {
             let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
             let wayNames = Array(wayPoints.keys)
@@ -299,13 +304,13 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
 //        var shouldHideBeaconDetails = true
-        print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)\n")
+//        print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)\n")
         if beacons.count > 0, usingMode == op.recording {
             let beacons2S = beacons.filter { $0.proximity != CLProximity.unknown }
             if beacons2S.count > 0 {
                 if let closestBeacon = beacons2S[0] as? CLBeacon {
                         let k2U = closestBeacon.minor.stringValue + closestBeacon.major.stringValue
-                        print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)")
+//                        print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)")
                         if beaconsInTheBag[k2U] == nil {
                             beaconsInTheBag[k2U] = true
                             trigger = point.ibeacon
@@ -315,7 +320,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                             let newWayPoint = wayPoint(recordID:nil, UUID: globalUUID, major:closestBeacon.major as? Int, minor: closestBeacon.minor as? Int, proximity: nil, coordinates: nil, name: uniqueName, hint:nil, image: nil, order: wayPoints.count, boxes: nil, challenge: nil,  URL: nil)
                             wayPoints[closestBeacon.proximityUUID.uuidString] = newWayPoint
                             listOfPoint2Save?.append(newWayPoint)
-                            print("WTF \(listOfPoint2Save) \(uniqueName)")
+//                            print("WTF \(listOfPoint2Save) \(uniqueName)")
                             performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
                         }
                     }
@@ -483,7 +488,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
  
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        pin.isEnabled = true
+//        pin.isEnabled = true
         orderLabel.text = String(order2Search!)
         currentLocation = locations.first
         let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
@@ -1135,6 +1140,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     var recordZoneID: CKRecordZoneID!
     var recordID: CKRecordID!
     
+//    var records2MaybeDelete:[CKRecordID] = []
+    
     @IBAction func newMap(_ sender: UIBarButtonItem) {
         usingMode = op.recording
         let alert = UIAlertController(title: "Map Name", message: "", preferredStyle: .alert)
@@ -1159,17 +1166,20 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                             print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
                         } else {
                             // Zone creation succeeded
-                            print("The 'privateDB LeZone' was successfully created in the private database.")
-                        }
-                    }))
-                        let operation = CKFetchRecordZonesOperation(recordZoneIDs: [recordZone.zoneID])
-                        operation.fetchRecordZonesCompletionBlock = { _, error in
-                            if error != nil {
-                                print(error?.localizedDescription.debugDescription)
+                            DispatchQueue.main.async {
+                                print("The 'privateDB \((textField?.text)!) was successfully created in the private database.")
                             }
                             self.doshare(rexShared: nil)
-                    }
-                    self.privateDB.add(operation)
+                        }
+                    }))
+//                        let operation = CKFetchRecordZonesOperation(recordZoneIDs: [recordZone.zoneID])
+//                        operation.fetchRecordZonesCompletionBlock = { _, error in
+//                            if error != nil {
+//                                print(error?.localizedDescription.debugDescription)
+//                            }
+//                            self.doshare(rexShared: nil)
+//                    }
+//                    self.privateDB.add(operation)
                 }
             }
             }))
@@ -1230,9 +1240,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.waitUntilAllOperationsAreFinished()
         
-//        var rec2Save:[CKRecord] = []
-//        print("fcuk26062018 listOfPoint2Save \(listOfPoint2Save)")
-        var p2S = 0
+        var p2S:Int = order2Search ?? 0
         
 //        for point2Save in listOfPoint2Save! {
         for point2Save in rex2S! {
@@ -1283,6 +1291,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //            self.doshare(rexShared: record!)
             if sharing {
                 self.sharing(record2S: self.sharePoint)
+                order2Search = listOfPoint2Save?.count
+                listOfPoint2Save?.removeAll()
             }
         }
         
@@ -1377,6 +1387,9 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     
         
     @IBAction func FetchShare(_ sender: Any) {
+        pin.isEnabled = false
+        scanButton.isEnabled = false
+        plusButton.isEnabled = false
         getShare()
     }
     
@@ -1441,23 +1454,9 @@ func getShare() {
             for record in records! {
                 print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
-                
-            
             }
+            
         }
-        
-//        let when = DispatchTime.now() + Double(8)
-//        DispatchQueue.main.asyncAfter(deadline: when){
-//            self.spinner.stopAnimating()
-//            for points in listOfPoint2Seek {
-//                let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
-//                let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
-//
-//            }
-//            self.lowLabel.isHidden = false
-//            self.highLabel.isHidden = false
-//            self.nextLocation2Show()
-//        }
     }
     
     func zoneRecord2Load(zoneNamed: String?) {
@@ -1477,8 +1476,9 @@ func getShare() {
         }
     }
     
-    func share2Load(zoneNamed: String?) {
+    func share2Load(zoneNamed: String?)  {
         print("fcuk03072018 \(zoneNamed)")
+//            records2MaybeDelete.removeAll()
             recordZone = CKRecordZone(zoneName: zoneNamed!)
             recordZoneID = recordZone.zoneID
         let predicate = NSPredicate(value: true)
@@ -1491,23 +1491,23 @@ func getShare() {
             for record in records! {
                 print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
+//                self.records2MaybeDelete.append(record.recordID)
             }
-            
-            
         }
+        
     
-    let when = DispatchTime.now() + Double(4)
-    DispatchQueue.main.asyncAfter(deadline: when){
-            self.countLabel.text  = String(listOfPoint2Seek.count)
-//        for points in listOfPoint2Seek {
-//            let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
-//            let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
-//            print("listOfPoint2Seek \(long) \(lat)")
-//        }
-        self.lowLabel.isHidden = false
-        self.highLabel.isHidden = false
-        self.nextLocation2Show()
-    }
+//    let when = DispatchTime.now() + Double(4)
+//    DispatchQueue.main.asyncAfter(deadline: when){
+//            self.countLabel.text  = String(listOfPoint2Seek.count)
+////        for points in listOfPoint2Seek {
+////            let long = self.getLocationDegreesFrom(longitude: (points.coordinates?.longitude)!)
+////            let lat = self.getLocationDegreesFrom(longitude: (points.coordinates?.latitude)!)
+////            print("listOfPoint2Seek \(long) \(lat)")
+////        }
+//        self.lowLabel.isHidden = false
+//        self.highLabel.isHidden = false
+//        self.nextLocation2Show()
+//    }
     
         
     
@@ -1765,6 +1765,9 @@ func getShare() {
     }
     
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
+        if usingMode == op.playing {
+            return
+        }
         if sender.state == .began {
             trigger = point.gps
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
@@ -1984,7 +1987,7 @@ func getShare() {
         locationManager?.activityType = CLActivityType.fitness
         locationManager?.allowsBackgroundLocationUpdates
         locationManager?.requestLocation()
-        pin.isEnabled = true
+//        pin.isEnabled = true
         _ = self.listAllZones()
     }
 

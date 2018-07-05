@@ -529,7 +529,7 @@
                                     <action selector="FetchShare:" destination="17o-cH-NIh" id="hGt-zJ-ZlS"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Pin" image="geo_fence" id="5rp-DO-9vb">
+                            <barButtonItem title="Item" image="geo_fence" id="5rp-DO-9vb">
                                 <connections>
                                     <action selector="pinButton:" destination="17o-cH-NIh" id="HJf-qv-h5X"/>
                                 </connections>
@@ -558,6 +558,8 @@
                         <outlet property="nameLabel" destination="H9l-Jh-LRi" id="cBp-Pw-diZ"/>
                         <outlet property="orderLabel" destination="2KP-uV-ovL" id="7o9-Ns-616"/>
                         <outlet property="pin" destination="5rp-DO-9vb" id="qgw-05-E2y"/>
+                        <outlet property="plusButton" destination="7Tj-8q-gGU" id="wUA-mb-34e"/>
+                        <outlet property="scanButton" destination="gau-6O-lj9" id="fs9-QC-2y5"/>
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="SvD-CE-nLV" id="RQi-Wn-jN8">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
