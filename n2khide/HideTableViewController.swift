@@ -333,6 +333,7 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     
     var wp2D:[CKRecordID] = []
     
+    
     override func tableView(_ tableView: UITableView,
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {

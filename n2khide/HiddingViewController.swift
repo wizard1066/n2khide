@@ -1240,14 +1240,17 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.waitUntilAllOperationsAreFinished()
         
-        var p2S:Int = order2Search ?? 0
+        var p2S = listOfPoint2Seek.count
         
-//        for point2Save in listOfPoint2Save! {
+        print("fcuk05072018 p2S \(p2S)")
+        
         for point2Save in rex2S! {
-            print("fcuk02072018 challenge \(point2Save.challenge)")
-//            let operation1 = BlockOperation {
-            
-                let ckWayPointRecord = CKRecord(recordType: Constants.Entity.wayPoints, zoneID: recordZone.zoneID)
+            var ckWayPointRecord: CKRecord!
+            if point2Save.recordID == nil {
+                    ckWayPointRecord = CKRecord(recordType: Constants.Entity.wayPoints, zoneID: recordZone.zoneID)
+            } else {
+                ckWayPointRecord = CKRecord(recordType: Constants.Entity.wayPoints, recordID: point2Save.recordID!)
+            }
                 ckWayPointRecord.setObject(point2Save.coordinates?.longitude as CKRecordValue?, forKey: Constants.Attribute.longitude)
                 ckWayPointRecord.setObject(point2Save.coordinates?.latitude as CKRecordValue?, forKey: Constants.Attribute.latitude)
                 ckWayPointRecord.setObject(point2Save.name as CKRecordValue?, forKey: Constants.Attribute.name)
@@ -1275,11 +1278,12 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
            }
              self.records2Share.append(ckWayPointRecord)
+            listOfPoint2Seek.append(point2Save)
         }
         
         let modifyOp = CKModifyRecordsOperation(recordsToSave:
             records2Share, recordIDsToDelete: rex2D)
-        modifyOp.savePolicy = .ifServerRecordUnchanged
+        modifyOp.savePolicy = .allKeys
         modifyOp.perRecordCompletionBlock = {(record,error) in
             print("error \(error.debugDescription)")
         }
@@ -1288,6 +1292,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             if error != nil {
                 print("error \(error.debugDescription)")
             }
+            
 //            self.doshare(rexShared: record!)
             if sharing {
                 self.sharing(record2S: self.sharePoint)
@@ -1435,6 +1440,7 @@ func getShare() {
     }
     
     func share2Source(zoneID: CKRecordZoneID?) {
+        spotOrderError.removeAll()
         windowView = .points
         DispatchQueue.main.async {
             self.mapView.alpha = 0.7
@@ -1476,11 +1482,15 @@ func getShare() {
         }
     }
     
+    
+    
     func share2Load(zoneNamed: String?)  {
+        spotOrderError.removeAll()
         print("fcuk03072018 \(zoneNamed)")
 //            records2MaybeDelete.removeAll()
             recordZone = CKRecordZone(zoneName: zoneNamed!)
             recordZoneID = recordZone.zoneID
+        
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
         query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
@@ -1491,6 +1501,7 @@ func getShare() {
             for record in records! {
                 print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
+                
 //                self.records2MaybeDelete.append(record.recordID)
             }
         }
@@ -1520,6 +1531,23 @@ func getShare() {
 //        }
     }
     
+    private func fetchParentX(recordID: CKRecordID) {
+        var fetchOperation = CKFetchRecordsOperation(recordIDs: [recordID])
+        fetchOperation.fetchRecordsCompletionBlock = {
+            records, error in
+            if error != nil {
+                print("\(error!)")
+            } else {
+                for (recordId, record) in records! {
+                    self.sharePoint = record
+                }
+            }
+        }
+        privateDB.add(fetchOperation)
+    }
+    
+    private var spotOrderError:[Int:Bool?] = [:]
+    
     private func buildWaypoint(record2U: CKRecord) {
 
         let longitude = record2U.object(forKey:  Constants.Attribute.longitude) as? Double
@@ -1529,10 +1557,14 @@ func getShare() {
         globalUUID = record2U.object(forKey: Constants.Attribute.UUID) as? String
 
             parentID = record2U.parent
+            if parentID != nil,  sharePoint == nil {
+                fetchParentX(recordID: (parentID?.recordID)!)
+            }
             let url2U = record2U.object(forKey: Constants.Attribute.URL) as? String
             let name = record2U.object(forKey:  Constants.Attribute.name) as? String
             let hint = record2U.object(forKey:  Constants.Attribute.hint) as? String
             let order = record2U.object(forKey:  Constants.Attribute.order) as? Int
+
             let boxes = record2U.object(forKey: Constants.Attribute.boxes) as? [CLLocation]
             let challenge = record2U.object(forKey: Constants.Attribute.challenge) as? String
             let file : CKAsset? = record2U.object(forKey: Constants.Attribute.imageData) as? CKAsset
