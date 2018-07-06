@@ -59,7 +59,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var scanButton: UIBarButtonItem!
     @IBOutlet weak var plusButton: UIBarButtonItem!
     @IBOutlet weak var timerLabel: UILabel!
-    
+    @IBOutlet weak var SVcountingLabels: UIStackView!
     private var savedMap: Bool = true
     
     @IBAction func searchButton(_ sender: Any) {
@@ -1518,7 +1518,7 @@ func getShare() {
     
     
     func share2Load(zoneNamed: String?)  {
-        spotOrderError.removeAll()
+//        spotOrderError.removeAll()
         print("fcuk03072018 \(zoneNamed)")
 //            records2MaybeDelete.removeAll()
             recordZone = CKRecordZone(zoneName: zoneNamed!)
@@ -1544,6 +1544,9 @@ func getShare() {
                 self.lowLabel.isHidden = false
                 self.highLabel.isHidden = false
                 self.nextLocation2Show()
+                self.makeTimer()
+                self.timerLabel.isHidden = false
+                self.countLabel.isHidden = false
             }
         }
         
@@ -1875,6 +1878,19 @@ func getShare() {
         }
     }
     
+    //MARK: timer
+    
+     var timer: Timer!
+    
+    func makeTimer() {
+        var timeCount:TimeInterval = 1.0
+        let timeInterval:TimeInterval = 1.0
+        var timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { timer in
+            self.timerLabel.text = self.timeString(time: timeCount)
+            timeCount += 1
+        }
+    }
+    
     // MARK: Popover Delegate
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
@@ -1885,7 +1901,7 @@ func getShare() {
     private var pinObserver: NSObjectProtocol!
     private var regionObserver: NSObjectProtocol!
     
-    var timer: Timer!
+   
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -1896,13 +1912,6 @@ func getShare() {
             let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
             self.mapView.setRegion(region, animated: true)
             self.regionHasBeenCentered = true
-            var timeCount:TimeInterval = 1.0
-            let timeInterval:TimeInterval = 1.0
-            var timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { timer in
-                                                self.timerLabel.text = self.timeString(time: timeCount)
-                                                timeCount += 1
-            }
-            timer.fire()
         }
 
         let center = NotificationCenter.default
