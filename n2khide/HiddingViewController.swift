@@ -781,12 +781,14 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //    }
     
     func didSetImage(name: String?, image: UIImage?) {
-//        for wayPoints in mapView.annotations {
-//            if wayPoints.title == name {
-                if let thumbButton = pinView.leftCalloutAccessoryView as? UIButton {
+        for wayPoints in mapView.annotations {
+           if wayPoints.title == name {
+                let view = mapView.view(for: wayPoints)
+                if let thumbButton = view?.leftCalloutAccessoryView as? UIButton {
                                     thumbButton.setImage(image, for: .normal)
-//                }
-//            }
+                }
+            }
+                
         }
         if image != nil {
             let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
