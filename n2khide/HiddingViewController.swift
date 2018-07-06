@@ -1948,6 +1948,17 @@ func getShare() {
             self.nameLabel.alpha = 1
             self.hintLabel.alpha = 1
         }
+        order2Search = 0
+        wayPoints = [:]
+        listOfPoint2Seek = []
+        listOfPoint2Save = []
+        listOfPoint2Search = []
+        listOfZones = []
+        
+        zoneTable = [:]
+        WP2M = [:]
+        WP2P = [:]
+        order2SaveIndex = nil
     }
     
     private func fadeTitles() {
