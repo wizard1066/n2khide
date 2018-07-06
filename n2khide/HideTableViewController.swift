@@ -24,6 +24,11 @@ protocol table2Map {
 
 class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPresentationControllerDelegate {
     
+    func didSetName(originalName: String?, name: String?) {
+        //fix
+    }
+    
+    
     private var edited: Bool = false
     
     func didSetURL(name: String?, URL: String?) {

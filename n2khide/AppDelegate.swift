@@ -82,7 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        print("fcuk05072017 Terminating \(listOfPoint2Save)")
+        
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     

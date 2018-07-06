@@ -38,7 +38,7 @@ struct wp2Search {
 
 var wayPoints:[String:wayPoint] = [:]
 var listOfPoint2Seek:[wayPoint] = []
-var listOfPoint2Save:[wayPoint]? = []
+//var listOfPoint2Save:[wayPoint]? = []
 var listOfPoint2Search:[wp2Search] = []
 var listOfZones:[String] = []
 var parentID: CKReference?

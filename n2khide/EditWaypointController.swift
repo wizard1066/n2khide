@@ -10,7 +10,7 @@ import UIKit
 import MobileCoreServices
 
 protocol  setWayPoint  {
-    func didSetName(name: String?)
+    func didSetName(originalName: String?, name: String?)
     func didSetHint(name: String?, hint: String?)
     func didSetImage(name: String?, image: UIImage?)
     func didSetChallenge(name: String?, challenge: String?)
@@ -127,7 +127,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
         let queue = OperationQueue.main
         let alert2Monitor = NSNotification.Name.UITextFieldTextDidEndEditing
         namedObserver = center.addObserver(forName: alert2Monitor, object: nameTextField, queue: queue) { (notification) in
-                self.setWayPoint.didSetName(name: self.nameTextField.text)
+            self.setWayPoint.didSetName(originalName:self.nameText, name: self.nameTextField.text)
         }
         hintObserver = center.addObserver(forName: alert2Monitor, object: hintTextField, queue: queue) { (notification) in
             self.setWayPoint.didSetHint(name: self.nameTextField.text,hint: self.hintTextField.text)

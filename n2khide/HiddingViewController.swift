@@ -115,7 +115,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
             let newWayPoint = wayPoint(recordID:nil,UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: userLocation, name: uniqueName, hint: hint2D, image: nil, order: wayPoints.count, boxes:box2F, challenge: nil, URL: nil)
             wayPoints[uniqueName] = newWayPoint
-            listOfPoint2Save?.append(newWayPoint)
+            listOfPoint2Seek.append(newWayPoint)
         }
     }
     
@@ -332,7 +332,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                             beaconsLogged.append(uniqueName)
                             let newWayPoint = wayPoint(recordID:nil, UUID: globalUUID, major:closestBeacon.major as? Int, minor: closestBeacon.minor as? Int, proximity: nil, coordinates: nil, name: uniqueName, hint:nil, image: nil, order: wayPoints.count, boxes: nil, challenge: nil,  URL: nil)
                             wayPoints[closestBeacon.proximityUUID.uuidString] = newWayPoint
-                            listOfPoint2Save?.append(newWayPoint)
+                            listOfPoint2Seek.append(newWayPoint)
 //                            print("WTF \(listOfPoint2Save) \(uniqueName)")
                             performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
                         }
@@ -683,71 +683,135 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     // MARK: setWayPoint protocl implementation
     
     func didSetURL(name: String?, URL: String?) {
-        if pinViewSelected != nil {
-            updateURL(waypoint2U: pinViewSelected, URL: URL)
-        } else {
-            let wp2C = listOfPoint2Save?.popLast()
-            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge:wp2C?.challenge, URL: URL)
-            listOfPoint2Save?.append(wp2S)
+        if URL != nil {
+            let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
+                item.name == name
+            })
+            if index2F != nil {
+                listOfPoint2Seek[index2F!].URL = URL
+            }
         }
     }
+        
+//        if pinViewSelected != nil {
+//            updateURL(waypoint2U: pinViewSelected, URL: URL)
+//        } else {
+//            let wp2C = listOfPoint2Seek.popLast()
+//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge:wp2C?.challenge, URL: URL)
+//            listOfPoint2Seek.append(wp2S)
+//        }
+//    }
     
     func didSetChallenge(name: String?, challenge: String?) {
-        if pinViewSelected != nil, challenge != nil {
+        if challenge != nil {
+            let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
+                item.name == name
+            })
+            if index2F != nil {
+                listOfPoint2Seek[index2F!].challenge = challenge
+            }
+        }
+    }
+////            mapView.selectAnnotation(pinViewSelected!, animated: true)
+//            updateChallenge(waypoint2U: pinViewSelected, challenge: challenge)
+//        } else {
+//            // must be a ibeacon
+//
+//            let wp2C = listOfPoint2Seek.popLast()
+//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge:challenge, URL: wp2C?.URL)
+//            listOfPoint2Seek.append(wp2S)
+//
+//        }
+//    }
+    
+    
+    func didSetName(originalName: String?, name: String?) {
+        if name != nil, originalName != nil {
+            for wayPoints in mapView.annotations {
+                if wayPoints.title == originalName {
+                    let nWP = MKPointAnnotation()
+                    nWP.coordinate  = wayPoints.coordinate
+                    nWP.subtitle = wayPoints.subtitle!
+                    nWP.title = name
+                    mapView.removeAnnotation(wayPoints)
+                    mapView.addAnnotation(nWP)
+                }
+            }
+            let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
+                item.name == originalName
+            })
+            if index2F != nil {
+                listOfPoint2Seek[index2F!].name = name
+            }
+        }
+    }
+//    }
+//         if pinViewSelected != nil, name != nil {
 //            mapView.selectAnnotation(pinViewSelected!, animated: true)
-            updateChallenge(waypoint2U: pinViewSelected, challenge: challenge)
-        } else {
-            // must be a ibeacon
-            
-            let wp2C = listOfPoint2Save?.popLast()
-            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge:challenge, URL: wp2C?.URL)
-            listOfPoint2Save?.append(wp2S)
-            print("fcuk02072018 listOfPoint2Save \(listOfPoint2Save)" )
-        }
-    }
-    
-    
-    func didSetName(name: String?) {
-         if pinViewSelected != nil, name != nil {
-            mapView.selectAnnotation(pinViewSelected!, animated: true)
-            updateName(waypoint2U: pinViewSelected, name2D: name!)
-            
-         } else {
-            // must be a ibeacon
-            let wp2C = listOfPoint2Save?.popLast()
-            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge: wp2C?.challenge, URL: wp2C?.URL)
-            listOfPoint2Save?.append(wp2S)
-        }
-    }
+//            updateName(waypoint2U: pinViewSelected, name2D: name!)
+//
+//         } else {
+//            // must be a ibeacon
+//            let wp2C = listOfPoint2Seek.popLast()
+//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge: wp2C?.challenge, URL: wp2C?.URL)
+//            listOfPoint2Seek.append(wp2S)
+//        }
+//    }
     
     func didSetHint(name: String?, hint: String?) {
-        if pinViewSelected != nil, hint != nil {
-            pinViewSelected?.subtitle = hint
-            mapView.selectAnnotation(pinViewSelected!, animated: true)
-            updateHint(waypoint2U: pinViewSelected, hint: hint!)
-        } else {
-            // must be a ibeacon
-            let wp2C = listOfPoint2Save?.popLast()
-            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge: wp2C?.challenge, URL: wp2C?.URL)
-            listOfPoint2Save?.append(wp2S)
+        if name != nil {
+            let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
+                item.name == name
+            })
+            if index2F != nil {
+                listOfPoint2Seek[index2F!].hint = hint
+            }
         }
     }
+//        if pinViewSelected != nil, hint != nil {
+//            pinViewSelected?.subtitle = hint
+//            mapView.selectAnnotation(pinViewSelected!, animated: true)
+//            updateHint(waypoint2U: pinViewSelected, hint: hint!)
+//        } else {
+//            // must be a ibeacon
+//            let wp2C = listOfPoint2Seek.popLast()
+//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge: wp2C?.challenge, URL: wp2C?.URL)
+//            listOfPoint2Seek.append(wp2S)
+//        }
+//    }
     
     func didSetImage(name: String?, image: UIImage?) {
-        if pinViewSelected != nil, image != nil {
-            if let thumbButton = pinView.leftCalloutAccessoryView as? UIButton {
-                thumbButton.setImage(image, for: .normal)
-                mapView.selectAnnotation(pinViewSelected!, animated: true)
-//                updateWayname(waypoint2U: pinViewSelected, image2U: image)
+//        for wayPoints in mapView.annotations {
+//            if wayPoints.title == name {
+                if let thumbButton = pinView.leftCalloutAccessoryView as? UIButton {
+                                    thumbButton.setImage(image, for: .normal)
+//                }
+//            }
+        }
+        if image != nil {
+            let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
+                item.name == name
+            })
+            if index2F != nil {
+                listOfPoint2Seek[index2F!].image = image
             }
-        } else {
-            // must be a ibeacon
-            let wp2C = listOfPoint2Save?.popLast()
-            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: wp2C?.hint, image: image, order: wayPoints.count, boxes: nil, challenge: wp2C?.challenge, URL: wp2C?.URL)
-            listOfPoint2Save?.append(wp2S)
         }
     }
-    
+        
+//        if pinViewSelected != nil, image != nil {
+//            if let thumbButton = pinView.leftCalloutAccessoryView as? UIButton {
+//                thumbButton.setImage(image, for: .normal)
+//                mapView.selectAnnotation(pinViewSelected!, animated: true)
+////                updateWayname(waypoint2U: pinViewSelected, image2U: image)
+//            }
+//        } else {
+//            // must be a ibeacon
+//            let wp2C = listOfPoint2Seek.popLast()
+//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: wp2C?.hint, image: image, order: wayPoints.count, boxes: nil, challenge: wp2C?.challenge, URL: wp2C?.URL)
+//            listOfPoint2Seek.append(wp2S)
+//        }
+//    }
+
     // MARK: MapView
     
 private func getNECoordinate(mRect: MKMapRect) ->  CLLocationCoordinate2D {
@@ -1182,7 +1246,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     }
     
     private func nouveauMap(source: Bool) {
-        print("nouveauMap listOfPoint2Save \(listOfPoint2Save?.count) listOfPoint2Seek \(listOfPoint2Seek.count)")
+        
         usingMode = op.recording
         var alert2U: String!
         if source {
@@ -1322,8 +1386,10 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
            }
              self.records2Share.append(ckWayPointRecord)
-            listOfPoint2Seek.append(point2Save)
+//            listOfPoint2Seek.append(point2Save)
         }
+        
+        print("fcuk06072018 \(records2Share) records2Share")
         
         let modifyOp = CKModifyRecordsOperation(recordsToSave:
             records2Share, recordIDsToDelete: rex2D)
@@ -1340,8 +1406,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //            self.doshare(rexShared: record!)
             if sharing {
                 self.sharing(record2S: self.sharePoint)
-                order2Search = listOfPoint2Save?.count
-                listOfPoint2Save?.removeAll()
+                order2Search = listOfPoint2Seek.count
+//                listOfPoint2Seek.removeAll()
             }
         }
         
@@ -1745,7 +1811,7 @@ func getShare() {
 }
     
     @IBAction func ShareButton2(_ sender: UIBarButtonItem) {
-        save2Cloud(rex2S: listOfPoint2Save, rex2D: nil, sharing: true)
+        save2Cloud(rex2S: listOfPoint2Seek, rex2D: nil, sharing: true)
         
 //        saveImage()
     }
@@ -1758,12 +1824,18 @@ func getShare() {
         if segue.identifier == Constants.EditUserWaypoint, trigger == point.gps {
             let ewvc = destination as? EditWaypointController
 //            wayPoints.removeValue(forKey: ((pinViewSelected?.title)!)!)
-            ewvc?.nameText = (pinViewSelected?.title)!
-            ewvc?.hintText = (pinViewSelected?.subtitle)!
+            let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
+                item.name ==  (pinViewSelected?.title)!
+            })
+            ewvc?.nameText = listOfPoint2Seek[index2F!].name
+            ewvc?.hintText = listOfPoint2Seek[index2F!].hint
             ewvc?.me = self
-            if let _ = wayPoints[(pinViewSelected?.title)!] {
-                    ewvc?.challengeText = (wayPoints[(pinViewSelected?.title)!]?.challenge)
+            if index2F != nil {
+                 ewvc?.challengeText = listOfPoint2Seek[index2F!].challenge
             }
+//            if let _ = wayPoints[(pinViewSelected?.title)!] {
+//                    ewvc?.challengeText = (wayPoints[(pinViewSelected?.title)!]?.challenge)
+//            }
             ewvc?.setWayPoint = self
                 if let ppc = ewvc?.popoverPresentationController {
                     ppc.sourceRect = (annotationView?.frame)!
@@ -1836,19 +1908,26 @@ func getShare() {
     }
     
     private func updateChallenge(waypoint2U: MKPointAnnotation, challenge: String?) {
-        print("fcuk29062016 updateChallenge wayPoints \(waypoint2U.title)")
-        if challenge != nil {
-            let wp2Fix = wayPoints.filter { (arg) -> Bool in
-                let (_, value2U) = arg
-                print("fcuk29062018 updateChallenge \(arg)")
-                return value2U.name == waypoint2U.title
-            }
-        print("fcuk29062018 updateChallenge \(wp2Fix)")
-        let wp2F = wp2Fix.values.first
-        let waypoint2A = wayPoint(recordID: wp2F?.recordID, UUID: wp2F?.UUID, major:wp2F?.major, minor: wp2F?.minor,proximity: nil, coordinates: waypoint2U.coordinate, name: wp2F?.name, hint: wp2F?.hint, image: wp2F?.image, order: wayPoints.count, boxes:wp2F?.boxes, challenge: challenge,URL: wp2F?.URL)
-            wayPoints[waypoint2U.title!] = waypoint2A
-            print("fcuk29062018 updateChallenge \(waypoint2A)")
+        let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
+            item.name == waypoint2U.title
+        })
+        if index2F != nil {
+            listOfPoint2Seek[index2F!].challenge = challenge
         }
+
+//        print("fcuk29062016 updateChallenge wayPoints \(waypoint2U.title)")
+//        if challenge != nil {
+//            let wp2Fix = wayPoints.filter { (arg) -> Bool in
+//                let (_, value2U) = arg
+//                print("fcuk29062018 updateChallenge \(arg)")
+//                return value2U.name == waypoint2U.title
+//            }
+//        print("fcuk29062018 updateChallenge \(wp2Fix)")
+//        let wp2F = wp2Fix.values.first
+//        let waypoint2A = wayPoint(recordID: wp2F?.recordID, UUID: wp2F?.UUID, major:wp2F?.major, minor: wp2F?.minor,proximity: nil, coordinates: waypoint2U.coordinate, name: wp2F?.name, hint: wp2F?.hint, image: wp2F?.image, order: wayPoints.count, boxes:wp2F?.boxes, challenge: challenge,URL: wp2F?.URL)
+//            wayPoints[waypoint2U.title!] = waypoint2A
+//            print("fcuk29062018 updateChallenge \(waypoint2A)")
+//        }
         
     }
     
@@ -1900,7 +1979,7 @@ func getShare() {
                 let newWayPoint = wayPoint(recordID: nil, UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: wayPoints.count, boxes: box2F, challenge: nil, URL: nil)
                 wayPoints[uniqueName] = newWayPoint
                 print("fcuk29062018 \(wayPoints) \(uniqueName)")
-                listOfPoint2Save?.append(newWayPoint)
+                listOfPoint2Seek.append(newWayPoint)
             }
         }
     }
@@ -1951,7 +2030,7 @@ func getShare() {
         order2Search = 0
         wayPoints = [:]
         listOfPoint2Seek = []
-        listOfPoint2Save = []
+//        listOfPoint2Save = []
         listOfPoint2Search = []
         listOfZones = []
         
@@ -2138,7 +2217,7 @@ func getShare() {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if !savedMap {
-            save2Cloud(rex2S: listOfPoint2Save, rex2D: nil, sharing: true)
+            save2Cloud(rex2S: listOfPoint2Seek, rex2D: nil, sharing: true)
         }
  
          let center = NotificationCenter.default
