@@ -371,7 +371,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                             }
                         } else {
                             // see if you found an out of sequence ibeacon
-                            sequence(alert2U: alert2Post!)
+                            if alert2Post != nil {
+                                sequence(k2U: k2U, alert2U: alert2Post!)
+                            }
 //                            if alert2Post != nil {
 //                                let alert = UIAlertController(title: "Sequence Jump \(alert2Post!) OOS", message:  "Do you want to SKIP ahead?", preferredStyle: UIAlertControllerStyle.alert)
 //                                alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak alert] (_) in
@@ -429,21 +431,31 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //    func locationManager(_ manager: CLLocationManager!, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
 //        print(error)
 //    }
+    
+    private var OOS:[String:Int?] = [:]
 
-
-    func sequence(alert2U: String) {
-        if alert2U != nil {
-            let alert = UIAlertController(title: "Sequence Jump \(alert2U) OOS", message:  "Do you want to SKIP ahead?", preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak alert] (_) in
-                print("fcuk06072018 pre - order2Search\(order2Search)")
-                let index2F  = listOfPoint2Search.index(where: { (item) -> Bool in
-                    item.name == alert2U
-                })
-                order2Search = index2F!
-                self.judgement()
-            }))
-            alert.addAction(UIAlertAction(title: "No", style: .default,handler: nil))
-            self.present(alert, animated: true, completion: nil)
+    func sequence(k2U: String, alert2U: String) {
+        if OOS[k2U] == nil {
+            OOS[k2U] = 0
+            if alert2U != nil, WP2M[k2U] != nil, codeRunState == gameplay.playing {
+                let alert = UIAlertController(title: "Sequence Jump \(alert2U) \(k2U) OOS", message:  "Do you want to SKIP ahead?", preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak alert] (_) in
+                    print("fcuk06072018 pre - order2Search\(order2Search)")
+                    let index2F  = listOfPoint2Search.index(where: { (item) -> Bool in
+                        item.name == alert2U
+                    })
+                    order2Search = index2F!
+                    self.updatePoint2Search(name2S: alert2U)
+                    self.judgement()
+                }))
+                alert.addAction(UIAlertAction(title: "No", style: .default,handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+            if OOS[k2U]!! < 24 {
+                OOS[k2U] = OOS[k2U]!! + 1
+            } else {
+                OOS[k2U] = nil
+            }
         }
    }
     
@@ -549,9 +561,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             self.latitudeLabel.text =  self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
             if listOfPoint2Seek.count > 0, order2Search! <  listOfPoint2Seek.count {
                 let nextWP2S = listOfPoint2Seek[order2Search!]
-
+                
                 if WP2M[latValue + longValue] != nil {
-                    let  alert2Post = WP2M[latValue + longValue]
+                    let k2U = latValue + longValue
+                    let  alert2Post = WP2M[k2U]
                     
                     if alert2Post == nextWP2S.name, usingMode == op.playing, codeRunState == gameplay.playing {
                         self.updatePoint2Search(name2S: nextWP2S.name!)
@@ -574,7 +587,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                             }
                         }
                     } else {
-                        self.sequence(alert2U: alert2Post!)
+                        if alert2Post != nil {
+                            self.sequence(k2U: k2U, alert2U: alert2Post!)
+                        }
                     }
                 }
             }
