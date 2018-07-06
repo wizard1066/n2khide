@@ -83,7 +83,10 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     private var shadowTable:[wayPoint?]? = []
     
     @objc func switchTable() {
-        print("switchin")
+        if windowView == .playing {
+            return
+        }
+        print("switchin \(windowView.hashValue)")
         if windowView == .points {
             let button = UIButton(type: .custom)
             button.setImage(UIImage (named: "map_marker"), for: .normal)
@@ -138,10 +141,11 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     // MARK: View management
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         self.tableView.dataSource = self
         self.tableView.delegate = self
-       
+
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -227,9 +231,14 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
         // #warning Incomplete implementation, return the number of rows
         if windowView == .points {
             return listOfPoint2Seek.count
-        } else {
+        }
+        if windowView == .zones {
             return listOfZones.count
         }
+        if windowView == .playing {
+            return listOfPoint2Search.count
+        }
+        return 0
     }
 
     
@@ -247,6 +256,11 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
         if windowView == .zones, listOfZones.count > 0 {
             cell.detailTextLabel?.text = listOfZones[indexPath.row]
             return cell
+        }
+        if windowView == .playing, listOfPoint2Search.count > 0 {
+            let waypoint = listOfPoint2Search[indexPath.row]
+            cell.detailTextLabel?.text = waypoint.name
+            cell.textLabel?.text = waypoint.find
         }
         return cell
     }

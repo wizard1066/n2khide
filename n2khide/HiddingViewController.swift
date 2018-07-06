@@ -351,6 +351,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         let  alert2Post = WP2M[k2U]
                         
                         if alert2Post == nextWP2S.name {
+                            updatePoint2Search(name2S: nextWP2S.name!)
                             if nextWP2S.URL != nil {
                                 if presentedViewController?.contents != WebViewController() {
                                     let url = URL(string: nextWP2S.URL! )
@@ -498,7 +499,14 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     var regionHasBeenCentered = false
     var currentLocation: CLLocation!
     
- 
+    func updatePoint2Search(name2S: String) {
+        let WP2F = wp2Search(name: name2S, find: timerLabel.text)
+        let zap = listOfPoint2Search.index(where: { (item) -> Bool in
+            item.name == name2S
+        })
+        listOfPoint2Search.remove(at: zap!)
+        listOfPoint2Search.insert(WP2F, at: zap!)
+    }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 //        pin.isEnabled = true
@@ -521,6 +529,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     let  alert2Post = WP2M[latValue + longValue]
                     
                     if alert2Post == nextWP2S.name, usingMode == op.playing {
+                        self.updatePoint2Search(name2S: nextWP2S.name!)
                         if nextWP2S.URL != nil {
                             if self.presentedViewController?.contents != WebViewController() {
                                 let url = URL(string: nextWP2S.URL! )
@@ -1414,6 +1423,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     
         
     @IBAction func FetchShare(_ sender: Any) {
+        windowView = .playing
         pin.isEnabled = false
         scanButton.isEnabled = false
         plusButton.isEnabled = false
@@ -1440,9 +1450,10 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     
 func getShare() {
         usingMode = op.playing
-        windowView = .points
+//        windowView = .points
         mapView.alpha = 0.7
         listOfPoint2Seek = []
+        listOfPoint2Search = []
         centerImage.image = UIImage(named: "compassClip")
     if currentZone == nil {
         let alert = UIAlertController(title: "Map Name", message: "", preferredStyle: .alert)
@@ -1463,7 +1474,7 @@ func getShare() {
     
     func share2Source(zoneID: CKRecordZoneID?) {
         spotOrderError.removeAll()
-        windowView = .points
+//        windowView = .points
         DispatchQueue.main.async {
             self.mapView.alpha = 0.7
             listOfPoint2Seek = []
@@ -1601,6 +1612,8 @@ func getShare() {
             if major == nil {
                 let wp2S = wayPoint(recordID: record2U.recordID, UUID: nil, major:major, minor: minor, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: image2D, order: order, boxes: boxes, challenge: challenge, URL: url2U)
                  listOfPoint2Seek.append(wp2S)
+                let wp2S2 = wp2Search(name: name, find: nil)
+                listOfPoint2Search.append(wp2S2)
             } else {
                 let wp2S = wayPoint(recordID: record2U.recordID,UUID: globalUUID, major:major, minor: minor, proximity: nil, coordinates: nil, name: name, hint: hint, image: image2D, order: order, boxes: nil, challenge: challenge, URL: url2U)
                 listOfPoint2Seek.append(wp2S)
@@ -1608,6 +1621,8 @@ func getShare() {
                 let k2U = String(minor!) + String(major!)
                 beaconsInTheBag[k2U] = true
                 WP2M[k2U] = name
+                let wp2S2 = wp2Search(name: name, find: nil)
+                listOfPoint2Search.append(wp2S2)
             }
             self.plotPin(pin2P: record2U)
 //            let region2M = self.region(withPins: record2U)
@@ -1881,11 +1896,9 @@ func getShare() {
             let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
             self.mapView.setRegion(region, animated: true)
             self.regionHasBeenCentered = true
-            var timeCount:TimeInterval = 0.0
-            let timeInterval:TimeInterval = 0.05
-            var timer = Timer.scheduledTimer(withTimeInterval: timeInterval,
-                                             repeats: true) {
-                                                timer in
+            var timeCount:TimeInterval = 1.0
+            let timeInterval:TimeInterval = 1.0
+            var timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { timer in
                                                 self.timerLabel.text = self.timeString(time: timeCount)
                                                 timeCount += 1
             }

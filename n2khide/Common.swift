@@ -31,9 +31,15 @@ struct wayPoint {
 //        var imageAsset: CKAsset?
     }
 
+struct wp2Search {
+    var name: String?
+    var find: String?
+}
+
 var wayPoints:[String:wayPoint] = [:]
 var listOfPoint2Seek:[wayPoint] = []
 var listOfPoint2Save:[wayPoint]? = []
+var listOfPoint2Search:[wp2Search] = []
 var listOfZones:[String] = []
 var parentID: CKReference?
 
@@ -48,6 +54,7 @@ var url2U: String?
 enum tableViews  {
     case zones
     case points
+    case playing
 }
 
 var windowView: tableViews = .points
