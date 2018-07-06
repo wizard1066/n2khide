@@ -182,28 +182,34 @@ class HideTableViewController: UITableViewController, setWayPoint, UIPopoverPres
     override func setEditing (_ editing:Bool, animated:Bool)
     {
         super.setEditing(editing,animated:animated)
-        if(self.isEditing)
-        {
-            self.editButtonItem.title = "Back"
-        } else {
-            self.editButtonItem.title = "Reorder"
-        }
+       
+            if(self.isEditing)
+            {
+                self.editButtonItem.title = "Back"
+            } else {
+                self.editButtonItem.title = "Reorder"
+            }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
 //        listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
         
          let doneBarB = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(byebye))
-        self.editButtonItem.title = "Reorder"
-        self.navigationItem.rightBarButtonItems = [ doneBarB , self.editButtonItem]
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(switchTable))
+        if usingMode != op.playing {
+            self.editButtonItem.title = "Reorder"
+            self.navigationItem.rightBarButtonItems = [ doneBarB , self.editButtonItem]
+             self.navigationItem.rightBarButtonItem!.title = "Back"
+        } else {
+            self.navigationItem.rightBarButtonItems = [ doneBarB ]
+            self.navigationItem.rightBarButtonItem!.title = "Back"
+        }
         let button = UIButton(type: .custom)
         button.setImage(UIImage (named: "marker"), for: .normal)
         button.frame = CGRect(x: 0.0, y: 0.0, width: 35.0, height: 35.0)
         button.addTarget(self, action: #selector(switchTable), for: .touchUpInside)
 
         let barButtonItem = UIBarButtonItem(customView: button)
-        self.navigationItem.rightBarButtonItem!.title = "Back"
         self.navigationItem.leftBarButtonItems = [barButtonItem]
     }
     

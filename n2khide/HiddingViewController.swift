@@ -1478,6 +1478,7 @@ func getShare() {
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
             let textField = alert?.textFields![0]
             if textField?.text != "" {
+                self.navigationItem.title = textField?.text
                 self.share2Load(zoneNamed: (textField?.text)!)
                 self.zoneRecord2Load(zoneNamed: (textField?.text)!)
             }
@@ -1906,12 +1907,12 @@ func getShare() {
     
     //MARK: timer
     
-     var timer: Timer!
+     var timer2D: Timer!
     
     func makeTimer() {
         var timeCount:TimeInterval = 1.0
         let timeInterval:TimeInterval = 1.0
-        var timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { timer in
+        timer2D = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { timer in
             self.timerLabel.text = self.timeString(time: timeCount)
             timeCount += 1
         }
@@ -1951,6 +1952,7 @@ func getShare() {
     
     private func fadeTitles() {
         DispatchQueue.main.async {
+            self.timer2D.invalidate()
             UIView.animate(withDuration: 4.0) {
                 self.latitudeNextLabel.alpha = 0
                 self.longitudeNextLabel.alpha = 0
@@ -1964,6 +1966,7 @@ func getShare() {
             UIView.animate(withDuration: 8.0, animations: {
                 self.highLabel.alpha = 0
             }, completion: { (done) in
+                self.navigationItem.title = nil
                 self.highLabel.text = " Any more Maps ?"
                 UIView.animate(withDuration: 4.0) {
                     self.highLabel.alpha = 1
