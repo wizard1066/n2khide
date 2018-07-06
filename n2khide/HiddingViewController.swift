@@ -340,17 +340,17 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 }
         }
         
-        if beacons.count > 0, usingMode == op.playing {
+        if beacons.count > 0, usingMode == op.playing, codeRunState == gameplay.playing {
             let beacons2S = beacons.filter { $0.proximity != CLProximity.unknown }
             if beacons2S.count > 0 {
                 if let closestBeacon = beacons2S[0] as? CLBeacon {
                     if order2Search! < listOfPoint2Seek.count {
                          let nextWP2S = listOfPoint2Seek[order2Search!]
-                        print("WP2M \(WP2M) Seeking \(listOfPoint2Seek[order2Search!])")
                         let k2U = beacons2S[0].minor.stringValue + beacons2S[0].major.stringValue
                         let  alert2Post = WP2M[k2U]
-                        
+                        // look for a specific/next ibeacon
                         if alert2Post == nextWP2S.name {
+                            WP2M[k2U] = nil
                             updatePoint2Search(name2S: nextWP2S.name!)
                             if nextWP2S.URL != nil {
                                 if presentedViewController?.contents != WebViewController() {
@@ -358,18 +358,33 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                                     let svc = SFSafariViewController(url: url!)
                                     present(svc, animated: true, completion: nil)
                                     self.orderLabel.text = String(order2Search!)
-                                    if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
+                                    self.judgement()
                                     self.nextLocation2Show()
                                 }
                             } else {
                                 if presentedViewController?.contents != ImageViewController() {
-                                    print("present")
                                     performSegue(withIdentifier: Constants.ShowImageSegue, sender: view)
                                     self.orderLabel.text = String(order2Search!)
-                                    if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
+                                    self.judgement()
                                     self.nextLocation2Show()
                                 }
                             }
+                        } else {
+                            // see if you found an out of sequence ibeacon
+                            sequence(alert2U: alert2Post!)
+//                            if alert2Post != nil {
+//                                let alert = UIAlertController(title: "Sequence Jump \(alert2Post!) OOS", message:  "Do you want to SKIP ahead?", preferredStyle: UIAlertControllerStyle.alert)
+//                                alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak alert] (_) in
+//                                    print("fcuk06072018 pre - order2Search\(order2Search)")
+//                                    let index2F  = listOfPoint2Search.index(where: { (item) -> Bool in
+//                                        item.name == alert2Post
+//                                    })
+//                                    order2Search = index2F!
+//                                    self.judgement()
+//                                }))
+//                                alert.addAction(UIAlertAction(title: "No", style: .default,handler: nil))
+//                                self.present(alert, animated: true, completion: nil)
+//                            }
                         }
                     }
                 }
@@ -414,6 +429,23 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 //    func locationManager(_ manager: CLLocationManager!, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
 //        print(error)
 //    }
+
+
+    func sequence(alert2U: String) {
+        if alert2U != nil {
+            let alert = UIAlertController(title: "Sequence Jump \(alert2U) OOS", message:  "Do you want to SKIP ahead?", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak alert] (_) in
+                print("fcuk06072018 pre - order2Search\(order2Search)")
+                let index2F  = listOfPoint2Search.index(where: { (item) -> Bool in
+                    item.name == alert2U
+                })
+                order2Search = index2F!
+                self.judgement()
+            }))
+            alert.addAction(UIAlertAction(title: "No", style: .default,handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+   }
     
     func getLocationDegreesFrom(latitude: Double) -> String {
         var latSeconds = Int(latitude * 3600)
@@ -432,8 +464,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             latDegrees >= 0 ? "N" : "S"
         )
     }
-    
- 
     
     func getLocationDegreesFrom(longitude: Double) -> String {
         var longSeconds = Int(longitude * 3600)
@@ -509,14 +539,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        pin.isEnabled = true
         orderLabel.text = String(order2Search!)
         currentLocation = locations.first
-        let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
-        let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
-//        let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
-//        self.mapView.setRegion(region, animated: true)
-//        self.regionHasBeenCentered = true
+
         DispatchQueue.main.async {
             let longValue =  self.getLocationDegreesFrom(longitude: (self.locationManager?.location?.coordinate.longitude)!)
             let latValue = self.getLocationDegreesFrom(latitude: (self.locationManager?.location?.coordinate.latitude)!)
@@ -528,7 +553,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 if WP2M[latValue + longValue] != nil {
                     let  alert2Post = WP2M[latValue + longValue]
                     
-                    if alert2Post == nextWP2S.name, usingMode == op.playing {
+                    if alert2Post == nextWP2S.name, usingMode == op.playing, codeRunState == gameplay.playing {
                         self.updatePoint2Search(name2S: nextWP2S.name!)
                         if nextWP2S.URL != nil {
                             if self.presentedViewController?.contents != WebViewController() {
@@ -536,7 +561,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                                 let svc = SFSafariViewController(url: url!)
                                 self.present(svc, animated: true, completion: nil)
                                 self.orderLabel.text = String(order2Search!)
-                                if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
+                                self.judgement()
                                 self.nextLocation2Show()
                             }
                         } else {
@@ -544,39 +569,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                                 print("present")
                                 self.performSegue(withIdentifier: Constants.ShowImageSegue, sender: self.view)
                                 self.orderLabel.text = String(order2Search!)
-                                if order2Search! < listOfPoint2Seek.count - 1 { order2Search! += 1 }
+                                self.judgement()
                                 self.nextLocation2Show()
                             }
                         }
-//                        let alert = UIAlertController(title: "WP2M Triggered", message: alert2Post, preferredStyle: UIAlertControllerStyle.alert)
-//                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-//                        self.present(alert, animated: true, completion: nil)
-//                        let wayPointRec = wayPoints[alert2Post!]
-////                        self.centerImage.image = wayPointRec?.image
-//                        let image2Show = UIImageView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-//                        image2Show.image = wayPointRec?.image
-//                        self.mapView.addSubview(image2Show)
-//                        image2Show.translatesAutoresizingMaskIntoConstraints  = false
-//                        let THighConstraint = NSLayoutConstraint(item: image2Show, attribute: .top, relatedBy: .equal, toItem: self.view, attribute: .top, multiplier: 1, constant: 30)
-//                        let TLowConstraint = NSLayoutConstraint(item: image2Show, attribute: .bottom, relatedBy: .equal, toItem: self.view, attribute: .bottom, multiplier: 1, constant: 0)
-//                        let TLeftConstraint = NSLayoutConstraint(item: image2Show, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1, constant: 0)
-//                        let TRightConstraint = NSLayoutConstraint(item: image2Show, attribute: .trailing, relatedBy: .equal, toItem: self.view, attribute: .trailing, multiplier: 1, constant: 0)
-//                        self.view.addConstraints([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
-//                        NSLayoutConstraint.activate([THighConstraint,TLowConstraint,TLeftConstraint,TRightConstraint])
-//                        self.hintLabel.text = wayPointRec?.hint
-//                        self.orderLabel.text = String(order2Search!)
-////                        WP2M[latValue + longValue] = nil
-//                        self.deleteWM2M(key2U: latValue + longValue)
-//                        order2Search? += 1
-//                        UIView.animate(withDuration: 8, animations: {
-//                            image2Show.alpha = 0
-//                            self.hintLabel.alpha = 0
-//                        }, completion: { (result) in
-//                            image2Show.removeFromSuperview()
-//                            self.hintLabel.text = ""
-//                            self.hintLabel.alpha = 1
-//                            self.nextLocation2Show()
-//                        })
+                    } else {
+                        self.sequence(alert2U: alert2Post!)
                     }
                 }
             }
@@ -1428,6 +1426,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         scanButton.isEnabled = false
         plusButton.isEnabled = false
         getShare()
+        codeRunState = gameplay.playing
+        resetTitles()
     }
     
     @IBAction func saveB(_ sender: Any) {
@@ -1645,7 +1645,16 @@ func getShare() {
     }
     
     private func nextLocation2Show() {
-        
+        if codeRunState == gameplay.finished {
+//            UIView.animate(withDuration: 4.0) {
+//                self.latitudeNextLabel.alpha = 0
+//                self.longitudeNextLabel.alpha = 0
+//                self.timerLabel.alpha = 0
+//                self.countLabel.alpha = 0
+//                self.orderLabel.alpha = 0
+//            }
+//            self.highLabel.text = "You Finished!! Well done!!"
+        }
         if order2Search == 0, usingMode == op.playing {
             // do splash
         }
@@ -1653,6 +1662,8 @@ func getShare() {
             let nextWP2S = listOfPoint2Seek[(order2Search!)]
             print("nextWP2S nextWP2S.UUID \(nextWP2S.UUID)")
             if nextWP2S.UUID == nil {
+                self.latitudeNextLabel.isHidden = false
+                self.longitudeNextLabel.isHidden = false
                 self.longitudeNextLabel.text = self.getLocationDegreesFrom(longitude: (nextWP2S.coordinates?.longitude)!)
                 self.latitudeNextLabel.text = self.getLocationDegreesFrom(latitude: (nextWP2S.coordinates?.latitude)!)
                 self.nextLocation = CLLocationCoordinate2DMake((nextWP2S.coordinates?.latitude)!, (nextWP2S.coordinates?.longitude)!)
@@ -1663,7 +1674,7 @@ func getShare() {
                 self.nameLabel.isHidden = false
                 self.latitudeNextLabel.isHidden = false
                 self.longitudeNextLabel.isHidden = false
-                self.highLabel.text = "[You need to be here]"
+                self.highLabel.text = " < You need to be here >"
                 self.centerImage.image = UIImage(named: "compassClip")
             } else {
                     // you have a beacon record
@@ -1674,7 +1685,7 @@ func getShare() {
                     self.nameLabel.isHidden = false
                     self.latitudeNextLabel.isHidden = true
                     self.longitudeNextLabel.isHidden = true
-                    self.highLabel.text = "<You need to search>"
+                self.highLabel.text = " < You need to search > "
                 }
         } else {
             // do finale
@@ -1901,7 +1912,50 @@ func getShare() {
     private var pinObserver: NSObjectProtocol!
     private var regionObserver: NSObjectProtocol!
     
-   
+    private func judgement() {
+        if order2Search! < listOfPoint2Seek.count - 1 {
+            order2Search! += 1
+        } else {
+            codeRunState = gameplay.finished
+            self.fadeTitles()
+        }
+        self.nextLocation2Show()
+    }
+    
+    private func resetTitles() {
+        DispatchQueue.main.async {
+            self.latitudeNextLabel.alpha = 1
+            self.longitudeNextLabel.alpha = 1
+            self.timerLabel.alpha = 1
+            self.countLabel.alpha = 1
+            self.orderLabel.alpha = 1
+            self.nameLabel.alpha = 1
+            self.hintLabel.alpha = 1
+        }
+    }
+    
+    private func fadeTitles() {
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 4.0) {
+                self.latitudeNextLabel.alpha = 0
+                self.longitudeNextLabel.alpha = 0
+                self.timerLabel.alpha = 0
+                self.countLabel.alpha = 0
+                self.orderLabel.alpha = 0
+                self.nameLabel.alpha = 0
+                self.hintLabel.alpha = 0
+            }
+            self.highLabel.text = " [ You Finished ] "
+            UIView.animate(withDuration: 8.0, animations: {
+                self.highLabel.alpha = 0
+            }, completion: { (done) in
+                self.highLabel.text = " Any more Maps ?"
+                UIView.animate(withDuration: 4.0) {
+                    self.highLabel.alpha = 1
+                }
+            })
+        }
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -2073,6 +2127,8 @@ func getShare() {
         directionLabel.isHidden = true
         nameLabel.isHidden = true
         hintLabel.isHidden = true
+        latitudeNextLabel.isHidden = true
+        longitudeNextLabel.isHidden = true
         super.viewDidLoad()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         locationManager = appDelegate.locationManager

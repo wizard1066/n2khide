@@ -59,6 +59,15 @@ enum tableViews  {
 
 var windowView: tableViews = .points
 
+enum gameplay {
+    case initialized
+    case playing
+    case finished
+    case defining
+}
+
+var codeRunState: gameplay = .initialized
+
 enum op {
     case playing
     case recording
