@@ -785,10 +785,9 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
            if wayPoints.title == name {
                 let view = mapView.view(for: wayPoints)
                 if let thumbButton = view?.leftCalloutAccessoryView as? UIButton {
-                                    thumbButton.setImage(image, for: .normal)
+                    thumbButton.setImage(image, for: .normal)
                 }
             }
-                
         }
         if image != nil {
             let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
@@ -1623,14 +1622,15 @@ func getShare() {
             }
             let when = DispatchTime.now() + Double(0)
             DispatchQueue.main.asyncAfter(deadline: when){
-                self.countLabel.text  = String(listOfPoint2Seek.count)
-                
-                self.lowLabel.isHidden = false
-                self.highLabel.isHidden = false
-                self.nextLocation2Show()
-                self.makeTimer()
-                self.timerLabel.isHidden = false
-                self.countLabel.isHidden = false
+                if usingMode == op.playing {
+                    self.countLabel.text  = String(listOfPoint2Seek.count)
+                    self.lowLabel.isHidden = false
+                    self.highLabel.isHidden = false
+                    self.nextLocation2Show()
+                    self.makeTimer()
+                    self.timerLabel.isHidden = false
+                    self.countLabel.isHidden = false
+                }
             }
         }
         
@@ -1862,6 +1862,7 @@ func getShare() {
             tbvc?.zapperDelegate = self
             tbvc?.save2CloudDelegate = self
             tbvc?.table2MapDelegate = self
+            tbvc?.me = self
         }
         if segue.identifier == Constants.ScannerViewController {
             let svc = destination as? ScannerViewController
