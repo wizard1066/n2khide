@@ -73,6 +73,8 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         progressBar.setProgress(0.0, animated: false)
         print("fcuk04072018 didFinish \(webView.url?.absoluteURL)")
         secondViewController?.didSetURL(name: nameOfNode, URL: webView.url?.absoluteString)
+        let defaults:UserDefaults = UserDefaults.standard
+        defaults.set(webView.url?.absoluteString, forKey: "URLUsed")
     }
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
@@ -90,7 +92,14 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         searchBar?.delegate = self
         webView.addObserver(self, forKeyPath: "estimatedProgress", options: .new, context: nil)
         print("fcuk04072018 nameOfNode \(nameOfNode)")
-  
+        let defaults:UserDefaults = UserDefaults.standard
+        if let opened:String = defaults.string(forKey: "URLUsed" ) {
+            if let web2S = URL(string: opened) {
+                let request = URLRequest(url: web2S)
+                searchBar?.text = opened
+                webView.load(request)
+            }
+        }
         // Do any additional setup after loading the view.
     }
     

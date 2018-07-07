@@ -27,7 +27,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="spJ-aP-f9V">
-                                <rect key="frame" x="8" y="8" width="304" height="186"/>
+                                <rect key="frame" x="8" y="8" width="304" height="178"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="hG9-5l-Qgc">
                                         <rect key="frame" x="0.0" y="0.0" width="304" height="30"/>
@@ -35,7 +35,7 @@
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Name" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NPw-2x-d5g">
                                                 <rect key="frame" x="0.0" y="0.0" width="304" height="30"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="284" id="I6f-VW-AGj"/>
+                                                    <constraint firstAttribute="width" constant="304" id="DNS-S9-6o7"/>
                                                 </constraints>
                                                 <nil key="textColor"/>
                                                 <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="17"/>
@@ -61,29 +61,29 @@
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="z5D-0U-KQ1">
-                                        <rect key="frame" x="0.0" y="114" width="304" height="72"/>
+                                        <rect key="frame" x="0.0" y="114" width="304" height="64"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wt2-lW-vZs">
-                                                <rect key="frame" x="80" y="8" width="64" height="56"/>
-                                                <color key="backgroundColor" red="0.83741801979999997" green="0.83743780850000005" blue="0.83742713930000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <rect key="frame" x="82" y="4.5" width="66" height="56"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="64" id="SEQ-Gk-I3f"/>
+                                                    <constraint firstAttribute="width" constant="66" id="SEQ-Gk-I3f"/>
                                                     <constraint firstAttribute="height" constant="56" id="eYm-eM-MZe"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="11"/>
-                                                <state key="normal" title="&lt;DragDrop&gt;">
+                                                <inset key="titleEdgeInsets" minX="0.0" minY="56" maxX="0.0" maxY="0.0"/>
+                                                <state key="normal" title="{DragDrop}" backgroundImage="down">
                                                     <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="alN-3G-3Xl">
-                                                <rect key="frame" x="160" y="8" width="64" height="56"/>
-                                                <color key="backgroundColor" red="0.83741801979999997" green="0.83743780850000005" blue="0.83742713930000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <rect key="frame" x="156" y="8" width="66" height="56"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="64" id="0oN-Ww-2Nn"/>
+                                                    <constraint firstAttribute="width" constant="66" id="0oN-Ww-2Nn"/>
                                                     <constraint firstAttribute="height" constant="56" id="9sQ-Rr-1uR"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="13"/>
-                                                <state key="normal" title="&lt;Library&gt;">
+                                                <inset key="titleEdgeInsets" minX="0.0" minY="56" maxX="0.0" maxY="0.0"/>
+                                                <state key="normal" title="{Library}" backgroundImage="picture-1">
                                                     <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
                                                 <connections>
@@ -91,14 +91,14 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6b7-1o-tNs">
-                                                <rect key="frame" x="232" y="8" width="64" height="56"/>
-                                                <color key="backgroundColor" red="0.92143100499999997" green="0.92145264149999995" blue="0.92144101860000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <rect key="frame" x="230" y="8" width="66" height="56"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="56" id="Rax-oQ-EXT"/>
-                                                    <constraint firstAttribute="width" constant="64" id="snn-Bm-GjI"/>
+                                                    <constraint firstAttribute="width" constant="66" id="snn-Bm-GjI"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="13"/>
-                                                <state key="normal" title="&lt;Browser&gt;">
+                                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="12"/>
+                                                <inset key="titleEdgeInsets" minX="0.0" minY="56" maxX="0.0" maxY="0.0"/>
+                                                <state key="normal" title="{Browser}" backgroundImage="globe">
                                                     <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
                                                 <connections>
@@ -106,15 +106,15 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x1i-WY-DjV">
-                                                <rect key="frame" x="8" y="8" width="64" height="56"/>
-                                                <color key="backgroundColor" red="0.75406885150000003" green="0.75408679249999999" blue="0.75407713649999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <rect key="frame" x="8" y="4" width="66" height="56"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="64" id="V1G-Ny-CzD"/>
+                                                    <constraint firstAttribute="width" constant="66" id="V1G-Ny-CzD"/>
                                                     <constraint firstAttribute="height" constant="56" id="uTl-uC-bfp"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="13"/>
+                                                <inset key="titleEdgeInsets" minX="0.0" minY="56" maxX="0.0" maxY="0.0"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="8" maxX="0.0" maxY="0.0"/>
-                                                <state key="normal" title="&lt;Camera&gt;">
+                                                <state key="normal" title="{Camera}" backgroundImage="camera">
                                                     <color key="titleColor" red="0.016804177310000001" green="0.19835099580000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
                                                 <connections>
@@ -127,14 +127,14 @@
                                             <constraint firstItem="alN-3G-3Xl" firstAttribute="baseline" secondItem="Wt2-lW-vZs" secondAttribute="baseline" id="9MA-HY-tDC"/>
                                             <constraint firstItem="x1i-WY-DjV" firstAttribute="leading" secondItem="z5D-0U-KQ1" secondAttribute="leading" constant="8" id="CCE-VB-CSs"/>
                                             <constraint firstItem="alN-3G-3Xl" firstAttribute="top" secondItem="z5D-0U-KQ1" secondAttribute="topMargin" id="QaE-cl-vGp"/>
+                                            <constraint firstItem="alN-3G-3Xl" firstAttribute="leading" secondItem="Wt2-lW-vZs" secondAttribute="trailing" constant="8" id="S6H-uM-MFE"/>
                                             <constraint firstItem="x1i-WY-DjV" firstAttribute="centerY" secondItem="z5D-0U-KQ1" secondAttribute="centerY" id="YAX-Ie-ggo"/>
                                             <constraint firstItem="alN-3G-3Xl" firstAttribute="baseline" secondItem="x1i-WY-DjV" secondAttribute="baseline" id="aX3-Oz-Ykj"/>
-                                            <constraint firstItem="6b7-1o-tNs" firstAttribute="leading" secondItem="alN-3G-3Xl" secondAttribute="trailing" constant="8" id="lkk-pI-b05"/>
+                                            <constraint firstItem="6b7-1o-tNs" firstAttribute="leading" secondItem="alN-3G-3Xl" secondAttribute="trailing" constant="8" id="glg-Dv-4fQ"/>
                                             <constraint firstItem="6b7-1o-tNs" firstAttribute="centerY" secondItem="alN-3G-3Xl" secondAttribute="centerY" id="mKe-l4-PBs"/>
                                             <constraint firstItem="Wt2-lW-vZs" firstAttribute="leading" secondItem="x1i-WY-DjV" secondAttribute="trailing" constant="8" id="mqo-Fb-m2n"/>
-                                            <constraint firstAttribute="trailing" secondItem="6b7-1o-tNs" secondAttribute="trailing" constant="8" id="wnq-vO-tvw"/>
                                             <constraint firstItem="Wt2-lW-vZs" firstAttribute="centerY" secondItem="z5D-0U-KQ1" secondAttribute="centerY" id="ypR-Rg-17d"/>
-                                            <constraint firstAttribute="height" constant="72" id="z4Z-ph-v6a"/>
+                                            <constraint firstAttribute="height" constant="64" id="z4Z-ph-v6a"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -186,32 +186,32 @@
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NHm-ms-D8F">
-                                <rect key="frame" x="76" y="64" width="64" height="56"/>
+                                <rect key="frame" x="8" y="64" width="64" height="56"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="64" id="1b2-nT-gbE"/>
                                     <constraint firstAttribute="height" constant="56" id="U9b-PL-gBX"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="16"/>
-                                <state key="normal" title="Back" backgroundImage="icons8-chevron-right-filled-50"/>
+                                <state key="normal" title="Back" backgroundImage="icons8-chevron-left-filled-50"/>
                                 <connections>
                                     <action selector="backButtonAction:" destination="Jgq-3g-BUk" eventType="touchUpInside" id="4ev-C6-0Hj"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4QA-pa-oom">
-                                <rect key="frame" x="8" y="64" width="60" height="56"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="56" id="2bd-aq-1aB"/>
-                                    <constraint firstAttribute="width" constant="60" id="nUc-t1-Sfz"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="16"/>
-                                <state key="normal" title="Forward" backgroundImage="icons8-chevron-left-filled-50"/>
-                                <connections>
-                                    <action selector="forwardButtonAction:" destination="Jgq-3g-BUk" eventType="touchUpInside" id="YFC-Av-Uxf"/>
                                 </connections>
                             </button>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="hfz-xz-Qm0">
                                 <rect key="frame" x="8" y="128" width="740" height="2"/>
                             </progressView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4QA-pa-oom">
+                                <rect key="frame" x="80" y="64" width="60" height="56"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="2bd-aq-1aB"/>
+                                    <constraint firstAttribute="width" constant="60" id="nUc-t1-Sfz"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="16"/>
+                                <state key="normal" title="Forward" backgroundImage="icons8-chevron-right-filled-50"/>
+                                <connections>
+                                    <action selector="forwardButtonAction:" destination="Jgq-3g-BUk" eventType="touchUpInside" id="YFC-Av-Uxf"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -219,17 +219,17 @@
                             <constraint firstItem="Ch4-Fk-f8Z" firstAttribute="bottom" secondItem="T0m-Se-ZBu" secondAttribute="bottom" id="EDd-jV-BdW"/>
                             <constraint firstItem="NHm-ms-D8F" firstAttribute="centerY" secondItem="7b0-7E-g91" secondAttribute="centerY" id="Fae-GK-2HQ"/>
                             <constraint firstItem="Ch4-Fk-f8Z" firstAttribute="top" secondItem="hfz-xz-Qm0" secondAttribute="bottom" constant="8" id="H1Y-es-6NL"/>
-                            <constraint firstItem="NHm-ms-D8F" firstAttribute="leading" secondItem="4QA-pa-oom" secondAttribute="trailing" constant="8" id="LSU-gW-6aR"/>
+                            <constraint firstItem="NHm-ms-D8F" firstAttribute="leading" secondItem="T0m-Se-ZBu" secondAttribute="leading" constant="8" id="Mcz-Q9-Kg3"/>
                             <constraint firstItem="hfz-xz-Qm0" firstAttribute="leading" secondItem="s2P-Uh-RIf" secondAttribute="leading" constant="8" id="WPb-iW-B0R"/>
-                            <constraint firstItem="7b0-7E-g91" firstAttribute="leading" secondItem="NHm-ms-D8F" secondAttribute="trailing" constant="8" id="Xt0-Y5-DPM"/>
                             <constraint firstItem="Ch4-Fk-f8Z" firstAttribute="trailing" secondItem="T0m-Se-ZBu" secondAttribute="trailing" id="b0v-bL-68S"/>
+                            <constraint firstItem="7b0-7E-g91" firstAttribute="leading" secondItem="4QA-pa-oom" secondAttribute="trailing" constant="8" id="clE-xR-XDb"/>
                             <constraint firstItem="Ch4-Fk-f8Z" firstAttribute="top" secondItem="hfz-xz-Qm0" secondAttribute="bottom" constant="8" id="eg4-wT-rQF"/>
                             <constraint firstItem="Ch4-Fk-f8Z" firstAttribute="leading" secondItem="T0m-Se-ZBu" secondAttribute="leading" id="fZm-Xw-zxM"/>
+                            <constraint firstItem="4QA-pa-oom" firstAttribute="leading" secondItem="NHm-ms-D8F" secondAttribute="trailing" constant="8" id="k75-so-oI4"/>
                             <constraint firstItem="T0m-Se-ZBu" firstAttribute="trailing" secondItem="7b0-7E-g91" secondAttribute="trailing" constant="20" id="ksO-UT-F54"/>
+                            <constraint firstItem="4QA-pa-oom" firstAttribute="centerY" secondItem="7b0-7E-g91" secondAttribute="centerY" id="lOd-6w-c27"/>
                             <constraint firstItem="7b0-7E-g91" firstAttribute="top" secondItem="T0m-Se-ZBu" secondAttribute="top" id="pHF-cp-xHN"/>
-                            <constraint firstItem="4QA-pa-oom" firstAttribute="leading" secondItem="T0m-Se-ZBu" secondAttribute="leading" constant="8" id="sPD-O1-bnE"/>
                             <constraint firstAttribute="trailing" secondItem="hfz-xz-Qm0" secondAttribute="trailing" constant="20" id="w0e-Go-kmp"/>
-                            <constraint firstItem="4QA-pa-oom" firstAttribute="centerY" secondItem="NHm-ms-D8F" secondAttribute="centerY" id="z1I-Wh-0yl"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="T0m-Se-ZBu"/>
                     </view>
@@ -403,7 +403,7 @@
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="32" id="FHU-U0-oq0"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="24"/>
+                                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="24"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -437,7 +437,7 @@
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="35" id="c6B-wF-8fd"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="24"/>
+                                                <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="24"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -705,10 +705,14 @@
         </scene>
     </scenes>
     <resources>
+        <image name="camera" width="165" height="165"/>
+        <image name="down" width="165" height="165"/>
         <image name="geo_fence" width="30" height="30"/>
+        <image name="globe" width="165" height="165"/>
         <image name="icons8-chevron-left-filled-50" width="16" height="16"/>
         <image name="icons8-chevron-right-filled-50" width="16" height="16"/>
         <image name="map" width="30" height="30"/>
+        <image name="picture-1" width="165" height="165"/>
         <image name="qr_code" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>

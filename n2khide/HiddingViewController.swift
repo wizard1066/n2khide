@@ -726,7 +726,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     
     
     func didSetName(originalName: String?, name: String?) {
-        if name != nil, originalName != nil {
+        if !(name?.isEmpty)!, originalName != nil {
             for wayPoints in mapView.annotations {
                 if wayPoints.title == originalName {
                     let nWP = MKPointAnnotation()
@@ -1163,12 +1163,12 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     }
     
     private var pinViewSelected: MKPointAnnotation!
-    private var pinView: MKAnnotationView!
+//    private var pinView: MKAnnotationView!
     
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         pinViewSelected = view.annotation as? MKPointAnnotation
-        pinView = view
+//        pinView = view
 //        if usingMode == op.recording {
 //            mapView.deselectAnnotation(view.annotation, animated: false)
 //            performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
@@ -1826,6 +1826,7 @@ func getShare() {
         if segue.identifier == Constants.EditUserWaypoint, trigger == point.gps {
             let ewvc = destination as? EditWaypointController
 //            wayPoints.removeValue(forKey: ((pinViewSelected?.title)!)!)
+            
             let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
                 item.name ==  (pinViewSelected?.title)!
             })
