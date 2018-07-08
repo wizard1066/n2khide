@@ -70,7 +70,7 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         view.layer.addSublayer(previewLayer)
         
         instructionView = UITextView(frame: previewLayer.frame)
-        instructionView.text = "QR code of the ibeacon UUID you need search for ... "
+        instructionView.text = "Scan the QR code of the UUID to search4"
         instructionView.font = UIFont(name: "StarStrella", size: 32)
         instructionView.textColor = UIColor.red
         instructionView.backgroundColor = UIColor.clear
@@ -79,7 +79,7 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         instructionView.translatesAutoresizingMaskIntoConstraints  = false
         instructionView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         instructionView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
-        instructionView.heightAnchor.constraint(equalToConstant: 64).isActive = true
+        instructionView.heightAnchor.constraint(equalToConstant: 128).isActive = true
         instructionView.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
         
         let rightBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(broadcast))
@@ -134,9 +134,9 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
 //            })
             if UUID(uuidString: code) != nil {
                 self.firstViewController?.globalUUID = code
-                self.instructionView.text = "You're good to go,, use the play button to create a broadcast test"
+                self.instructionView.text = "You're good to go. Use the PLAY button to test it."
             } else {
-                self.instructionView.text = "Sorry, code isn't a valid UUID I can use"
+                self.instructionView.text = "Sorry, not a VALID UUID, check the code."
                 self.captureSession.startRunning()
             }
 //            self.navigationController?.popViewController(animated: true)
