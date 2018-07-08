@@ -537,11 +537,6 @@
                                     <action selector="pinButton:" destination="17o-cH-NIh" id="HJf-qv-h5X"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem systemItem="search" id="33a-1k-Ysf">
-                                <connections>
-                                    <action selector="searchButton:" destination="17o-cH-NIh" id="jdw-A2-L3j"/>
-                                </connections>
-                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
@@ -565,6 +560,7 @@
                         <outlet property="plusButton" destination="7Tj-8q-gGU" id="wUA-mb-34e"/>
                         <outlet property="scanButton" destination="gau-6O-lj9" id="fs9-QC-2y5"/>
                         <outlet property="timerLabel" destination="436-V8-9AS" id="o6k-Mf-u0P"/>
+                        <outlet property="topView" destination="8n7-vd-joa" id="U3X-Hz-WQu"/>
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="SvD-CE-nLV" id="RQi-Wn-jN8">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>

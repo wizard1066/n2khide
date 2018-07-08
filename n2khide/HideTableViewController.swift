@@ -325,6 +325,9 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
     override func tableView(_ tableView: UITableView,
                    leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
+        if windowView == .playing {
+            return nil
+        }
         var closeAction: UIContextualAction!
         if windowView == .points {
             closeAction = UIContextualAction(style: .normal, title:  "Update", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
@@ -348,9 +351,9 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
                     success(true)
                     // load points from updated zone
                 }
+                closeAction?.image = UIImage(named: "tick")
+                closeAction?.backgroundColor = .green
             })
-            closeAction?.image = UIImage(named: "tick")
-            closeAction?.backgroundColor = .green
         }
         
         return UISwipeActionsConfiguration(actions: [closeAction])

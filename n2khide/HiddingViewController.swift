@@ -14,6 +14,34 @@ import SafariServices
 
 // 2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6 UUID
 
+extension UIImage {
+    func resize(width: CGFloat) -> UIImage {
+        let height = (width/self.size.width)*self.size.height
+        return self.resize(size: CGSize(width: width, height: height))
+    }
+    
+    func resize(height: CGFloat) -> UIImage {
+        let width = (height/self.size.height)*self.size.width
+        return self.resize(size: CGSize(width: width, height: height))
+    }
+    
+    func resize(size: CGSize) -> UIImage {
+        let widthRatio  = size.width/self.size.width
+        let heightRatio = size.height/self.size.height
+        var updateSize = size
+        if(widthRatio > heightRatio) {
+            updateSize = CGSize(width:self.size.width*heightRatio, height:self.size.height*heightRatio)
+        } else if heightRatio > widthRatio {
+            updateSize = CGSize(width:self.size.width*widthRatio,  height:self.size.height*widthRatio)
+        }
+        UIGraphicsBeginImageContextWithOptions(updateSize, false, UIScreen.main.scale)
+        self.draw(in: CGRect(origin: .zero, size: updateSize))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage!
+    }
+}
+
 extension String {
     func reformatIntoDMS() -> String {
         let parts2F = split(separator: "-")
@@ -60,6 +88,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var plusButton: UIBarButtonItem!
     @IBOutlet weak var timerLabel: UILabel!
     @IBOutlet weak var SVcountingLabels: UIStackView!
+    @IBOutlet weak var topView: UIView!
     private var savedMap: Bool = true
     
     @IBAction func searchButton(_ sender: Any) {
@@ -798,20 +827,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
         }
     }
-        
-//        if pinViewSelected != nil, image != nil {
-//            if let thumbButton = pinView.leftCalloutAccessoryView as? UIButton {
-//                thumbButton.setImage(image, for: .normal)
-//                mapView.selectAnnotation(pinViewSelected!, animated: true)
-////                updateWayname(waypoint2U: pinViewSelected, image2U: image)
-//            }
-//        } else {
-//            // must be a ibeacon
-//            let wp2C = listOfPoint2Seek.popLast()
-//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: wp2C?.hint, image: image, order: wayPoints.count, boxes: nil, challenge: wp2C?.challenge, URL: wp2C?.URL)
-//            listOfPoint2Seek.append(wp2S)
-//        }
-//    }
 
     // MARK: MapView
     
@@ -835,24 +850,6 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         let swMapPoint = MKMapPointMake(x, y)
         return MKCoordinateForMapPoint(swMapPoint);
     }
-
-//    private func getBoundingBox(mRect: MKMapRect) ->(Double, Double, Double, Double) {
-////        let botLeft = getSWCoordinate(mRect: mRect)
-////        let topRight = getNECoordinate(mRect: mRect)
-//
-//
-////        let BLP = MyPointAnnotation()
-////        BLP.coordinate  = CLLocationCoordinate2D(latitude: botLeft.latitude, longitude: botLeft.longitude)
-////        BLP.title = "botLeft"
-////        mapView.addAnnotation(BLP)
-////
-////        let TRP = MyPointAnnotation()
-////        TRP.coordinate  = CLLocationCoordinate2D(latitude: topRight.latitude, longitude: topRight.longitude)
-////        TRP.title = "topRight"
-////        mapView.addAnnotation(TRP)
-//
-//        return (botLeft.latitude, botLeft.longitude, topRight.latitude, topRight.longitude)
-//    }
 
     @IBAction func boxButton(_ sender: Any) {
         // Disabled 21.06.2018
@@ -1025,55 +1022,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 self.mapView.add(polygon, level: MKOverlayLevel.aboveRoads)
             }
         }
-//        return boxes2R
         return boxes2S
     }
-    
-//    private func doBox(latitude2S: String, longitude2S: String) {
-//        var coordinates:[CLLocationCoordinate2D] = []
-//        print("latitude2S \(latitude2S) longitude2S \(longitude2S)")
-//        var latitude2P = latitude2S.split(separator: "-")
-//        var longitude2P = longitude2S.split(separator: "-")
-//
-//        let lat2Pplus = Int(latitude2P[2])! + 1
-//        let lon2Pplus = Int(longitude2P[2])! + 1
-//
-//        //        [(36,22)
-//        let start2PLatitude = "\(latitude2P[0])-\(latitude2P[1])-\(latitude2P[2])-\(latitude2P[3])"
-//        let (NWLatitude, NWLongitude) = getDigitalFromDegrees(latitude: start2PLatitude, longitude: longitude2S)
-//        var cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: NWLongitude)
-//        coordinates.append(cord2U)
-//
-//        //         (37,22)
-//        let source2PLatitude = "\(latitude2P[0])-\(latitude2P[1])-\(lat2Pplus)-\(latitude2P[3])"
-//        print("source2PLatitude \(source2PLatitude) longitude2S \(longitude2S)")
-//        let (SELatitude, SELongitude) = getDigitalFromDegrees(latitude: source2PLatitude, longitude: longitude2S)
-//        cord2U = CLLocationCoordinate2D(latitude: SELatitude, longitude: SELongitude)
-//        coordinates.append(cord2U)
-//
-//        //        (37,23)
-//        let source2PLongitude = "\(longitude2P[0])-\(longitude2P[1])-\(lon2Pplus)-\(longitude2P[3])"
-//        print("source2PLongitude \(source2PLongitude) \(source2PLongitude)")
-//        let (SWLatitude, SWLongitude) = getDigitalFromDegrees(latitude: source2PLatitude, longitude: source2PLongitude)
-//        cord2U = CLLocationCoordinate2D(latitude: SWLatitude, longitude: SWLongitude)
-//        coordinates.append(cord2U)
-////
-////        //        (36,23)
-//        print("source2PLongitude \(latitude2S) \(source2PLongitude)")
-//        let (NELatitude, NELongitude) = getDigitalFromDegrees(latitude: latitude2S, longitude: source2PLongitude)
-//        cord2U = CLLocationCoordinate2D(latitude: NELatitude, longitude: NELongitude)
-//        coordinates.append(cord2U)
-////
-////        //        (36,22)]
-//        cord2U = CLLocationCoordinate2D(latitude: NWLatitude, longitude: NWLongitude)
-//        coordinates.append(cord2U)
-//
-//
-//        let polyLine = MKPolyline(coordinates: &coordinates, count: coordinates.count)
-//        DispatchQueue.main.async {
-//            self.mapView.add(polyLine, level: MKOverlayLevel.aboveRoads)
-//        }
-//    }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, didChange newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         let pinMoving = view.annotation?.title
@@ -1146,7 +1096,6 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         if view == nil {
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: Constants.AnnotationViewReuseIdentifier)
             view.canShowCallout = true
-//            let colorPointAnnotation = annotation as! MyPointAnnotation
             view.tintColor = .blue
             
         } else {
@@ -1373,10 +1322,11 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 ckWayPointRecord.setObject(p2S as CKRecordValue?, forKey: Constants.Attribute.order)
                 ckWayPointRecord.setParent(sharePoint)
                 p2S += 1
-//                ckWayPointRecord.setParent(self.mapRecord)
+            
             var image2D: Data!
             if point2Save.image != nil {
-                image2D = UIImageJPEGRepresentation((point2Save.image!), 1.0)
+                 let newImage = point2Save.image?.resize(size: CGSize(width: 1080, height: 1920))
+                image2D = UIImageJPEGRepresentation(newImage!, 1.0)
             } else {
                 image2D = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
             }
@@ -1510,6 +1460,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         getShare()
         codeRunState = gameplay.playing
         resetTitles()
+        self.topView.bringSubview(toFront: self.lowLabel)
+        self.topView.bringSubview(toFront: self.highLabel)
     }
     
     @IBAction func saveB(_ sender: Any) {
@@ -2078,6 +2030,8 @@ func getShare() {
             let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
             self.mapView.setRegion(region, animated: true)
             self.regionHasBeenCentered = true
+           
+           
         }
 
         let center = NotificationCenter.default

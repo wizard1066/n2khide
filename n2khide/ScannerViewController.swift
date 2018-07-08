@@ -133,7 +133,7 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
 //                // nothing
 //            })
             self.firstViewController?.globalUUID = code
-            self.instructionView.text = "Code Good, use the playButton to create a broadcast test"
+            self.instructionView.text = "Code Read, use the play button to create a broadcast test"
 //            self.navigationController?.popViewController(animated: true)
         }))
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
