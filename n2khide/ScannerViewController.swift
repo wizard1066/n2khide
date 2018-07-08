@@ -132,8 +132,13 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
 //           self.presentingViewController?.dismiss(animated: true, completion: {
 //                // nothing
 //            })
-            self.firstViewController?.globalUUID = code
-            self.instructionView.text = "Code Read, use the play button to create a broadcast test"
+            if UUID(uuidString: code) != nil {
+                self.firstViewController?.globalUUID = code
+                self.instructionView.text = "You're good to go,, use the play button to create a broadcast test"
+            } else {
+                self.instructionView.text = "Sorry, code isn't a valid UUID I can use"
+                self.captureSession.startRunning()
+            }
 //            self.navigationController?.popViewController(animated: true)
         }))
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))

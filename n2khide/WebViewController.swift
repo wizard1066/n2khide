@@ -90,6 +90,8 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         backButton.isEnabled = false
         forwardButton.isEnabled = false
         searchBar?.delegate = self
+        searchBar?.autocapitalizationType = .none
+        searchBar?.autocorrectionType = .no
         webView.addObserver(self, forKeyPath: "estimatedProgress", options: .new, context: nil)
         print("fcuk04072018 nameOfNode \(nameOfNode)")
         let defaults:UserDefaults = UserDefaults.standard

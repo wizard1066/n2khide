@@ -181,9 +181,9 @@
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
-                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="7b0-7E-g91">
+                            <searchBar contentMode="redraw" text="https://" placeholder="https://" showsSearchResultsButton="YES" showsBookmarkButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7b0-7E-g91">
                                 <rect key="frame" x="148" y="64" width="600" height="56"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="yes" keyboardType="URL" smartQuotesType="no" textContentType="url"/>
                             </searchBar>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NHm-ms-D8F">
                                 <rect key="frame" x="8" y="64" width="64" height="56"/>
@@ -192,7 +192,7 @@
                                     <constraint firstAttribute="height" constant="56" id="U9b-PL-gBX"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="16"/>
-                                <state key="normal" title="Back" backgroundImage="icons8-chevron-left-filled-50"/>
+                                <state key="normal" title="Back" backgroundImage="noun_back_542006"/>
                                 <connections>
                                     <action selector="backButtonAction:" destination="Jgq-3g-BUk" eventType="touchUpInside" id="4ev-C6-0Hj"/>
                                 </connections>
@@ -207,7 +207,7 @@
                                     <constraint firstAttribute="width" constant="60" id="nUc-t1-Sfz"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="StarStrella" family="Star Strella" pointSize="16"/>
-                                <state key="normal" title="Forward" backgroundImage="icons8-chevron-right-filled-50"/>
+                                <state key="normal" title="Forward" backgroundImage="noun_Next_538847"/>
                                 <connections>
                                     <action selector="forwardButtonAction:" destination="Jgq-3g-BUk" eventType="touchUpInside" id="YFC-Av-Uxf"/>
                                 </connections>
@@ -234,7 +234,7 @@
                         <viewLayoutGuide key="safeArea" id="T0m-Se-ZBu"/>
                     </view>
                     <navigationItem key="navigationItem" id="vqt-Of-kyP">
-                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="U7u-Ot-eNM">
+                        <barButtonItem key="leftBarButtonItem" systemItem="save" id="U7u-Ot-eNM">
                             <connections>
                                 <action selector="doneButton:" destination="Jgq-3g-BUk" id="tYL-uX-mmN"/>
                             </connections>
@@ -704,9 +704,9 @@
         <image name="down" width="165" height="165"/>
         <image name="geo_fence" width="30" height="30"/>
         <image name="globe" width="165" height="165"/>
-        <image name="icons8-chevron-left-filled-50" width="16" height="16"/>
-        <image name="icons8-chevron-right-filled-50" width="16" height="16"/>
         <image name="map" width="30" height="30"/>
+        <image name="noun_Next_538847" width="700" height="700"/>
+        <image name="noun_back_542006" width="700" height="700"/>
         <image name="picture-1" width="165" height="165"/>
         <image name="qr_code" width="30" height="30"/>
     </resources>
