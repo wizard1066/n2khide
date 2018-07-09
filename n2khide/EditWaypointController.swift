@@ -172,7 +172,10 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     }
     
     func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
-        return  session.canLoadObjects(ofClass: NSURL.self) && session.canLoadObjects(ofClass: UIImage.self)
+//        return  session.canLoadObjects(ofClass: NSURL.self) && session.canLoadObjects(ofClass: UIImage.self)
+        return session.hasItemsConforming(toTypeIdentifiers:
+            [kUTTypeImage as String]) &&
+            session.items.count == 1
     }
     
     func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
@@ -193,10 +196,17 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     }
     
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
-        imageFetcher = ImageFetcher() { (url, image) in
-            DispatchQueue.main.async {
-//               self.updateImage(image2U: image)
-                self.setWayPoint.didSetImage(name: self.nameTextField.text, image: image)
+//        imageFetcher = ImageFetcher() { (url, image) in
+//            DispatchQueue.main.async {
+////               self.updateImage(image2U: image)
+//                self.setWayPoint.didSetImage(name: self.nameTextField.text, image: image)
+//            }
+//        }
+        if session.canLoadObjects(ofClass: UIImage.self) {
+            session.loadObjects(ofClass: UIImage.self) { (items) in
+                if let images = items as? [UIImage] {
+                    self.setWayPoint.didSetImage(name: self.nameTextField.text, image: images.first)
+                }
             }
         }
         
@@ -207,9 +217,9 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
         }
         
         session.loadObjects(ofClass: UIImage.self) { images in
-            if let image = images.first as? UIImage {
-                self.imageFetcher.backup = image
-            }
+//            if let image = images.first as? UIImage {
+//                self.imageFetcher.backup = image
+//            }
         }
     }
     
