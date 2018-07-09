@@ -53,7 +53,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let image = (info[UIImagePickerControllerEditedImage] as? UIImage ?? info[UIImagePickerControllerOriginalImage] as? UIImage) {
             DispatchQueue.main.async {
-                self.updateImage(image2U: image)
+//                self.updateImage(image2U: image)
                 self.setWayPoint.didSetImage(name: self.nameTextField.text, image: image)
             }
         }
@@ -195,7 +195,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
         imageFetcher = ImageFetcher() { (url, image) in
             DispatchQueue.main.async {
-               self.updateImage(image2U: image)
+//               self.updateImage(image2U: image)
                 self.setWayPoint.didSetImage(name: self.nameTextField.text, image: image)
             }
         }

@@ -442,7 +442,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                         proximityMessage = "Where's the beacon?"
                     }
 //                    shouldHideBeaconDetails = false
-                    print("Beacon Major = \(closestBeacon.major.intValue) BeaconMinor = \(closestBeacon.minor.intValue) Distance: \(proximityMessage)\n")
+                    print("Beacon Major = \(closestBeacon.major.intValue) BeaconMinor = \(closestBeacon.minor.intValue) Distance: \(proximityMessage)")
                     
                 }
             }
@@ -482,11 +482,12 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 alert.addAction(UIAlertAction(title: "No", style: .default,handler: nil))
                 self.present(alert, animated: true, completion: nil)
             }
-            if OOS[k2U]!! < 24 {
-                OOS[k2U] = OOS[k2U]!! + 1
-            } else {
-                OOS[k2U] = nil
-            }
+        }
+        if OOS[k2U]!! < 12 {
+            OOS[k2U] = OOS[k2U]!! + 1
+            print("fcuk09072018 OOS[k2U] \(OOS[k2U])")
+        } else {
+            OOS[k2U] = nil
         }
    }
     
@@ -1510,8 +1511,6 @@ func getShare() {
     }
     
     func share2Source(zoneID: CKRecordZoneID?) {
-        spotOrderError.removeAll()
-//        windowView = .points
         DispatchQueue.main.async {
             self.mapView.alpha = 0.7
             listOfPoint2Seek = []
@@ -1531,7 +1530,9 @@ func getShare() {
                 print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
             }
-            
+            DispatchQueue.main.async {
+                self.spinner.stopAnimating()
+            }
         }
     }
     
@@ -1574,9 +1575,11 @@ func getShare() {
                 
 //                self.records2MaybeDelete.append(record.recordID)
             }
+            
             let when = DispatchTime.now() + Double(0)
             DispatchQueue.main.asyncAfter(deadline: when){
                 if usingMode == op.playing {
+                    
                     self.countLabel.text  = String(listOfPoint2Seek.count)
                     self.lowLabel.isHidden = false
                     self.highLabel.isHidden = false
@@ -1634,10 +1637,12 @@ func getShare() {
         let minor = record2U.object(forKey: Constants.Attribute.minor) as? Int
         globalUUID = record2U.object(forKey: Constants.Attribute.UUID) as? String
 
-            parentID = record2U.parent
+        parentID = record2U.parent
+        if usingMode == op.recording {
             if parentID != nil,  sharePoint == nil {
                 fetchParentX(recordID: (parentID?.recordID)!)
             }
+        }
             let url2U = record2U.object(forKey: Constants.Attribute.URL) as? String
             let name = record2U.object(forKey:  Constants.Attribute.name) as? String
             let hint = record2U.object(forKey:  Constants.Attribute.hint) as? String
@@ -1991,6 +1996,7 @@ func getShare() {
     
     private func resetTitles() {
         DispatchQueue.main.async {
+            self.makeTimer()
             self.latitudeNextLabel.alpha = 1
             self.longitudeNextLabel.alpha = 1
             self.timerLabel.alpha = 1
@@ -2088,7 +2094,7 @@ func getShare() {
     func fetchParent(_ metadata: CKShareMetadata) {
         recordZoneID = metadata.share.recordID.zoneID
         recordID = metadata.share.recordID
-        let record2S =  [metadata.rootRecordID].last
+//        let record2S =  [metadata.rootRecordID].last
         DispatchQueue.main.async() {
             self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
             self.spinner = UIActivityIndicatorView(frame: CGRect(x: self.view.center.x, y: self.view.center.y, width: 64, height: 64))
@@ -2097,24 +2103,6 @@ func getShare() {
             self.spinner.startAnimating()
         }
         share2Source(zoneID: recordZoneID)
-        
-//        let operation = CKFetchRecordsOperation(recordIDs: [recordID])
-//        operation.perRecordCompletionBlock = { record, _, error in
-//            if error != nil {
-//                print(error?.localizedDescription.debugDescription)
-//            }
-//            if record != nil {
-//                let name2S = record?.object(forKey: Constants.Attribute.mapName) as? String
-//                DispatchQueue.main.async() {
-//                    self.navigationItem.title = name2S
-//                }
-//                DispatchQueue.main.async() {
-//                    let pins2Plot = record?.object(forKey: Constants.Attribute.wayPointsArray) as? Array<CKReference>
-//                    self.queryShare(record2S: pins2Plot!)
-//                }
-//                }
-//            }
-//        sharedDB.add(operation)
     }
     
     func queryShare(record2S: [CKReference]) {

@@ -37,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     func application(_ application: UIApplication, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShareMetadata) {
         usingMode = op.playing
+       
         let acceptShareOperation = CKAcceptSharesOperation(shareMetadatas: [cloudKitShareMetadata])
         
         acceptShareOperation.qualityOfService = .userInteractive
@@ -50,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             /// Send your user to where they need to go in your app
         }
-        
+         codeRunState = gameplay.playing
         CKContainer(identifier:cloudKitShareMetadata.containerIdentifier).add(acceptShareOperation)
         UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]) { (granted, error) in
             if granted {

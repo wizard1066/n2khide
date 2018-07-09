@@ -134,7 +134,7 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
 //            })
             if UUID(uuidString: code) != nil {
                 self.firstViewController?.globalUUID = code
-                self.instructionView.text = "You're good to go. Use the PLAY button to test it."
+                self.instructionView.text = "You're good to go. Use the PLAY button on a second device to test it."
             } else {
                 self.instructionView.text = "Sorry, not a VALID UUID, check the code."
                 self.captureSession.startRunning()
