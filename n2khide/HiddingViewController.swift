@@ -90,6 +90,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     @IBOutlet weak var SVcountingLabels: UIStackView!
     @IBOutlet weak var topView: UIView!
     private var savedMap: Bool = true
+    @IBOutlet weak var proximityLabel: UILabel!
     
     @IBAction func searchButton(_ sender: Any) {
         let url = URL(string: "https://elearning.swisseducation.com")
@@ -423,28 +424,32 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 }
             }
         }
-
+        var proximityMessage: String!
+        
         if beacons.count > 0 {
             if let closestBeacon = beacons[0] as? CLBeacon {
                 if closestBeacon != lastFoundBeacon, lastProximity != closestBeacon.proximity  {
                     lastFoundBeacon = closestBeacon
                     lastProximity = closestBeacon.proximity
-                    var proximityMessage: String!
+                    
                     switch lastFoundBeacon.proximity {
                     case CLProximity.immediate:
-                        proximityMessage = "Very close"
+                        proximityMessage = "Close " + String(CLProximity.immediate.rawValue) + " "
                         
                     case CLProximity.near:
-                        proximityMessage = "Near"
+                        proximityMessage = "Near " + String(CLProximity.near.rawValue) + " "
                     case CLProximity.far:
-                        proximityMessage = "Far"
+                        proximityMessage = "Far " + String(CLProximity.far.rawValue) + " "
                     default:
-                        proximityMessage = "Where's the beacon?"
+                        proximityMessage = "??? " + String(CLProximity.unknown.rawValue) + " "
                     }
-//                    shouldHideBeaconDetails = false
-                    print("Beacon Major = \(closestBeacon.major.intValue) BeaconMinor = \(closestBeacon.minor.intValue) Distance: \(proximityMessage)")
-                    
+                    if usingMode == op.recording {
+                        self.proximityLabel.text = proximityMessage + "Maj \(closestBeacon.major.intValue) Min \(closestBeacon.minor.intValue)\n"
+                    } else {
+                        self.proximityLabel.isHidden = true
+                    }
                 }
+                
             }
         
         }
@@ -1553,7 +1558,7 @@ func getShare() {
         }
     }
     
-    
+   
     
     func share2Load(zoneNamed: String?)  {
 //        spotOrderError.removeAll()
@@ -1628,6 +1633,7 @@ func getShare() {
     }
     
     private var spotOrderError:[Int:Bool?] = [:]
+    var spotDuplicateError:[String:Bool]? = [:]
     
     private func buildWaypoint(record2U: CKRecord) {
 
@@ -1656,22 +1662,30 @@ func getShare() {
                 image2D = UIImage(data: data as Data)
             }
             if major == nil {
-                let wp2S = wayPoint(recordID: record2U.recordID, UUID: nil, major:major, minor: minor, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: image2D, order: order, boxes: boxes, challenge: challenge, URL: url2U)
-                 listOfPoint2Seek.append(wp2S)
-                let wp2S2 = wp2Search(name: name, find: nil)
-                listOfPoint2Search.append(wp2S2)
+                let k2C = "\(String(describing: longitude)) \(String(describing: latitude?.description))"
+                if spotDuplicateError![k2C] == nil {
+                    let wp2S = wayPoint(recordID: record2U.recordID, UUID: nil, major:major, minor: minor, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: image2D, order: order, boxes: boxes, challenge: challenge, URL: url2U)
+                     listOfPoint2Seek.append(wp2S)
+                    let wp2S2 = wp2Search(name: name, find: nil)
+                    listOfPoint2Search.append(wp2S2)
+                    spotDuplicateError![k2C]  = true
+                }
             } else {
                 let k2U = String(minor!) + String(major!)
-                let wp2S = wayPoint(recordID: record2U.recordID,UUID: globalUUID, major:major, minor: minor, proximity: nil, coordinates: nil, name: name, hint: hint, image: image2D, order: order, boxes: nil, challenge: challenge, URL: url2U)
-                listOfPoint2Seek.append(wp2S)
-                // set this just in case you want to define more ibeacons
-               
-                beaconsInTheBag[k2U] = true
-                WP2M[k2U] = name
-                let wp2S2 = wp2Search(name: name, find: nil)
-                listOfPoint2Search.append(wp2S2)
+                 if spotDuplicateError![k2U] == nil {
+                    let wp2S = wayPoint(recordID: record2U.recordID,UUID: globalUUID, major:major, minor: minor, proximity: nil, coordinates: nil, name: name, hint: hint, image: image2D, order: order, boxes: nil, challenge: challenge, URL: url2U)
+                    listOfPoint2Seek.append(wp2S)
+                    // set this just in case you want to define more ibeacons
+                   
+                    beaconsInTheBag[k2U] = true
+                    WP2M[k2U] = name
+                    let wp2S2 = wp2Search(name: name, find: nil)
+                    listOfPoint2Search.append(wp2S2)
+                    spotDuplicateError![k2U]  = true
+                }
             }
             self.plotPin(pin2P: record2U)
+        
 //            let region2M = self.region(withPins: record2U)
 //            self.addRadiusOverlay(forGeotification: record2U)
 //            self.locationManager?.startMonitoring(for: region2M)

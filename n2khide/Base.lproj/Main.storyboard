@@ -447,6 +447,15 @@
                                                     <outletCollection property="gestureRecognizers" destination="UVg-oV-eg7" appends="YES" id="3Ao-zu-coc"/>
                                                 </connections>
                                             </mapView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="proximity" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FOH-tJ-Mty">
+                                                <rect key="frame" x="320" y="847" width="128" height="25"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="128" id="F01-AT-jpB"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="18"/>
+                                                <color key="textColor" red="1" green="0.57810515169999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -455,6 +464,7 @@
                                             <constraint firstItem="UXF-hu-0wk" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="3QL-hm-TyA"/>
                                             <constraint firstItem="8Qb-jJ-lNW" firstAttribute="top" secondItem="9zf-oX-1TL" secondAttribute="bottom" constant="-4" id="3iF-2L-QBC"/>
                                             <constraint firstItem="iIv-Br-KVR" firstAttribute="top" secondItem="UXF-hu-0wk" secondAttribute="bottom" constant="8" id="6KY-qe-OO5"/>
+                                            <constraint firstItem="FOH-tJ-Mty" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="984-vI-v52"/>
                                             <constraint firstItem="rws-ci-FeV" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="D8O-9N-yfl"/>
                                             <constraint firstItem="rws-ci-FeV" firstAttribute="top" secondItem="Zax-lQ-oNB" secondAttribute="bottom" constant="4" id="HSb-aO-zYZ"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerY" secondItem="sLL-BY-qSg" secondAttribute="centerY" id="I7Q-2n-NZT"/>
@@ -466,6 +476,7 @@
                                             <constraint firstItem="8Qb-jJ-lNW" firstAttribute="centerX" secondItem="SvD-CE-nLV" secondAttribute="centerX" id="Pqx-0n-aND"/>
                                             <constraint firstItem="9zf-oX-1TL" firstAttribute="centerX" secondItem="sLL-BY-qSg" secondAttribute="centerX" id="RWb-oe-CXi"/>
                                             <constraint firstAttribute="trailing" secondItem="H9l-Jh-LRi" secondAttribute="trailing" constant="8" id="RZL-di-h84"/>
+                                            <constraint firstItem="mxa-CI-Jfg" firstAttribute="top" secondItem="FOH-tJ-Mty" secondAttribute="bottom" constant="4" id="SH8-hV-FyW"/>
                                             <constraint firstAttribute="trailing" secondItem="sLL-BY-qSg" secondAttribute="trailing" id="TmX-9p-yW7"/>
                                             <constraint firstItem="sLL-BY-qSg" firstAttribute="top" secondItem="SvD-CE-nLV" secondAttribute="top" id="XtS-pi-euW"/>
                                             <constraint firstItem="Shq-1A-DO9" firstAttribute="top" secondItem="rws-ci-FeV" secondAttribute="bottom" constant="4" id="YhJ-2z-Ihy"/>
@@ -558,6 +569,7 @@
                         <outlet property="orderLabel" destination="2KP-uV-ovL" id="7o9-Ns-616"/>
                         <outlet property="pin" destination="5rp-DO-9vb" id="qgw-05-E2y"/>
                         <outlet property="plusButton" destination="7Tj-8q-gGU" id="wUA-mb-34e"/>
+                        <outlet property="proximityLabel" destination="FOH-tJ-Mty" id="VdB-fa-eYD"/>
                         <outlet property="scanButton" destination="gau-6O-lj9" id="fs9-QC-2y5"/>
                         <outlet property="timerLabel" destination="436-V8-9AS" id="o6k-Mf-u0P"/>
                         <outlet property="topView" destination="8n7-vd-joa" id="U3X-Hz-WQu"/>
