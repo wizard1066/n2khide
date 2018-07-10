@@ -67,6 +67,8 @@ extension Double {
 
 
 class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapViewDelegate, UIPopoverPresentationControllerDelegate, setWayPoint, zap, UICloudSharingControllerDelegate, showPoint, CLLocationManagerDelegate,save2Cloud, table2Map, SFSafariViewControllerDelegate {
+
+    
  
     
     
@@ -97,6 +99,19 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         let svc = SFSafariViewController(url: url!)
         present(svc, animated: true, completion: nil)
     }
+    
+    @IBAction func foobar(_ sender: Any) {
+         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        let fileManager = FileManager.default
+        do {
+            let foobars = try fileManager.contentsOfDirectory(atPath: NSTemporaryDirectory())
+            print("fcuk10072018 foobars \(documentsDirectoryURL.absoluteString) \(foobars)")
+        }
+        catch let error as NSError {
+            print("Ooops! Something went wrong: \(error)")
+        }
+    }
+    
     @IBAction func debug(_ sender: Any) {
         
         for overlays in mapView.overlays {
@@ -1293,15 +1308,22 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     private var records2Share:[CKRecord] = []
     private var sharePoint: CKRecord!
     
-    func save2Cloud(rex2S:[wayPoint]?, rex2D:[CKRecordID]?, sharing: Bool) {
+    func save2Cloud(rex2S:[wayPoint]?, rex2D:[CKRecordID]?, sharing: Bool, reordered: Bool) {
         if recordZone == nil {
             nouveauMap(source: false)
+            DispatchQueue.main.async() {
+                if self.spinner != nil {
+                    self.spinner.stopAnimating()
+                    self.spinner.removeFromSuperview()
+                }
+            }
             return
         }
         sharingApp = true
         savedMap = true
         
         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        print("fcuk10072018 documentsDirectoryURL \(documentsDirectoryURL)")
 
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.waitUntilAllOperationsAreFinished()
@@ -1327,7 +1349,11 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 ckWayPointRecord.setObject(point2Save.UUID as CKRecordValue?, forKey: Constants.Attribute.UUID)
                 ckWayPointRecord.setObject(point2Save.challenge as CKRecordValue?, forKey: Constants.Attribute.challenge)
                 ckWayPointRecord.setObject(point2Save.URL as CKRecordValue?, forKey: Constants.Attribute.URL)
-                ckWayPointRecord.setObject(p2S as CKRecordValue?, forKey: Constants.Attribute.order)
+                if reordered {
+                    ckWayPointRecord.setObject(point2Save.order as CKRecordValue?, forKey: Constants.Attribute.order)
+                } else {
+                    ckWayPointRecord.setObject(p2S as CKRecordValue?, forKey: Constants.Attribute.order)
+                }
                 ckWayPointRecord.setParent(sharePoint)
                 p2S += 1
             
@@ -1339,10 +1365,24 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 image2D = UIImageJPEGRepresentation(UIImage(named: "noun_1348715_cc")!, 1.0)
             }
             if let _ = point2Save.name {
-                let file2ShareURL = documentsDirectoryURL.appendingPathComponent(point2Save.name!)
-                try? image2D?.write(to: file2ShareURL, options: .atomicWrite)
-                let newAsset = CKAsset(fileURL: file2ShareURL)
+//                let file2ShareURL = documentsDirectoryURL.appendingPathComponent(point2Save.name!)
+                let file2ShareURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(NSUUID().uuidString+".dat")
+                do {
+                    try image2D?.write(to: file2ShareURL!, options: .atomicWrite)
+                } catch let e as NSError {
+                    print("Error! \(e)");
+                    return
+                }
+//                try? image2D?.write(to: file2ShareURL, options: .atomicWrite)
+                let newAsset = CKAsset(fileURL: file2ShareURL!)
                 ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
+//                let fileManager = FileManager.default
+//                do {
+//                    try fileManager.removeItem(at: file2ShareURL!)
+//                }
+//                catch let error as NSError {
+//                    print("Ooops! Something went wrong: \(error)")
+//                }
            }
              self.records2Share.append(ckWayPointRecord)
 //            listOfPoint2Seek.append(point2Save)
@@ -1361,12 +1401,15 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             if error != nil {
                 print("error \(error.debugDescription)")
             }
-            
-//            self.doshare(rexShared: record!)
+            DispatchQueue.main.async() {
+                if self.spinner != nil {
+                    self.spinner.stopAnimating()
+                    self.spinner.removeFromSuperview()
+                }
+            }
             if sharing {
                 self.sharing(record2S: self.sharePoint)
                 order2Search = listOfPoint2Seek.count
-//                listOfPoint2Seek.removeAll()
             }
         }
         
@@ -1535,8 +1578,9 @@ func getShare() {
                 print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
             }
+//            self.confirmSequenced()
             DispatchQueue.main.async {
-                self.spinner.stopAnimating()
+//                self.spinner.stopAnimating()
             }
         }
     }
@@ -1574,11 +1618,18 @@ func getShare() {
             if error != nil {
                 print("error \(error)")
             }
+
             for record in records! {
                 print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
                 
 //                self.records2MaybeDelete.append(record.recordID)
+            }
+            DispatchQueue.main.async() {
+                if self.spinner != nil {
+                    self.spinner.stopAnimating()
+                    self.spinner.removeFromSuperview()
+                }
             }
             
             let when = DispatchTime.now() + Double(0)
@@ -1653,7 +1704,7 @@ func getShare() {
             let name = record2U.object(forKey:  Constants.Attribute.name) as? String
             let hint = record2U.object(forKey:  Constants.Attribute.hint) as? String
             let order = record2U.object(forKey:  Constants.Attribute.order) as? Int
-
+        
             let boxes = record2U.object(forKey: Constants.Attribute.boxes) as? [CLLocation]
             let challenge = record2U.object(forKey: Constants.Attribute.challenge) as? String
             let file : CKAsset? = record2U.object(forKey: Constants.Attribute.imageData) as? CKAsset
@@ -1700,6 +1751,30 @@ func getShare() {
                     }
                 }
         }
+    }
+    
+    var fireme: Bool! {
+        didSet {
+            confirmSequenced()
+        }
+    }
+    
+    private func confirmSequenced() -> Bool {
+        var bonSequence = 0
+        for items in listOfPoint2Seek {
+            if items.order == bonSequence {
+                bonSequence += 1
+            }
+        }
+        if bonSequence != listOfPoint2Seek.count {
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "OUT OF SEQUENCE", message: "Not Shared, sequence MUST start @ zero", preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+            return false
+        }
+        return true
     }
     
     private func nextLocation2Show() {
@@ -1787,7 +1862,16 @@ func getShare() {
 }
     
     @IBAction func ShareButton2(_ sender: UIBarButtonItem) {
-        save2Cloud(rex2S: listOfPoint2Seek, rex2D: nil, sharing: true)
+        if !confirmSequenced() {
+            return
+        }
+        DispatchQueue.main.async() {
+            self.spinner = UIActivityIndicatorView(frame: CGRect(x: self.view.center.x, y: self.view.center.y, width: 64, height: 64))
+            self.spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+            self.view.addSubview(self.spinner)
+            self.spinner.startAnimating()
+        }
+        save2Cloud(rex2S: listOfPoint2Seek, rex2D: nil, sharing: true, reordered: false)
         
 //        saveImage()
     }
@@ -1991,7 +2075,7 @@ func getShare() {
     // MARK: Popover Delegate
     
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-        // code
+//        self.confirmSequenced()
     }
     
      @IBOutlet weak var hideView: HideView!
@@ -2110,11 +2194,11 @@ func getShare() {
         recordID = metadata.share.recordID
 //        let record2S =  [metadata.rootRecordID].last
         DispatchQueue.main.async() {
-            self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
-            self.spinner = UIActivityIndicatorView(frame: CGRect(x: self.view.center.x, y: self.view.center.y, width: 64, height: 64))
-            self.spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
-            self.view.addSubview(self.spinner)
-            self.spinner.startAnimating()
+//            self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
+//            self.spinner = UIActivityIndicatorView(frame: CGRect(x: self.view.center.x, y: self.view.center.y, width: 64, height: 64))
+//            self.spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+//            self.view.addSubview(self.spinner)
+//            self.spinner.startAnimating()
         }
         share2Source(zoneID: recordZoneID)
     }
@@ -2145,8 +2229,8 @@ func getShare() {
                 print(error?.localizedDescription.debugDescription)
             }
             DispatchQueue.main.async() {
-                self.spinner.stopAnimating()
-                self.spinner.removeFromSuperview()
+//                self.spinner.stopAnimating()
+//                self.spinner.removeFromSuperview()
             }
         }
         CKContainer.default().sharedCloudDatabase.add(operation)
@@ -2193,7 +2277,7 @@ func getShare() {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if !savedMap {
-            save2Cloud(rex2S: listOfPoint2Seek, rex2D: nil, sharing: true)
+            save2Cloud(rex2S: listOfPoint2Seek, rex2D: nil, sharing: true, reordered: false)
         }
  
          let center = NotificationCenter.default

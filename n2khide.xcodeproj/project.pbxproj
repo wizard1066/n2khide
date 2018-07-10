@@ -25,6 +25,7 @@
 		EF897B7620D3E2D800C0D2D9 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF897B7520D3E2D700C0D2D9 /* UserNotifications.framework */; };
 		EF8E3B2320D1481800F6C6CD /* Geotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8E3B2220D1481800F6C6CD /* Geotification.swift */; };
 		EFBA662920EA198E0093D662 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA662820EA198E0093D662 /* ImageViewController.swift */; };
+		EFE908B520F492C400C73501 /* ZoneTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE908B420F492C400C73501 /* ZoneTableViewCell.swift */; };
 		EFF07FB020C03B160018C8C7 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF07FAF20C03B160018C8C7 /* Common.swift */; };
 		EFFE6EF920ECB91800D5D904 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFE6EF820ECB91800D5D904 /* WebViewController.swift */; };
 /* End PBXBuildFile section */
@@ -51,6 +52,7 @@
 		EF897B7520D3E2D700C0D2D9 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		EF8E3B2220D1481800F6C6CD /* Geotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geotification.swift; sourceTree = "<group>"; };
 		EFBA662820EA198E0093D662 /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
+		EFE908B420F492C400C73501 /* ZoneTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneTableViewCell.swift; sourceTree = "<group>"; };
 		EFF07FAF20C03B160018C8C7 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		EFFE6EF820ECB91800D5D904 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -107,6 +109,7 @@
 			children = (
 				EF258B8A20C7D1CD0089EB4D /* n2khide.entitlements */,
 				EF85869520BE845100A21777 /* HideTableViewController.swift */,
+				EFE908B420F492C400C73501 /* ZoneTableViewCell.swift */,
 				EFF07FAF20C03B160018C8C7 /* Common.swift */,
 				EF56461720BD9A4C00F500F6 /* AppDelegate.swift */,
 				EF56461B20BD9A4C00F500F6 /* Main.storyboard */,
@@ -219,6 +222,7 @@
 				EF8E3B2320D1481800F6C6CD /* Geotification.swift in Sources */,
 				EF85869E20BE880800A21777 /* HiddingViewController.swift in Sources */,
 				EF85869C20BE84A300A21777 /* Utilities.swift in Sources */,
+				EFE908B520F492C400C73501 /* ZoneTableViewCell.swift in Sources */,
 				EF0C63A220D9343200A65CC0 /* ScannerViewController.swift in Sources */,
 				EF85869620BE845100A21777 /* HideTableViewController.swift in Sources */,
 				EF85869820BE847300A21777 /* HideView.swift in Sources */,

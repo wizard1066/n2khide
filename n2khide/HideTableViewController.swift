@@ -14,7 +14,7 @@ protocol zap  {
 }
 
 protocol save2Cloud {
-    func save2Cloud(rex2S: [wayPoint]?, rex2D: [CKRecordID]?, sharing: Bool)
+    func save2Cloud(rex2S: [wayPoint]?, rex2D: [CKRecordID]?, sharing: Bool, reordered: Bool)
 }
 
 protocol table2Map {
@@ -22,7 +22,16 @@ protocol table2Map {
     func share2Load(zoneNamed: String?)
 }
 
+class WayPointViewCell: UITableViewCell {
+    
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var countLabel: UILabel!
+    @IBOutlet weak var imageLabel: UIImageView!
+    
+}
+
 class HideTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
+    
     
     var setWayPoint: setWayPoint!
     var me:HiddingViewController!
@@ -30,52 +39,6 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
     
     
     private var edited: Bool = false
-    
-//    func didSetURL(name: String?, URL: String?) {
-//        // do nothing
-//    }
-//
-//    func didSetChallenge(name: String?, challenge: String?) {
-//        if challenge != nil {
-//            self.edited = true
-//                let wp2F =  listOfPoint2Seek[classIndexPath.row]
-//            let wp2A = wayPoint(recordID: wp2F.recordID, UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: wp2F.name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: challenge, URL: wp2F.URL)
-//                listOfPoint2Seek[classIndexPath.row] = wp2A
-//                tableView.reloadData()
-//        }
-//    }
-//
-//    func didSetName(name: String?) {
-//        if name != nil {
-//            self.edited = true
-//            let wp2F =  listOfPoint2Seek[classIndexPath.row]
-//            let wp2A = wayPoint(recordID:wp2F.recordID, UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge, URL: wp2F.URL)
-//            listOfPoint2Seek[classIndexPath.row] = wp2A
-//            tableView.reloadData()
-//        }
-//    }
-//
-//    func didSetHint(name: String?, hint: String?) {
-//        if name != nil {
-//            self.edited = true
-//            let wp2F =  listOfPoint2Seek[classIndexPath.row]
-//            let wp2A = wayPoint(recordID:wp2F.recordID,UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: hint, image: wp2F.image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge, URL: wp2F.URL)
-//            listOfPoint2Seek[classIndexPath.row] = wp2A
-//            tableView.reloadData()
-//        }
-//    }
-//
-//    func didSetImage(name: String?, image: UIImage?) {
-//        if image != nil {
-//            self.edited = true
-//            let wp2F =  listOfPoint2Seek[classIndexPath.row]
-//            let wp2A = wayPoint(recordID:wp2F.recordID,UUID: wp2F.UUID, major:wp2F.major, minor: wp2F.minor,proximity: nil, coordinates: wp2F.coordinates, name: name, hint: wp2F.hint, image: image, order: classIndexPath.row, boxes:wp2F.boxes, challenge: wp2F.challenge, URL: wp2F.URL)
-//            listOfPoint2Seek[classIndexPath.row] = wp2A
-//            tableView.reloadData()
-//        }
-//    }
-    
-   
     
     // MARK: main code
     
@@ -87,40 +50,44 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
 
     private var shadowTable:[wayPoint?]? = []
     
+    private var spinner:UIActivityIndicatorView!
+    
     @objc func switchTable() {
         if windowView == .playing {
             return
         }
-        print("switchin \(windowView.hashValue)")
         if windowView == .points {
             let button = UIButton(type: .custom)
             button.setImage(UIImage (named: "map_marker"), for: .normal)
             button.frame = CGRect(x: 0.0, y: 0.0, width: 35.0, height: 35.0)
             button.addTarget(self, action: #selector(switchTable), for: .touchUpInside)
-            
             let barButtonItem = UIBarButtonItem(customView: button)
-            
+
             self.navigationItem.leftBarButtonItems = [barButtonItem]
             
-            
-            if listOfPoint2Seek.count > 0 {
-                shadowTable = listOfPoint2Seek
-            }
+//            if listOfPoint2Seek.count > 0 {
+//                shadowTable = listOfPoint2Seek
+//            }
             windowView = .zones
-//            listOfPoint2Seek.removeAll()
             listOfZones.removeAll()
+            DispatchQueue.main.async() {
+                self.spinner = UIActivityIndicatorView(frame: CGRect(x: self.view.center.x, y: self.view.center.y, width: 64, height: 64))
+                self.spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+                self.view.addSubview(self.spinner)
+                self.spinner.startAnimating()
+            }
             let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
             operation.fetchRecordZonesCompletionBlock = { records, error in
                 if error != nil {
                     print(error?.localizedDescription.debugDescription)
                 }
                 for rex in records! {
-//                    let rex2S = wayPoint(recordID:nil, UUID: nil, major: 0, minor: 0, proximity: nil, coordinates: nil, name: rex.value.zoneID.zoneName, hint: nil, image: nil, order: nil, boxes: nil, challenge: nil)
-//                     listOfPoint2Seek.append(rex2S)
                     listOfZones.append(rex.value.zoneID.zoneName)
                     zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
                 }
                 DispatchQueue.main.async {
+                    self.spinner.stopAnimating()
+                    self.spinner.removeFromSuperview()
                     self.tableView.reloadData()
                 }
             }
@@ -133,9 +100,17 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
             button.frame = CGRect(x: 0.0, y: 0.0, width: 35.0, height: 35.0)
             button.addTarget(self, action: #selector(switchTable), for: .touchUpInside)
             
-            let barButtonItem = UIBarButtonItem(customView: button)
+            let reSequence = UIButton(type: .system)
+            reSequence.addTarget(self, action: #selector(resequence), for: .touchUpInside)
+//            reSequence.setTitle("Resequence", for: .normal)
+            let myAttribute = [ NSAttributedStringKey.font: UIFont(name: "AvenirNextCondensed-Regular", size: 16.0)! ]
+            let attrString3 = NSAttributedString(string: "Resequence.", attributes: myAttribute)
+            reSequence.setAttributedTitle(attrString3, for: .normal)
+            reSequence.sizeToFit()
             
-            self.navigationItem.leftBarButtonItems = [barButtonItem]
+            let barButtonItem = UIBarButtonItem(customView: button)
+            let barButton2 = UIBarButtonItem(customView: reSequence)
+            self.navigationItem.leftBarButtonItems = [barButtonItem, barButton2]
             
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -150,6 +125,11 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
         super.viewDidLoad()
         self.tableView.dataSource = self
         self.tableView.delegate = self
+        
+        UIBarButtonItem.appearance().setTitleTextAttributes(
+            [NSAttributedStringKey.font : UIFont(name: "AvenirNextCondensed-Regular", size: 16)!], for: .normal)
+        
+//        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "zoneTableCell")
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -184,45 +164,68 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
         self.dismiss(animated: true, completion: nil)
     }
     
+    @objc func resequence() {
+        edited = true
+        var newOrder = 0
+        var newList:[wayPoint] = []
+        for e in listOfPoint2Seek  {
+            let newE = wayPoint(recordID: e.recordID, UUID: e.UUID, major: e.major, minor: e.minor, proximity: e.proximity, coordinates: e.coordinates, name: e.name, hint: e.hint, image: e.image, order: newOrder, boxes: e.boxes, challenge: e.challenge, URL: e.URL)
+            newOrder += 1
+            newList.append(newE)
+        }
+        listOfPoint2Seek = newList
+        tableView.reloadData()
+    }
+    
     override func setEditing (_ editing:Bool, animated:Bool)
     {
         super.setEditing(editing,animated:animated)
-       
             if(self.isEditing)
             {
                 self.editButtonItem.title = "Back"
             } else {
                 self.editButtonItem.title = "Reorder"
             }
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
-//        listOfPoint2Seek = Array(wayPoints.values.map{ $0 })
-        
          let doneBarB = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(byebye))
-        if usingMode != op.playing {
-            self.editButtonItem.title = "Reorder"
-            self.navigationItem.rightBarButtonItems = [ doneBarB , self.editButtonItem]
-             self.navigationItem.rightBarButtonItem!.title = "Back"
-        } else {
-            self.navigationItem.rightBarButtonItems = [ doneBarB ]
-            self.navigationItem.rightBarButtonItem!.title = "Back"
-        }
+
+            if usingMode != op.playing  {
+                self.editButtonItem.title = "Reorder"
+                self.navigationItem.rightBarButtonItems = [ doneBarB , self.editButtonItem]
+                 self.navigationItem.rightBarButtonItem!.title = "Back"
+            } else {
+                self.navigationItem.rightBarButtonItems = [ doneBarB ]
+                self.navigationItem.rightBarButtonItem!.title = "Back"
+            }
+        
+        let reSequence = UIButton(type: .system)
+        reSequence.addTarget(self, action: #selector(resequence), for: .touchUpInside)
+        let myAttribute = [ NSAttributedStringKey.font: UIFont(name: "AvenirNextCondensed-Regular", size: 16.0)! ]
+        let attrString3 = NSAttributedString(string: "Resequence.", attributes: myAttribute)
+        
+        reSequence.setAttributedTitle(attrString3, for: .normal)
+            
+        
+        
         let button = UIButton(type: .custom)
         button.setImage(UIImage (named: "marker"), for: .normal)
-        button.frame = CGRect(x: 0.0, y: 0.0, width: 35.0, height: 35.0)
+//        button.frame = CGRect(x: 0.0, y: 0.0, width: 35.0, height: 35.0)
+        button.sizeToFit()
         button.addTarget(self, action: #selector(switchTable), for: .touchUpInside)
 
         let barButtonItem = UIBarButtonItem(customView: button)
-        self.navigationItem.leftBarButtonItems = [barButtonItem]
+        let barButton2 = UIBarButtonItem(customView: reSequence)
+        self.navigationItem.leftBarButtonItems = [barButtonItem, barButton2]
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         if edited, windowView == .points {
             // BUG this saves the entire set AGAIN!!
-            save2CloudDelegate.save2Cloud(rex2S: listOfPoint2Seek, rex2D: wp2D, sharing: false)
+            save2CloudDelegate.save2Cloud(rex2S: listOfPoint2Seek, rex2D: wp2D, sharing: false, reordered: true)
         }
+        me.fireme = true
     }
     
 
@@ -255,23 +258,26 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RuleCell", for: indexPath)
-
-        // Configure the cell...
         if windowView == .points, listOfPoint2Seek.count > 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "wayPointCell", for: indexPath) as? WayPointViewCell
             let waypoint = listOfPoint2Seek[indexPath.row]
-            cell.detailTextLabel?.text = waypoint.hint
-            cell.textLabel? .text = waypoint.name
-            cell.imageView?.image = waypoint.image
-            return cell
+            cell?.nameLabel.text = waypoint.name
+            cell?.countLabel.text = "\(String(describing: waypoint.order!))"
+            if waypoint.image != nil {
+                cell?.imageLabel.image = waypoint.image
+            }
+            if windowView == .playing, listOfPoint2Search.count > 0 {
+                let waypoint = listOfPoint2Search[indexPath.row]
+                cell?.nameLabel.text = waypoint.name
+                cell?.countLabel.text = waypoint.find
+            }
+            return cell!
         }
+        
         if windowView == .zones, listOfZones.count > 0 {
-            cell.detailTextLabel?.text = listOfZones[indexPath.row]
-            return cell
-        }
-        if windowView == .playing, listOfPoint2Search.count > 0 {
-            let waypoint = listOfPoint2Search[indexPath.row]
-            cell.detailTextLabel?.text = waypoint.name
-            cell.textLabel?.text = waypoint.find
+                let cell = tableView.dequeueReusableCell(withIdentifier: "zoneTableCell", for: indexPath) as? ZoneTableViewCell
+                cell?.zoneLabel.text = listOfZones[indexPath.row]
+                return cell!
         }
         return cell
     }
@@ -346,8 +352,10 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
             closeAction = UIContextualAction(style: .normal, title:  "Load", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
                 if windowView == .zones {
                     self.table2MapDelegate.deleteAllWayPointsInPlace()
+                    listOfPoint2Seek.removeAll()
                     let zone2Seek = listOfZones[indexPath.row]
                     self.table2MapDelegate.share2Load(zoneNamed: zone2Seek)
+                    self.me?.navigationItem.title = zone2Seek
                     success(true)
                     // load points from updated zone
                 }
