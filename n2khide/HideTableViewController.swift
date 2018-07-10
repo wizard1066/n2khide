@@ -82,8 +82,10 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
                     print("\(String(describing: error))")
                 }
                 for rex in records! {
-                    listOfZones.append(rex.value.zoneID.zoneName)
-                    zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
+                     if rex.value.zoneID.zoneName != "_defaultZone" {
+                        listOfZones.append(rex.value.zoneID.zoneName)
+                        zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
+                    }
                 }
                 DispatchQueue.main.async {
                     self.spinner.stopAnimating()

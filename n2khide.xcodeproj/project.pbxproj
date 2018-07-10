@@ -21,7 +21,6 @@
 		EF85869C20BE84A300A21777 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF85869B20BE84A300A21777 /* Utilities.swift */; };
 		EF85869E20BE880800A21777 /* HiddingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF85869D20BE880800A21777 /* HiddingViewController.swift */; };
 		EF8586A220BEE09C00A21777 /* EditWaypointController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8586A120BEE09C00A21777 /* EditWaypointController.swift */; };
-		EF897B7420D3A43400C0D2D9 /* America.gpx in Resources */ = {isa = PBXBuildFile; fileRef = EF897B7320D3A43400C0D2D9 /* America.gpx */; };
 		EF897B7620D3E2D800C0D2D9 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF897B7520D3E2D700C0D2D9 /* UserNotifications.framework */; };
 		EF8E3B2320D1481800F6C6CD /* Geotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8E3B2220D1481800F6C6CD /* Geotification.swift */; };
 		EFBA662920EA198E0093D662 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA662820EA198E0093D662 /* ImageViewController.swift */; };
@@ -48,7 +47,6 @@
 		EF85869B20BE84A300A21777 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		EF85869D20BE880800A21777 /* HiddingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddingViewController.swift; sourceTree = "<group>"; };
 		EF8586A120BEE09C00A21777 /* EditWaypointController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWaypointController.swift; sourceTree = "<group>"; };
-		EF897B7320D3A43400C0D2D9 /* America.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = America.gpx; sourceTree = "<group>"; };
 		EF897B7520D3E2D700C0D2D9 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		EF8E3B2220D1481800F6C6CD /* Geotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geotification.swift; sourceTree = "<group>"; };
 		EFBA662820EA198E0093D662 /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
@@ -116,7 +114,6 @@
 				EFFE6EF820ECB91800D5D904 /* WebViewController.swift */,
 				EFBA662820EA198E0093D662 /* ImageViewController.swift */,
 				EF0C63A320D9472B00A65CC0 /* BeaconCode.swift */,
-				EF897B7320D3A43400C0D2D9 /* America.gpx */,
 				EF8E3B2220D1481800F6C6CD /* Geotification.swift */,
 				EF8586A120BEE09C00A21777 /* EditWaypointController.swift */,
 				EF85869720BE847300A21777 /* HideView.swift */,
@@ -206,7 +203,6 @@
 			files = (
 				EF56462220BD9A4E00F500F6 /* LaunchScreen.storyboard in Resources */,
 				EF56461F20BD9A4E00F500F6 /* Assets.xcassets in Resources */,
-				EF897B7420D3A43400C0D2D9 /* America.gpx in Resources */,
 				EF0C63A720DA90F500A65CC0 /* Star Strella.otf in Resources */,
 				EF56461D20BD9A4C00F500F6 /* Main.storyboard in Resources */,
 			);

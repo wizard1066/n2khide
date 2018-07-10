@@ -361,29 +361,25 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     var cMinorMajorKey: String!
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-//        var shouldHideBeaconDetails = true
-//        print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)\n")
+        var closestBeacon: CLBeacon!
+        
         if beacons.count > 0, usingMode == op.recording {
             let beacons2S = beacons.filter { $0.proximity != CLProximity.unknown }
             if beacons2S.count > 0 {
-                if let closestBeacon = beacons2S[0] as? CLBeacon {
+                 let closestBeacon = beacons2S[0]
                         cMinorMajorKey = closestBeacon.minor.stringValue + closestBeacon.major.stringValue
-//                        print("fcuk26062018 beaconsInTheBag \(beaconsInTheBag)")
                         if beaconsInTheBag[cMinorMajorKey] == nil {
                             beaconsInTheBag[cMinorMajorKey] = true
                             trigger = point.ibeacon
 
-//                            let uniqueName = "UUID".madeUnique(withRespectTo: beaconsLogged)
                             let uniqueName = "UUID" + "-" + cMinorMajorKey
                             beaconsLogged.append(uniqueName)
                             let newWayPoint = wayPoint(recordID:nil, UUID: globalUUID, major:closestBeacon.major as? Int, minor: closestBeacon.minor as? Int, proximity: nil, coordinates: nil, name: uniqueName, hint:"ibeacon", image: nil, order: listOfPoint2Seek.count, boxes: nil, challenge: nil,  URL: nil)
                             wayPoints[closestBeacon.proximityUUID.uuidString] = newWayPoint
                            
                             listOfPoint2Seek.append(newWayPoint)
-//                            print("WTF \(listOfPoint2Save) \(uniqueName)")
                             performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
                         }
-                    }
                 }
         }
         
@@ -421,19 +417,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                             if alert2Post != nil {
                                 sequence(k2U: k2U, alert2U: alert2Post!)
                             }
-//                            if alert2Post != nil {
-//                                let alert = UIAlertController(title: "Sequence Jump \(alert2Post!) OOS", message:  "Do you want to SKIP ahead?", preferredStyle: UIAlertControllerStyle.alert)
-//                                alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak alert] (_) in
-//                                    print("fcuk06072018 pre - order2Search\(order2Search)")
-//                                    let index2F  = listOfPoint2Search.index(where: { (item) -> Bool in
-//                                        item.name == alert2Post
-//                                    })
-//                                    order2Search = index2F!
-//                                    self.judgement()
-//                                }))
-//                                alert.addAction(UIAlertAction(title: "No", style: .default,handler: nil))
-//                                self.present(alert, animated: true, completion: nil)
-//                            }
                         }
                     }
                 }
