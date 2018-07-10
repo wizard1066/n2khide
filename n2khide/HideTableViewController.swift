@@ -79,7 +79,7 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
             let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
             operation.fetchRecordZonesCompletionBlock = { records, error in
                 if error != nil {
-                    print(error?.localizedDescription.debugDescription)
+                    print("\(String(describing: error))")
                 }
                 for rex in records! {
                     listOfZones.append(rex.value.zoneID.zoneName)

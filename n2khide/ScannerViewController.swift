@@ -194,22 +194,19 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         switch peripheral.state {
         case CBManagerState.poweredOn:
             statusMessage = "Bluetooth Status: Turned On"
-            
         case CBManagerState.poweredOff:
             statusMessage = "Bluetooth Status: Turned Off"
-            
         case CBManagerState.resetting:
             statusMessage = "Bluetooth Status: Resetting"
-            
         case CBManagerState.unauthorized:
             statusMessage = "Bluetooth Status: Not Authorized"
-            
         case CBManagerState.unsupported:
             statusMessage = "Bluetooth Status: Not Supported"
-            
         default:
             statusMessage = "Bluetooth Status: Unknown"
         }
+        if statusMessage != "Bluetooth Status: Turned On" {
+            // alert needs bluetooth if you want ibeacons
+        }
     }
-    
 }

@@ -223,7 +223,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
         operation.fetchRecordZonesCompletionBlock = { records, error in
             if error != nil {
-                print(error?.localizedDescription.debugDescription)
+                print("\(String(describing: error?.localizedDescription))")
             }
             for rex in records! {
                 print("\(rex.value.zoneID.zoneName)")
@@ -393,7 +393,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 if let closestBeacon = beacons2S[0] as? CLBeacon {
                     if order2Search! < listOfPoint2Seek.count {
                          let nextWP2S = listOfPoint2Seek[order2Search!]
-                        let k2U = beacons2S[0].minor.stringValue + beacons2S[0].major.stringValue
+                        let k2U = closestBeacon.minor.stringValue + closestBeacon.major.stringValue
                         let  alert2Post = WP2M[k2U]
                         // look for a specific/next ibeacon
                         if alert2Post == nextWP2S.name {
@@ -446,7 +446,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 if closestBeacon != lastFoundBeacon, lastProximity != closestBeacon.proximity  {
                     lastFoundBeacon = closestBeacon
                     lastProximity = closestBeacon.proximity
-                    
                     switch lastFoundBeacon.proximity {
                     case CLProximity.immediate:
                         proximityMessage = "Close " + String(CLProximity.immediate.rawValue) + " "
@@ -458,17 +457,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                     default:
                         proximityMessage = "??? " + String(CLProximity.unknown.rawValue) + " "
                     }
-                    if usingMode == op.recording {
-                        self.proximityLabel.text = proximityMessage + "Maj \(closestBeacon.major.intValue) Min \(closestBeacon.minor.intValue)\n"
-                    } else {
-                        self.proximityLabel.isHidden = true
-                    }
+                    self.proximityLabel.text = proximityMessage + "Maj \(closestBeacon.major.intValue) Min \(closestBeacon.minor.intValue)\n"
                 }
-                
             }
-        
         }
-//      lblBeaconDetails.hidden = shouldHideBeaconDetails
     }
     
     func locationManager(_ manager: CLLocationManager!, didFailWithError error: NSError!) {
@@ -488,10 +480,10 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     func sequence(k2U: String, alert2U: String) {
         if OOS[k2U] == nil {
             OOS[k2U] = 0
-            if alert2U != nil, WP2M[k2U] != nil, codeRunState == gameplay.playing {
+            if WP2M[k2U] != nil, codeRunState == gameplay.playing {
                 let alert = UIAlertController(title: "Sequence Jump \(alert2U) \(k2U) OOS", message:  "Do you want to SKIP ahead?", preferredStyle: UIAlertControllerStyle.alert)
                 alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { [weak alert] (_) in
-                    print("fcuk06072018 pre - order2Search\(order2Search)")
+                
                     let index2F  = listOfPoint2Search.index(where: { (item) -> Bool in
                         item.name == alert2U
                     })
@@ -505,7 +497,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
         if OOS[k2U]!! < 12 {
             OOS[k2U] = OOS[k2U]!! + 1
-            print("fcuk09072018 OOS[k2U] \(OOS[k2U])")
+            
         } else {
             OOS[k2U] = nil
         }
@@ -1049,11 +1041,11 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, didChange newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-        let pinMoving = view.annotation?.title
-        print("fcuk30062018 pinMoving \(pinMoving) \(newState.rawValue) \(oldState.rawValue) ")
+//        let pinMoving = view.annotation?.title
+        
         if newState == MKAnnotationViewDragState.starting {
             let wP2E = wayPoints[((view.annotation?.title)!)!]
-            print("fcuk30112018 \(wP2E)")
+            
             let boxes2D = wP2E?.boxes
             for overlays in mapView.overlays {
                 let latitude = overlays.coordinate.latitude
@@ -1183,7 +1175,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         let latitude = region2D.object(forKey:  Constants.Attribute.latitude) as? Double
         let name = region2D.object(forKey:  Constants.Attribute.name) as? String
         let r2DCoordinates = CLLocationCoordinate2D(latitude: latitude!, longitude:longitude!)
-        let maxDistance = locationManager?.maximumRegionMonitoringDistance
+//        let maxDistance = locationManager?.maximumRegionMonitoringDistance
         if CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
             print("Monitoring available")
         }
@@ -1257,13 +1249,11 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         self.privateDB.save(zone2S, completionHandler: ({returnRecord, error in
             if error != nil {
                 // Zone creation failed
-                print("Cloud privateDB Error\n\(error?.localizedDescription.debugDescription)")
+                
             } else {
                 // Zone creation succeeded
                 recordZone = returnRecord
-                DispatchQueue.main.async {
-                    print("The 'privateDB \(zone2S.zoneID.zoneName) was successfully created in the private database.")
-                }
+
                 self.doshare(rexShared: nil)
             }
         }))
@@ -1422,7 +1412,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             sharePoint = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: recordZone.zoneID)
             parentID = CKReference(record: self.sharePoint, action: .none)
 //        }
-        var recordID2Share:[CKReference] = []
+//        var recordID2Share:[CKReference] = []
         
 //        for rex in self.records2Share {
 ////            let parentR = CKReference(record: self.parentID, action: .none)
@@ -1571,10 +1561,9 @@ func getShare() {
         query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
         sharedDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
             if error != nil {
-                print("error \(error)")
+                print("error \(String(describing: error))")
             }
             for record in records! {
-                print("fcuk26062018 record \(record)")
                 self.buildWaypoint(record2U: record)
             }
 //            self.confirmSequenced()
@@ -1603,7 +1592,7 @@ func getShare() {
         let query = CKQuery(recordType: "mapLinks", predicate: predicate)
         privateDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
             if error != nil {
-                print("error \(error)")
+                print("error \(String(describing: error))")
             }
             for record in records! {
                 print("fcuk26062018 record \(record)")
@@ -1617,7 +1606,6 @@ func getShare() {
     
     func share2Load(zoneNamed: String?)  {
 //        spotOrderError.removeAll()
-        print("fcuk03072018 \(zoneNamed)")
 //            records2MaybeDelete.removeAll()
             recordZone = CKRecordZone(zoneName: zoneNamed!)
             recordZoneID = recordZone.zoneID
@@ -1627,7 +1615,7 @@ func getShare() {
         query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
         privateDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
             if error != nil {
-                print("error \(error)")
+                print("error \(String(describing: error))")
             }
 
             for record in records! {
@@ -1680,13 +1668,13 @@ func getShare() {
     }
     
     private func fetchParentX(recordID: CKRecordID) {
-        var fetchOperation = CKFetchRecordsOperation(recordIDs: [recordID])
+        let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordID])
         fetchOperation.fetchRecordsCompletionBlock = {
             records, error in
             if error != nil {
                 print("\(error!)")
             } else {
-                for (recordId, record) in records! {
+                for (_, record) in records! {
                     self.sharePoint = record
                 }
             }
@@ -1754,7 +1742,7 @@ func getShare() {
            
             DispatchQueue.main.async {
                 if boxes != nil {
-                    for boxes2D in boxes! {
+                    for _ in boxes! {
 //                        self.drawBox(Cords2E: boxes2D.coordinate, boxColor: UIColor.red)
                         let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
                         let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
@@ -1766,7 +1754,7 @@ func getShare() {
     
     var fireme: Bool! {
         didSet {
-            confirmSequenced()
+            _ = confirmSequenced()
         }
     }
     
@@ -1804,7 +1792,6 @@ func getShare() {
         }
         if order2Search! < listOfPoint2Seek.count, usingMode == op.playing {
             let nextWP2S = listOfPoint2Seek[(order2Search!)]
-            print("nextWP2S nextWP2S.UUID \(nextWP2S.UUID) \(order2Search)")
             if nextWP2S.UUID == nil {
                 self.latitudeNextLabel.isHidden = false
                 self.longitudeNextLabel.isHidden = false
@@ -2214,38 +2201,38 @@ func getShare() {
         share2Source(zoneID: recordZoneID)
     }
     
-    func queryShare(record2S: [CKReference]) {
-        var pinID:[CKRecordID] = []
-        for pins in record2S {
-            pinID.append(pins.recordID)
-        }
-        let operation = CKFetchRecordsOperation(recordIDs: pinID)
-        operation.perRecordCompletionBlock = { record, _, error in
-            if error != nil {
-                print(error?.localizedDescription)
-            }
-            if record != nil {
-                DispatchQueue.main.async() {
-                    self.plotPin(pin2P: record!)
-                }
-//                let region2M = self.region(withPins: record!)
-//                self.locationManager?.startUpdatingLocation()
-//                self.locationManager?.startUpdatingHeading()
-//                self.locationManager?.startMonitoring(for: region2M)
-//                self.locationManager.startMonitoringVisits()
-            }
-        }
-        operation.fetchRecordsCompletionBlock = { _, error in
-            if error != nil {
-                print(error?.localizedDescription.debugDescription)
-            }
-            DispatchQueue.main.async() {
-//                self.spinner.stopAnimating()
-//                self.spinner.removeFromSuperview()
-            }
-        }
-        CKContainer.default().sharedCloudDatabase.add(operation)
-    }
+//    func queryShare(record2S: [CKReference]) {
+//        var pinID:[CKRecordID] = []
+//        for pins in record2S {
+//            pinID.append(pins.recordID)
+//        }
+//        let operation = CKFetchRecordsOperation(recordIDs: pinID)
+//        operation.perRecordCompletionBlock = { record, _, error in
+//            if error != nil {
+//                print("\(String(describing: error?.localizedDescription))")
+//            }
+//            if record != nil {
+//                DispatchQueue.main.async() {
+//                    self.plotPin(pin2P: record!)
+//                }
+////                let region2M = self.region(withPins: record!)
+////                self.locationManager?.startUpdatingLocation()
+////                self.locationManager?.startUpdatingHeading()
+////                self.locationManager?.startMonitoring(for: region2M)
+////                self.locationManager.startMonitoringVisits()
+//            }
+//        }
+//        operation.fetchRecordsCompletionBlock = { _, error in
+//            if error != nil {
+//                print("\(String(describing: error))")
+//            }
+//            DispatchQueue.main.async() {
+////                self.spinner.stopAnimating()
+////                self.spinner.removeFromSuperview()
+//            }
+//        }
+//        CKContainer.default().sharedCloudDatabase.add(operation)
+//    }
     
     private func plotPin(pin2P: CKRecord) {
         let UUID = pin2P.object(forKey:  Constants.Attribute.UUID) as? String
@@ -2266,7 +2253,7 @@ func getShare() {
             waypoint.subtitle = hint2D
            
             if let data = NSData(contentsOf: (file?.fileURL)!) {
-                let image2D = UIImage(data: data as Data)
+//                let image2D = UIImage(data: data as Data)
                  self.mapView.addAnnotation(waypoint)
                 self.pinViewSelected = waypoint
                 self.mapView.selectAnnotation(self.pinViewSelected!, animated: true)
@@ -2319,7 +2306,7 @@ func getShare() {
         locationManager?.distanceFilter = kCLDistanceFilterNone
         locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager?.activityType = CLActivityType.fitness
-        locationManager?.allowsBackgroundLocationUpdates
+//        locationManager?.allowsBackgroundLocationUpdates
         locationManager?.requestLocation()
         self.listAllZones()
     }

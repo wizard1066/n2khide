@@ -71,7 +71,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         backButton.isEnabled = webView.canGoBack
         forwardButton.isEnabled = webView.canGoForward
         progressBar.setProgress(0.0, animated: false)
-        print("fcuk04072018 didFinish \(webView.url?.absoluteURL)")
+       
         secondViewController?.didSetURL(name: nameOfNode, URL: webView.url?.absoluteString)
         let defaults:UserDefaults = UserDefaults.standard
         defaults.set(webView.url?.absoluteString, forKey: "URLUsed")
@@ -93,7 +93,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         searchBar?.autocapitalizationType = .none
         searchBar?.autocorrectionType = .no
         webView.addObserver(self, forKeyPath: "estimatedProgress", options: .new, context: nil)
-        print("fcuk04072018 nameOfNode \(nameOfNode)")
+        
         let defaults:UserDefaults = UserDefaults.standard
         if let opened:String = defaults.string(forKey: "URLUsed" ) {
             if let web2S = URL(string: opened) {
