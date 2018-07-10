@@ -223,7 +223,7 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
     override func viewWillDisappear(_ animated: Bool) {
         if edited, windowView == .points {
             // BUG this saves the entire set AGAIN!!
-            save2CloudDelegate.save2Cloud(rex2S: listOfPoint2Seek, rex2D: wp2D, sharing: false, reordered: true)
+//            save2CloudDelegate.save2Cloud(rex2S: listOfPoint2Seek, rex2D: wp2D, sharing: false, reordered: true)
         }
         me.fireme = true
     }

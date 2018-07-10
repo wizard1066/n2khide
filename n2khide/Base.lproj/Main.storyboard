@@ -452,8 +452,8 @@
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="128" id="F01-AT-jpB"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-DemiBold" family="Avenir Next Condensed" pointSize="18"/>
-                                                <color key="textColor" red="1" green="0.57810515169999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <fontDescription key="fontDescription" name="AvenirNextCondensed-UltraLight" family="Avenir Next Condensed" pointSize="18"/>
+                                                <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -538,7 +538,7 @@
                                     <action selector="ShareButton2:" destination="17o-cH-NIh" id="0Vk-FL-SrB"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem systemItem="play" id="HSj-4F-8zi">
+                            <barButtonItem enabled="NO" systemItem="play" id="HSj-4F-8zi">
                                 <connections>
                                     <action selector="FetchShare:" destination="17o-cH-NIh" id="hGt-zJ-ZlS"/>
                                 </connections>

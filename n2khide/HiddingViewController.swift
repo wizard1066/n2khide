@@ -1328,9 +1328,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.waitUntilAllOperationsAreFinished()
         
-        var p2S = listOfPoint2Seek.count
-        
-        print("fcuk05072018 p2S \(p2S)")
+//        var p2S = listOfPoint2Seek.count
+        var p2S = 0
         
         for point2Save in rex2S! {
             var ckWayPointRecord: CKRecord!
@@ -1580,7 +1579,19 @@ func getShare() {
             }
 //            self.confirmSequenced()
             DispatchQueue.main.async {
-//                self.spinner.stopAnimating()
+                let when = DispatchTime.now() + Double(4)
+                DispatchQueue.main.asyncAfter(deadline: when){
+                    if usingMode == op.playing {
+                        
+                        self.countLabel.text  = String(listOfPoint2Seek.count)
+                        self.lowLabel.isHidden = false
+                        self.highLabel.isHidden = false
+                        self.nextLocation2Show()
+                        self.makeTimer()
+                        self.timerLabel.isHidden = false
+                        self.countLabel.isHidden = false
+                    }
+                }
             }
         }
     }
@@ -1632,7 +1643,7 @@ func getShare() {
                 }
             }
             
-            let when = DispatchTime.now() + Double(0)
+            let when = DispatchTime.now() + Double(4)
             DispatchQueue.main.asyncAfter(deadline: when){
                 if usingMode == op.playing {
                     
@@ -1793,7 +1804,7 @@ func getShare() {
         }
         if order2Search! < listOfPoint2Seek.count, usingMode == op.playing {
             let nextWP2S = listOfPoint2Seek[(order2Search!)]
-            print("nextWP2S nextWP2S.UUID \(nextWP2S.UUID)")
+            print("nextWP2S nextWP2S.UUID \(nextWP2S.UUID) \(order2Search)")
             if nextWP2S.UUID == nil {
                 self.latitudeNextLabel.isHidden = false
                 self.longitudeNextLabel.isHidden = false
