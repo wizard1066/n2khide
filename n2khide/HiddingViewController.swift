@@ -1278,9 +1278,10 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     private var operationQueue = OperationQueue()
     private var sharingApp = false
     private var records2Share:[CKRecord] = []
-    private var sharePoint: CKRecord!
+    private var sharePoint: CKRecord?
     
     func save2Cloud(rex2S:[wayPoint]?, rex2D:[CKRecordID]?, sharing: Bool, reordered: Bool) {
+       
         if recordZone == nil {
             nouveauMap(source: false)
             DispatchQueue.main.async() {
@@ -1294,8 +1295,17 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         sharingApp = true
         savedMap = true
         
+         if sharePoint == nil {
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "Network Slow", message: "Try again in a minute or two", preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            }
+            return
+        }
+        
         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        print("fcuk10072018 documentsDirectoryURL \(documentsDirectoryURL)")
+        print("fcuk11072018 rex2S \(rex2S!)")
 
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.waitUntilAllOperationsAreFinished()
@@ -1340,22 +1350,17 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 let file2ShareURL = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(NSUUID().uuidString+".dat")
                 do {
                     try image2D?.write(to: file2ShareURL!, options: .atomicWrite)
+                    let newAsset = CKAsset(fileURL: file2ShareURL!)
+                    ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
+                    self.records2Share.append(ckWayPointRecord)
                 } catch let e as NSError {
                     print("Error! \(e)");
                     return
                 }
-//                try? image2D?.write(to: file2ShareURL, options: .atomicWrite)
-                let newAsset = CKAsset(fileURL: file2ShareURL!)
-                ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
-//                let fileManager = FileManager.default
-//                do {
-//                    try fileManager.removeItem(at: file2ShareURL!)
-//                }
-//                catch let error as NSError {
-//                    print("Ooops! Something went wrong: \(error)")
-//                }
+//                let newAsset = CKAsset(fileURL: file2ShareURL!)
+//                ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
            }
-             self.records2Share.append(ckWayPointRecord)
+            
 //            listOfPoint2Seek.append(point2Save)
         }
         
@@ -1380,7 +1385,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                 print("fcuk11072018 Saved \(record?.count) records ")
             }
             if sharing {
-                self.sharing(record2S: self.sharePoint)
+                self.sharing(record2S: self.sharePoint!)
                 order2Search = listOfPoint2Seek.count
             }
         }
@@ -1393,7 +1398,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         
 //        if listOfPoint2Seek.count == 0 {
             sharePoint = CKRecord(recordType: Constants.Entity.mapLinks, zoneID: recordZone.zoneID)
-            parentID = CKReference(record: self.sharePoint, action: .none)
+        parentID = CKReference(record: self.sharePoint!, action: .none)
 //        }
 //        var recordID2Share:[CKReference] = []
         
@@ -1404,9 +1409,9 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //            recordID2Share.append(childR)
 //        }
         
-        sharePoint.setObject(recordZone.zoneID.zoneName as CKRecordValue, forKey: Constants.Attribute.mapName)
+        sharePoint?.setObject(recordZone.zoneID.zoneName as CKRecordValue, forKey: Constants.Attribute.mapName)
 //        sharePoint.setObject(recordID2Share as CKRecordValue, forKey: Constants.Attribute.wayPointsArray)
-        privateDB.save(sharePoint) { (savedRecord, error) in
+        privateDB.save(sharePoint!) { (savedRecord, error) in
             if error != nil {
                 print("error \(error.debugDescription)")
             }
@@ -1593,6 +1598,8 @@ func getShare() {
             recordZone = CKRecordZone(zoneName: zoneNamed!)
             recordZoneID = recordZone.zoneID
         
+        
+        
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
         query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
@@ -1650,7 +1657,7 @@ func getShare() {
 //        }
     }
     
-    private func fetchParentX(recordID: CKRecordID) {
+    private func fetchParentX(recordID: CKRecordID)  {
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordID])
         fetchOperation.fetchRecordsCompletionBlock = {
             records, error in
