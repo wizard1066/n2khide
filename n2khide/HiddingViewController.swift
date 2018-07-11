@@ -101,15 +101,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     }
     
     @IBAction func foobar(_ sender: Any) {
-         let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        let fileManager = FileManager.default
-        do {
-            let foobars = try fileManager.contentsOfDirectory(atPath: NSTemporaryDirectory())
-            print("fcuk10072018 foobars \(documentsDirectoryURL.absoluteString) \(foobars)")
-        }
-        catch let error as NSError {
-            print("Ooops! Something went wrong: \(error)")
-        }
+
     }
     
     @IBAction func debug(_ sender: Any) {
@@ -309,6 +301,13 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         }
     }
     
+    func stopScanning() {
+         if globalUUID != nil {
+            locationManager?.stopMonitoring(for: beaconRegion)
+            locationManager?.stopRangingBeacons(in: beaconRegion)
+        }
+    }
+    
     
     func startScanning() {
 //        let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -374,7 +373,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
 
                             let uniqueName = "UUID" + "-" + cMinorMajorKey
                             beaconsLogged.append(uniqueName)
-                            let newWayPoint = wayPoint(recordID:nil, UUID: globalUUID, major:closestBeacon.major as? Int, minor: closestBeacon.minor as? Int, proximity: nil, coordinates: nil, name: uniqueName, hint:"ibeacon", image: nil, order: listOfPoint2Seek.count, boxes: nil, challenge: nil,  URL: nil)
+                            let newWayPoint = wayPoint(recordID:nil, UUID: globalUUID, major:closestBeacon.major as? Int, minor: closestBeacon.minor as? Int, proximity: nil, coordinates: nil, name: uniqueName, hint:nil, image: nil, order: listOfPoint2Seek.count, boxes: nil, challenge: nil,  URL: nil)
                             wayPoints[closestBeacon.proximityUUID.uuidString] = newWayPoint
                            
                             listOfPoint2Seek.append(newWayPoint)
@@ -554,7 +553,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         case .denied:
             print("User hates you")
         case .authorizedWhenInUse:
-                locationManager?.stopUpdatingLocation()
+                locationManager?.startUpdatingLocation()
             locationManager?.startUpdatingHeading()
         case .authorizedAlways:
                 locationManager?.startUpdatingLocation()
@@ -562,7 +561,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         case .restricted:
             print("User dislikes you")
         }
-        mapView.showsUserLocation = (status == .authorizedAlways)
+        mapView.showsUserLocation = (status == .authorizedWhenInUse)
     }
     
     var regionHasBeenCentered = false
@@ -1378,6 +1377,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                     self.spinner.stopAnimating()
                     self.spinner.removeFromSuperview()
                 }
+                print("fcuk11072018 Saved \(record?.count) records ")
             }
             if sharing {
                 self.sharing(record2S: self.sharePoint)
@@ -2124,6 +2124,14 @@ func getShare() {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        self.locationManager?.requestAlwaysAuthorization()
+        self.locationManager?.distanceFilter = kCLDistanceFilterNone
+        self.locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        self.locationManager?.activityType = CLActivityType.fitness
+        self.locationManager?.startUpdatingLocation()
+        self.locationManager?.startUpdatingHeading()
+        self.locationManager?.requestLocation()
+        self.startScanning()
         let when = DispatchTime.now() + Double(8)
         DispatchQueue.main.asyncAfter(deadline: when){
             let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
@@ -2131,8 +2139,6 @@ func getShare() {
             let region: MKCoordinateRegion = MKCoordinateRegionMake(userLocation, span)
             self.mapView.setRegion(region, animated: true)
             self.regionHasBeenCentered = true
-           
-           
         }
 
         let center = NotificationCenter.default
@@ -2252,7 +2258,9 @@ func getShare() {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
+        stopScanning()
+        self.locationManager?.stopUpdatingLocation()
+        self.locationManager?.stopUpdatingHeading()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -2271,6 +2279,7 @@ func getShare() {
     }
 
     override func viewDidLoad() {
+        cleanup()
         trigger = point.gps
         centerImage.alpha = 0.5
         directionLabel.isHidden = true
@@ -2285,12 +2294,12 @@ func getShare() {
             print("error \(error.debugDescription)")
         })
         locationManager?.delegate = self
-        locationManager?.requestAlwaysAuthorization()
-        locationManager?.distanceFilter = kCLDistanceFilterNone
-        locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager?.activityType = CLActivityType.fitness
-//        locationManager?.allowsBackgroundLocationUpdates
-        locationManager?.requestLocation()
+//        locationManager?.requestAlwaysAuthorization()
+//        locationManager?.distanceFilter = kCLDistanceFilterNone
+//        locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+//        locationManager?.activityType = CLActivityType.fitness
+////        locationManager?.allowsBackgroundLocationUpdates
+//        locationManager?.requestLocation()
         self.listAllZones()
     }
     
@@ -2339,6 +2348,28 @@ func getShare() {
             return navcon
         } else {
             return nil
+        }
+    }
+    
+    // MARK: Utilities
+    
+    private func cleanup() {
+        let fileManager = FileManager.default
+        do {
+            let tmpDirURL = fileManager.temporaryDirectory
+            let files2D = try fileManager.contentsOfDirectory(atPath: tmpDirURL.path )
+            for file2D in files2D {
+                do {
+                    let fileURL = tmpDirURL.appendingPathComponent(file2D)
+                    try fileManager.removeItem(at: fileURL)
+                }
+                catch let error as NSError {
+                    print("Ooops! Something went wrong: \(error)")
+                }
+            }
+        }
+        catch let error as NSError {
+            print("Ooops! Something went wrong: \(error)")
         }
     }
     

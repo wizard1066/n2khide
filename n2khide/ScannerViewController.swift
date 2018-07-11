@@ -8,10 +8,54 @@
 
 import AVFoundation
 import UIKit
-import CoreBluetooth
 import CoreLocation
+import CoreBluetooth
 
 class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate, CBPeripheralManagerDelegate {
+    
+    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
+        var statusMessage = ""
+        switch peripheral.state {
+        case .poweredOn:
+            statusMessage = "Bluetooth Status: Turned On"
+            break
+        case .poweredOff:
+            statusMessage = "Bluetooth Status: Turned Off"
+            break
+        case .resetting:
+            statusMessage = "Bluetooth Status: Resetting"
+            break
+        case .unauthorized:
+            statusMessage = "Bluetooth Status: Not Authorized"
+            break
+        case .unsupported:
+            statusMessage = "Bluetooth Status: Not Supported"
+            break
+        case .unknown:
+            statusMessage = "Bluetooth Status: Unknown"
+            break
+        default:
+            statusMessage = "Bluetooth Status: Unknown"
+            break
+        }
+        if statusMessage != "Bluetooth Status: Turned On" {
+            let ac = UIAlertController(title: "Bluetooth isn't working ...", message:statusMessage, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "Turn On", style: .cancel, handler: { (action) in
+                guard let settingsUrl = URL(string: UIApplicationOpenSettingsURLString) else {
+                    return
+                }
+                
+                if UIApplication.shared.canOpenURL(settingsUrl) {
+                    UIApplication.shared.open(settingsUrl, completionHandler: { (success) in
+                        print("Settings opened: \(success)") // Prints true
+                    })
+                }
+            }))
+//            ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            present(ac, animated: true)
+        }
+    }
+    
     var captureSession: AVCaptureSession!
     var previewLayer: AVCaptureVideoPreviewLayer!
     weak var firstViewController: HiddingViewController?
@@ -27,11 +71,15 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
     private var  beaconRegion: CLBeaconRegion!
     
     override func viewDidDisappear(_ animated: Bool) {
-        peripheralManager.stopAdvertising()
+        if peripheralManager.isAdvertising {
+            peripheralManager.stopAdvertising()
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        peripheralManager.delegate = self
         
         view.backgroundColor = UIColor.black
         captureSession = AVCaptureSession()
@@ -107,7 +155,7 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+        self.firstViewController?.globalUUID = code2D
         if (captureSession?.isRunning == true) {
             captureSession.stopRunning()
         }
@@ -126,14 +174,14 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
 //        dismiss(animated: true)
     }
     
+    var code2D: String?
+    
     func found(code: String) {
         let ac = UIAlertController(title: "Code Read", message:code, preferredStyle: .alert)
         ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
-//           self.presentingViewController?.dismiss(animated: true, completion: {
-//                // nothing
-//            })
             if UUID(uuidString: code) != nil {
-                self.firstViewController?.globalUUID = code
+//                self.firstViewController?.globalUUID = code
+                self.code2D = code
                 self.instructionView.text = "You're good to go. Use the PLAY button on a second device to test it."
             } else {
                 self.instructionView.text = "Sorry, not a VALID UUID, check the code."
@@ -188,25 +236,5 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         self.present(alert, animated: true, completion: nil)
     }
     
-    func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        var statusMessage = ""
-        
-        switch peripheral.state {
-        case CBManagerState.poweredOn:
-            statusMessage = "Bluetooth Status: Turned On"
-        case CBManagerState.poweredOff:
-            statusMessage = "Bluetooth Status: Turned Off"
-        case CBManagerState.resetting:
-            statusMessage = "Bluetooth Status: Resetting"
-        case CBManagerState.unauthorized:
-            statusMessage = "Bluetooth Status: Not Authorized"
-        case CBManagerState.unsupported:
-            statusMessage = "Bluetooth Status: Not Supported"
-        default:
-            statusMessage = "Bluetooth Status: Unknown"
-        }
-        if statusMessage != "Bluetooth Status: Turned On" {
-            // alert needs bluetooth if you want ibeacons
-        }
-    }
+
 }
