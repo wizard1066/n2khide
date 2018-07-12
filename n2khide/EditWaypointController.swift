@@ -174,7 +174,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
 //        return  session.canLoadObjects(ofClass: NSURL.self) && session.canLoadObjects(ofClass: UIImage.self)
         return session.hasItemsConforming(toTypeIdentifiers:
-            [kUTTypeImage as String]) &&
+            [kUTTypeImage as String]) && session.canLoadObjects(ofClass: UIImage.self) &&
             session.items.count == 1
     }
     

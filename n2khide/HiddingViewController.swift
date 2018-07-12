@@ -1904,16 +1904,18 @@ func getShare() {
         if segue.identifier == Constants.EditUserWaypoint, trigger == point.ibeacon {
             let ewvc = destination as? EditWaypointController
             let uniqueName = "UUID" + "-" + cMinorMajorKey
-            let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
+            let index2F:Int?  = listOfPoint2Seek.index(where: { (item) -> Bool in
                    item.name == uniqueName
             })
-           order2Search = index2F!
+//            if order2Search == nil { order2Search = 0 } else { order2Search = index2F }
             if index2F == nil {
+                order2Search = 0
                 ewvc?.nameText =  uniqueName
                 ewvc?.hintText = "ibeacon"
                 ewvc?.setWayPoint = self
                 ewvc?.me = self
             } else {
+                order2Search = index2F
                 ewvc?.nameText = listOfPoint2Seek[index2F!].name
                 ewvc?.hintText = listOfPoint2Seek[index2F!].hint
                 ewvc?.setWayPoint = self
