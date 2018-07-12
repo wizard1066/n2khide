@@ -372,11 +372,11 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                             beaconsInTheBag[cMinorMajorKey] = true
                             trigger = point.ibeacon
 
-//                            let uniqueName = "UUID" + "-" + cMinorMajorKey
-                            let uniqueName = UUID().uuidString
+                            let uniqueName = "UUID" + "-" + cMinorMajorKey
+//                            let uniqueName = UUID().uuidString
                             beaconsLogged.append(uniqueName)
                             let newWayPoint = wayPoint(recordID:nil, UUID: globalUUID, major:closestBeacon.major as? Int, minor: closestBeacon.minor as? Int, proximity: nil, coordinates: nil, name: uniqueName, hint:nil, image: nil, order: listOfPoint2Seek.count, boxes: nil, challenge: nil,  URL: nil)
-                            wayPoints[closestBeacon.proximityUUID.uuidString] = newWayPoint
+                            wayPoints[cMinorMajorKey] = newWayPoint
                            
                             listOfPoint2Seek.append(newWayPoint)
                             performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
@@ -2029,7 +2029,7 @@ func getShare() {
         if sender.state == .began {
             trigger = point.gps
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
-            let wayNames = Array(wayPoints.keys)
+//            let wayNames = Array(wayPoints.keys)
 //            let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
             let uniqueName = UUID().uuidString
 //           let waypoint2 = MKPointAnnotation()
