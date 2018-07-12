@@ -360,7 +360,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     var cMinorMajorKey: String!
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        var closestBeacon: CLBeacon!
+//        var closestBeacon: CLBeacon!
         
         if beacons.count > 0, usingMode == op.recording {
             let beacons2S = beacons.filter { $0.proximity != CLProximity.unknown }
@@ -1304,8 +1304,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
             return
         }
         
-        let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        print("fcuk11072018 rex2S \(rex2S!)")
+//        let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+//        print("fcuk11072018 rex2S \(rex2S!)")
 
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.waitUntilAllOperationsAreFinished()
@@ -1364,7 +1364,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
 //            listOfPoint2Seek.append(point2Save)
         }
         
-        print("fcuk06072018 \(records2Share) records2Share")
+//        print("fcuk06072018 \(records2Share) records2Share")
         
         let modifyOp = CKModifyRecordsOperation(recordsToSave:
             records2Share, recordIDsToDelete: rex2D)
@@ -1382,7 +1382,7 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                     self.spinner.stopAnimating()
                     self.spinner.removeFromSuperview()
                 }
-                print("fcuk11072018 Saved \(record?.count) records ")
+//                print("fcuk11072018 Saved \(record?.count) records ")
             }
             if sharing {
                 self.sharing(record2S: self.sharePoint!)
@@ -1545,6 +1545,12 @@ func getShare() {
         let predicate = NSPredicate(value: true)
 //        let predicate = NSPredicate(format: "owningList == %@", recordZoneID)
         //        let query = CKQuery(recordType: "Waypoints", predicate: predicate)
+        DispatchQueue.main.async() {
+            self.spinner = UIActivityIndicatorView(frame: CGRect(x: self.view.center.x, y: self.view.center.y, width: 64, height: 64))
+            self.spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+            self.view.addSubview(self.spinner)
+            self.spinner.startAnimating()
+        }
         let query = CKQuery(recordType: "Waypoints", predicate: predicate)
         query.sortDescriptors = [NSSortDescriptor(key: "order", ascending: true)]
         sharedDB.perform(query, inZoneWith: recordZoneID) { (records, error) in
@@ -1556,10 +1562,10 @@ func getShare() {
             }
 //            self.confirmSequenced()
             DispatchQueue.main.async {
+                self.spinner.stopAnimating()
                 let when = DispatchTime.now() + Double(4)
                 DispatchQueue.main.asyncAfter(deadline: when){
                     if usingMode == op.playing {
-                        
                         self.countLabel.text  = String(listOfPoint2Seek.count)
                         self.lowLabel.isHidden = false
                         self.highLabel.isHidden = false
@@ -1567,6 +1573,7 @@ func getShare() {
                         self.makeTimer()
                         self.timerLabel.isHidden = false
                         self.countLabel.isHidden = false
+                        self.spinner.removeFromSuperview()
                     }
                 }
             }

@@ -223,13 +223,13 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        if edited, windowView == .points {
+        if edited, windowView == .points, usingMode != op.playing {
             // BUG this saves the entire set AGAIN!!
             if listOfPoint2Seek.count != 0 {
                 save2CloudDelegate.save2Cloud(rex2S: listOfPoint2Seek, rex2D: wp2D, sharing: false, reordered: true)
             }
         }
-        me.fireme = true
+            me.fireme = true
     }
     
 
@@ -262,7 +262,7 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RuleCell", for: indexPath)
-        if windowView == .points, listOfPoint2Seek.count > 0 {
+        if windowView == .points, usingMode != op.playing , listOfPoint2Seek.count > 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "wayPointCell", for: indexPath) as? WayPointViewCell
             let waypoint = listOfPoint2Seek[indexPath.row]
             cell?.nameLabel.text = waypoint.name
@@ -270,10 +270,14 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
             if waypoint.image != nil {
                 cell?.imageLabel.image = waypoint.image
             }
+            return cell!
+        }
+        if windowView == .playing, usingMode == op.playing {
+              let cell = tableView.dequeueReusableCell(withIdentifier: "searchViewCell", for: indexPath) as? SearchTableViewCell
             if windowView == .playing, listOfPoint2Search.count > 0 {
-                let waypoint = listOfPoint2Search[indexPath.row]
-                cell?.nameLabel.text = waypoint.name
-                cell?.countLabel.text = waypoint.find
+                cell?.nameLabel.text = listOfPoint2Search[indexPath.row].name
+                cell?.orderLabel.text  = String(listOfPoint2Seek[indexPath.row].order!)
+                cell?.timeLabel.text = listOfPoint2Search[indexPath.row].find
             }
             return cell!
         }
@@ -335,7 +339,7 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
     override func tableView(_ tableView: UITableView,
                    leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
-        if windowView == .playing {
+        if windowView == .playing || usingMode == op.playing {
             return nil
         }
         var closeAction: UIContextualAction!
@@ -377,6 +381,9 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
     override func tableView(_ tableView: UITableView,
                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
     {
+        if windowView == .playing || usingMode == op.playing {
+            return nil
+        }
             let modifyAction = UIContextualAction(style: .normal, title:  "Delete", handler: { (ac:UIContextualAction, view:UIView, success:(Bool) -> Void) in
                 if windowView == .points {
                     self.edited = true

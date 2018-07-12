@@ -34,9 +34,9 @@ class ScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDel
         case .unknown:
             statusMessage = "Bluetooth Status: Unknown"
             break
-        default:
-            statusMessage = "Bluetooth Status: Unknown"
-            break
+//        default:
+//            statusMessage = "Bluetooth Status: Unknown"
+//            break
         }
         if statusMessage != "Bluetooth Status: Turned On" {
             let ac = UIAlertController(title: "Bluetooth isn't working ...", message:statusMessage, preferredStyle: .alert)

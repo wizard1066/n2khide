@@ -692,6 +692,54 @@
                                     <outlet property="zoneLabel" destination="85t-Uu-ahp" id="MSk-N9-H0D"/>
                                 </connections>
                             </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="searchViewCell" id="etg-Q5-XCV" customClass="SearchTableViewCell" customModule="n2khide" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="180" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="etg-Q5-XCV" id="pU9-2e-8q3">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00.0" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5s6-CT-h4v">
+                                            <rect key="frame" x="16" y="9.5" width="51" height="25"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="51" id="Eef-X2-2yE"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="18"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gP6-6T-gD9">
+                                            <rect key="frame" x="75" y="9.5" width="17" height="25"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="17" id="2VN-mz-LwG"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="18"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hqg-Fp-RE1">
+                                            <rect key="frame" x="100" y="10" width="204" height="25"/>
+                                            <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="18"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="Hqg-Fp-RE1" secondAttribute="trailing" constant="16" id="A3N-ly-RDg"/>
+                                        <constraint firstItem="gP6-6T-gD9" firstAttribute="centerY" secondItem="pU9-2e-8q3" secondAttribute="centerY" id="DUF-D3-WaT"/>
+                                        <constraint firstItem="Hqg-Fp-RE1" firstAttribute="leading" secondItem="gP6-6T-gD9" secondAttribute="trailing" constant="8" id="TXH-4p-AXB"/>
+                                        <constraint firstItem="5s6-CT-h4v" firstAttribute="leading" secondItem="pU9-2e-8q3" secondAttribute="leadingMargin" id="TqF-QP-n5c"/>
+                                        <constraint firstItem="5s6-CT-h4v" firstAttribute="centerY" secondItem="pU9-2e-8q3" secondAttribute="centerY" id="XRS-yv-2Sp"/>
+                                        <constraint firstItem="gP6-6T-gD9" firstAttribute="leading" secondItem="5s6-CT-h4v" secondAttribute="trailing" constant="8" id="hQd-Nd-ccQ"/>
+                                        <constraint firstItem="Hqg-Fp-RE1" firstAttribute="centerY" secondItem="pU9-2e-8q3" secondAttribute="centerY" id="iXw-YM-fJj"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="nameLabel" destination="Hqg-Fp-RE1" id="WVI-dF-MYR"/>
+                                    <outlet property="orderLabel" destination="gP6-6T-gD9" id="NBF-Qy-Xpb"/>
+                                    <outlet property="timeLabel" destination="5s6-CT-h4v" id="p9e-V9-cic"/>
+                                </connections>
+                            </tableViewCell>
                         </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="AtU-1N-T2Y" id="6bL-4O-nZf"/>
@@ -794,6 +842,6 @@
         <image name="qr_code" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="RQi-Wn-jN8"/>
+        <segue reference="hFW-Ay-RwD"/>
     </inferredMetricsTieBreakers>
 </document>
