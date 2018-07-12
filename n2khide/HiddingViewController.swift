@@ -131,7 +131,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         if currentLocation != nil {
             let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
             let wayNames = Array(wayPoints.keys)
-            let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
+//            let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
+            let uniqueName = UUID().uuidString
             
             let waypoint2 = MyPointAnnotation()
             waypoint2.coordinate  = userLocation
@@ -202,14 +203,14 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         return selectedSet
     }
     
-   var  zonesReturned = false {
-        didSet {
-            if zoneTable["Saved"] == nil {
-                    print("fcuk05072018 \(zoneTable)")
-                    saveZone(zone2S: CKRecordZone(zoneName: "Saved"))
-            }
-        }
-    }
+//   var  zonesReturned = false {
+//        didSet {
+//            if zoneTable["Saved"] == nil {
+//                    print("fcuk05072018 \(zoneTable)")
+//                    saveZone(zone2S: CKRecordZone(zoneName: "Saved"))
+//            }
+//        }
+//    }
     
     private func listAllZones()  {
         let operation = CKFetchRecordZonesOperation.fetchAllRecordZonesOperation()
@@ -221,7 +222,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                 print("\(rex.value.zoneID.zoneName)")
                 zoneTable[rex.value.zoneID.zoneName] = rex.value.zoneID
             }
-            self.zonesReturned = true
+//            self.zonesReturned = true
         }
         privateDB.add(operation)
     }
@@ -371,7 +372,8 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                             beaconsInTheBag[cMinorMajorKey] = true
                             trigger = point.ibeacon
 
-                            let uniqueName = "UUID" + "-" + cMinorMajorKey
+//                            let uniqueName = "UUID" + "-" + cMinorMajorKey
+                            let uniqueName = UUID().uuidString
                             beaconsLogged.append(uniqueName)
                             let newWayPoint = wayPoint(recordID:nil, UUID: globalUUID, major:closestBeacon.major as? Int, minor: closestBeacon.minor as? Int, proximity: nil, coordinates: nil, name: uniqueName, hint:nil, image: nil, order: listOfPoint2Seek.count, boxes: nil, challenge: nil,  URL: nil)
                             wayPoints[closestBeacon.proximityUUID.uuidString] = newWayPoint
@@ -1208,7 +1210,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
             let textField = alert?.textFields![0]
             if textField?.text != "" {
-                let _ = self.listAllZones()
+//                let _ = self.listAllZones()
+                self.navigationItem.title = (textField?.text)!
                 if zoneTable[(textField?.text)!] != nil {
                     self.share2Load(zoneNamed: (textField?.text)!)
                     if listOfPoint2Seek.count == 0 {
@@ -1280,6 +1283,10 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     private var records2Share:[CKRecord] = []
     private var sharePoint: CKRecord?
     
+//    func mergeList(rex2S:[wayPoint]?) -> ([wayPoint]?, Int) {
+//
+//    }
+    
     func save2Cloud(rex2S:[wayPoint]?, rex2D:[CKRecordID]?, sharing: Bool, reordered: Bool) {
        
         if recordZone == nil {
@@ -1294,6 +1301,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         }
         sharingApp = true
         savedMap = true
+        
+        
         
          if sharePoint == nil {
             DispatchQueue.main.async {
@@ -1310,7 +1319,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
         operationQueue.maxConcurrentOperationCount = 1
         operationQueue.waitUntilAllOperationsAreFinished()
         
-//        var p2S = listOfPoint2Seek.count
+// Do something here with saves, reread zone and make sure you're not saving a duplicate record!!
+//        var p2S = readinrecords ?? 0
         var p2S = 0
         
         for point2Save in rex2S! {
@@ -1357,14 +1367,8 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                     print("Error! \(e)");
                     return
                 }
-//                let newAsset = CKAsset(fileURL: file2ShareURL!)
-//                ckWayPointRecord.setObject(newAsset as CKAsset?, forKey: Constants.Attribute.imageData)
            }
-            
-//            listOfPoint2Seek.append(point2Save)
         }
-        
-//        print("fcuk06072018 \(records2Share) records2Share")
         
         let modifyOp = CKModifyRecordsOperation(recordsToSave:
             records2Share, recordIDsToDelete: rex2D)
@@ -1382,14 +1386,12 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
                     self.spinner.stopAnimating()
                     self.spinner.removeFromSuperview()
                 }
-//                print("fcuk11072018 Saved \(record?.count) records ")
             }
             if sharing {
                 self.sharing(record2S: self.sharePoint!)
                 order2Search = listOfPoint2Seek.count
             }
         }
-        
         self.privateDB.add(modifyOp)
     }
         
@@ -1597,7 +1599,7 @@ func getShare() {
         }
     }
     
-   
+    var readinrecords: Int?
     
     func share2Load(zoneNamed: String?)  {
 //        spotOrderError.removeAll()
@@ -1621,6 +1623,7 @@ func getShare() {
                 
 //                self.records2MaybeDelete.append(record.recordID)
             }
+            self.readinrecords  = records?.count
             DispatchQueue.main.async() {
                 if self.spinner != nil {
                     self.spinner.stopAnimating()
@@ -2025,7 +2028,8 @@ func getShare() {
             trigger = point.gps
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
             let wayNames = Array(wayPoints.keys)
-            let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
+//            let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
+            let uniqueName = UUID().uuidString
 //           let waypoint2 = MKPointAnnotation()
             let waypoint2 = MyPointAnnotation()
           waypoint2.coordinate  = coordinate
@@ -2046,7 +2050,7 @@ func getShare() {
                 for box in boxes {
                     box2F.append(CLLocation(latitude: box.coordinate.latitude, longitude: box.coordinate.longitude))
                 }
-                let newWayPoint = wayPoint(recordID: nil, UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: wayPoints.count, boxes: box2F, challenge: nil, URL: nil)
+                let newWayPoint = wayPoint(recordID: nil, UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: listOfPoint2Seek.count, boxes: box2F, challenge: nil, URL: nil)
                 wayPoints[uniqueName] = newWayPoint
                 print("fcuk29062018 \(wayPoints) \(uniqueName)")
                 listOfPoint2Seek.append(newWayPoint)
@@ -2124,7 +2128,7 @@ func getShare() {
                 self.hintLabel.alpha = 0
             }
             self.highLabel.text = " [ You Finished ] "
-            UIView.animate(withDuration: 8.0, animations: {
+            UIView.animate(withDuration: 24.0, animations: {
                 self.highLabel.alpha = 0
             }, completion: { (done) in
                 self.navigationItem.title = nil
@@ -2191,8 +2195,10 @@ func getShare() {
     var spinner: UIActivityIndicatorView!
     
     func fetchParent(_ metadata: CKShareMetadata) {
+        
         recordZoneID = metadata.share.recordID.zoneID
         recordID = metadata.share.recordID
+        self.navigationItem.title = recordZoneID.zoneName
 //        let record2S =  [metadata.rootRecordID].last
         DispatchQueue.main.async() {
 //            self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
@@ -2279,9 +2285,9 @@ func getShare() {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        if !savedMap {
-            save2Cloud(rex2S: listOfPoint2Seek, rex2D: nil, sharing: true, reordered: false)
-        }
+//        if !savedMap {
+//            save2Cloud(rex2S: listOfPoint2Seek, rex2D: nil, sharing: true, reordered: false)
+//        }
  
          let center = NotificationCenter.default
         if pinObserver != nil {
