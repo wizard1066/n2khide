@@ -174,7 +174,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
     func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
 //        return  session.canLoadObjects(ofClass: NSURL.self) && session.canLoadObjects(ofClass: UIImage.self)
         return session.hasItemsConforming(toTypeIdentifiers:
-            [kUTTypeImage as String]) && session.canLoadObjects(ofClass: UIImage.self) &&
+            [kUTTypeImage as String]) && session.canLoadObjects(ofClass: UIImage.self) && session.canLoadObjects(ofClass: NSURL.self) &&
             session.items.count == 1
     }
     
@@ -212,7 +212,7 @@ class EditWaypointController: UIViewController, UIDropInteractionDelegate, UIIma
         
         session.loadObjects(ofClass: NSURL.self) { nsurl in
             if let url = nsurl.first as? URL {
-                self.imageFetcher.fetch(url)
+                self.setWayPoint.didSetURL(name: self.nameTextField.text, URL: url.absoluteString)
             }
         }
         

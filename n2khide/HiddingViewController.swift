@@ -14,6 +14,8 @@ import SafariServices
 
 // 2F234454-CF6D-4A0F-ADF2-F4911BA9FFA6 UUID
 
+
+
 extension UIImage {
     func resize(width: CGFloat) -> UIImage {
         let height = (width/self.size.width)*self.size.height
@@ -123,6 +125,14 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         
     }
     
+    func returnUUID(Source2U: String) -> String {
+        let allowedCharset = CharacterSet
+            .alphanumerics
+            .union(CharacterSet(charactersIn: "+"))
+        
+       return(String(Source2U.unicodeScalars.filter(allowedCharset.contains)))
+    }
+    
     @IBAction func pinButton(_ sender: Any) {
         if usingMode == op.playing {
             return
@@ -130,19 +140,20 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
         savedMap = false
         if currentLocation != nil {
             let userLocation: CLLocationCoordinate2D = CLLocationCoordinate2DMake(currentLocation!.coordinate.latitude, currentLocation!.coordinate.longitude)
-            let wayNames = Array(wayPoints.keys)
+            let wp2FLat = self.getLocationDegreesFrom(latitude: currentLocation.coordinate.latitude)
+            let wp2FLog = self.getLocationDegreesFrom(longitude: currentLocation.coordinate.longitude)
+            let hint2D = wp2FLat + wp2FLog
+//             let uniqueName = UUID().uuidString
+            let uniqueName =  returnUUID(Source2U: hint2D)
+//            let wayNames = Array(wayPoints.keys)
 //            let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
-            let uniqueName = UUID().uuidString
+           
             
             let waypoint2 = MyPointAnnotation()
             waypoint2.coordinate  = userLocation
             waypoint2.title = uniqueName
             MKPinAnnotationView.greenPinColor()
-            
-            let wp2FLat = self.getLocationDegreesFrom(latitude: waypoint2.coordinate.latitude)
-            let wp2FLog = self.getLocationDegreesFrom(longitude: waypoint2.coordinate.longitude)
-            let hint2D = wp2FLat + wp2FLog
-            waypoint2.subtitle = hint2D
+            waypoint2.subtitle = nil
             
 //            updateWayname(waypoint2U: waypoint2, image2U: nil)
             mapView.addAnnotation(waypoint2)
@@ -373,7 +384,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
                             trigger = point.ibeacon
 
                             let uniqueName = "UUID" + "-" + cMinorMajorKey
-//                            let uniqueName = UUID().uuidString
                             beaconsLogged.append(uniqueName)
                             let newWayPoint = wayPoint(recordID:nil, UUID: globalUUID, major:closestBeacon.major as? Int, minor: closestBeacon.minor as? Int, proximity: nil, coordinates: nil, name: uniqueName, hint:nil, image: nil, order: listOfPoint2Seek.count, boxes: nil, challenge: nil,  URL: nil)
                             wayPoints[cMinorMajorKey] = newWayPoint
@@ -711,6 +721,15 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     // MARK: setWayPoint protocl implementation
     
     func didSetURL(name: String?, URL: String?) {
+        for wayPoints in mapView.annotations {
+            if wayPoints.title == name {
+                let view = mapView.view(for: wayPoints)
+                let image2U = UIImage(named: "noun_link_654795")
+                if let thumbButton = view?.leftCalloutAccessoryView as? UIButton {
+                    thumbButton.setImage(image2U, for: .normal)
+                }
+            }
+        }
         if URL != nil {
             let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
                 item.name == name
@@ -740,17 +759,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
         }
     }
-////            mapView.selectAnnotation(pinViewSelected!, animated: true)
-//            updateChallenge(waypoint2U: pinViewSelected, challenge: challenge)
-//        } else {
-//            // must be a ibeacon
-//
-//            let wp2C = listOfPoint2Seek.popLast()
-//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge:challenge, URL: wp2C?.URL)
-//            listOfPoint2Seek.append(wp2S)
-//
-//        }
-//    }
+
     
     
     func didSetName(originalName: String?, name: String?) {
@@ -773,18 +782,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
         }
     }
-//    }
-//         if pinViewSelected != nil, name != nil {
-//            mapView.selectAnnotation(pinViewSelected!, animated: true)
-//            updateName(waypoint2U: pinViewSelected, name2D: name!)
-//
-//         } else {
-//            // must be a ibeacon
-//            let wp2C = listOfPoint2Seek.popLast()
-//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge: wp2C?.challenge, URL: wp2C?.URL)
-//            listOfPoint2Seek.append(wp2S)
-//        }
-//    }
     
     func didSetHint(name: String?, hint: String?) {
         if name != nil {
@@ -796,17 +793,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
         }
     }
-//        if pinViewSelected != nil, hint != nil {
-//            pinViewSelected?.subtitle = hint
-//            mapView.selectAnnotation(pinViewSelected!, animated: true)
-//            updateHint(waypoint2U: pinViewSelected, hint: hint!)
-//        } else {
-//            // must be a ibeacon
-//            let wp2C = listOfPoint2Seek.popLast()
-//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: wp2C?.name, hint: hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge: wp2C?.challenge, URL: wp2C?.URL)
-//            listOfPoint2Seek.append(wp2S)
-//        }
-//    }
+
     
     func didSetImage(name: String?, image: UIImage?) {
         for wayPoints in mapView.annotations {
@@ -1125,7 +1112,20 @@ private func getSECoordinate(mRect: MKMapRect) -> CLLocationCoordinate2D {
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == view.leftCalloutAccessoryView {
-            print("you tapped left callout")
+            let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
+                item.name ==  view.annotation?.title
+            })
+            let URL2U  = listOfPoint2Seek[index2F!].URL
+            let image2U = listOfPoint2Seek[index2F!].image
+            let order2U =  listOfPoint2Seek[index2F!].order
+            if URL2U != nil {
+                let url = URL(string: URL2U!)
+                let svc = SFSafariViewController(url: url!)
+                self.present(svc, animated: true, completion: nil)
+            } else if image2U != nil {
+                order2Search = order2U
+                self.performSegue(withIdentifier: Constants.ShowImageSegue, sender: self.view)
+            }
         } else if control == view.rightCalloutAccessoryView {
             mapView.deselectAnnotation(view.annotation, animated: false)
             performSegue(withIdentifier: Constants.EditUserWaypoint, sender: view)
@@ -1968,19 +1968,7 @@ func getShare() {
 //        }
 //    }
     
-//    private func updateURL(waypoint2U: MKPointAnnotation, URL: String?) {
-//        if  URL != nil {
-//            let wp2Fix = wayPoints.filter { (arg) -> Bool in
-//                let (_, value2U) = arg
-//                return value2U.name == waypoint2U.title
-//            }
-//            print("fcuk29062018 updateURL \(wp2Fix)")
-//            let wp2F = wp2Fix.values.first
-//            let waypoint2A = wayPoint(recordID: wp2F?.recordID, UUID: wp2F?.UUID, major:wp2F?.major, minor: wp2F?.minor,proximity: nil, coordinates: waypoint2U.coordinate, name: wp2F?.name, hint: wp2F?.hint, image: wp2F?.image, order: wayPoints.count, boxes:wp2F?.boxes, challenge: wp2F?.challenge,URL: URL)
-//            wayPoints[waypoint2U.title!] = waypoint2A
-//            print("fcuk29062018 updateURL \(waypoint2A)")
-//        }
-//    }
+
     
     private func updateChallenge(waypoint2U: MKPointAnnotation, challenge: String?) {
         let index2F  = listOfPoint2Seek.index(where: { (item) -> Bool in
@@ -1989,37 +1977,7 @@ func getShare() {
         if index2F != nil {
             listOfPoint2Seek[index2F!].challenge = challenge
         }
-
-//        print("fcuk29062016 updateChallenge wayPoints \(waypoint2U.title)")
-//        if challenge != nil {
-//            let wp2Fix = wayPoints.filter { (arg) -> Bool in
-//                let (_, value2U) = arg
-//                print("fcuk29062018 updateChallenge \(arg)")
-//                return value2U.name == waypoint2U.title
-//            }
-//        print("fcuk29062018 updateChallenge \(wp2Fix)")
-//        let wp2F = wp2Fix.values.first
-//        let waypoint2A = wayPoint(recordID: wp2F?.recordID, UUID: wp2F?.UUID, major:wp2F?.major, minor: wp2F?.minor,proximity: nil, coordinates: waypoint2U.coordinate, name: wp2F?.name, hint: wp2F?.hint, image: wp2F?.image, order: wayPoints.count, boxes:wp2F?.boxes, challenge: challenge,URL: wp2F?.URL)
-//            wayPoints[waypoint2U.title!] = waypoint2A
-//            print("fcuk29062018 updateChallenge \(waypoint2A)")
-//        }
-        
     }
-    
-//    private func updateName(waypoint2U: MKPointAnnotation, name2D: String) {
-//        if name2D != nil {
-//            let wp2Fix = wayPoints.filter { (arg) -> Bool in
-//                let (_, value2U) = arg
-//                return value2U.name == waypoint2U.title
-//            }
-//            let wp2F = wp2Fix.values.first
-//            print("fcuk29062018 updateName \(wp2F) \(waypoint2U.title)")
-//            let waypoint2A = wayPoint(recordID: wp2F?.recordID, UUID: wp2F?.UUID, major:wp2F?.major, minor: wp2F?.minor,proximity: nil, coordinates: waypoint2U.coordinate, name: name2D, hint: wp2F?.hint, image: wp2F?.image, order: wayPoints.count, boxes:wp2F?.boxes, challenge: wp2F?.challenge, URL: wp2F?.URL)
-//            wayPoints[name2D] = waypoint2A
-////            wayPoints.removeValue(forKey: ((pinViewSelected?.title)!)!)
-//            pinViewSelected?.title = name2D
-//        }
-//    }
     
     @IBAction func addWaypoint(_ sender: UILongPressGestureRecognizer) {
         if usingMode == op.playing {
@@ -2031,18 +1989,21 @@ func getShare() {
             let coordinate = mapView.convert(sender.location(in: mapView), toCoordinateFrom: mapView)
 //            let wayNames = Array(wayPoints.keys)
 //            let uniqueName = "GPS".madeUnique(withRespectTo: wayNames)
-            let uniqueName = UUID().uuidString
+            let wp2FLat = self.getLocationDegreesFrom(latitude: coordinate.latitude)
+            let wp2FLog = self.getLocationDegreesFrom(longitude: coordinate.longitude)
+            let hint2D = wp2FLat + wp2FLog
+             let uniqueName =  returnUUID(Source2U: hint2D)
+//            let uniqueName = UUID().uuidString
 //           let waypoint2 = MKPointAnnotation()
             let waypoint2 = MyPointAnnotation()
           waypoint2.coordinate  = coordinate
           waypoint2.title = uniqueName
 //            waypoint2.tintColor = .purple
-            let wp2FLat = self.getLocationDegreesFrom(latitude: coordinate.latitude)
-            let wp2FLog = self.getLocationDegreesFrom(longitude: coordinate.longitude)
-          waypoint2.subtitle = wp2FLat + wp2FLog
+
+          waypoint2.subtitle = nil
 //            updateWayname(waypoint2U: waypoint2, image2U: nil)
             
-            let hint2D = wp2FLat + wp2FLog
+     
 
             DispatchQueue.main.async() {
                 self.mapView.addAnnotation(waypoint2)
@@ -2052,7 +2013,7 @@ func getShare() {
                 for box in boxes {
                     box2F.append(CLLocation(latitude: box.coordinate.latitude, longitude: box.coordinate.longitude))
                 }
-                let newWayPoint = wayPoint(recordID: nil, UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:hint2D, image: nil, order: listOfPoint2Seek.count, boxes: box2F, challenge: nil, URL: nil)
+                let newWayPoint = wayPoint(recordID: nil, UUID: nil, major:nil, minor: nil, proximity: nil, coordinates: coordinate, name: uniqueName, hint:nil, image: nil, order: listOfPoint2Seek.count, boxes: box2F, challenge: nil, URL: nil)
                 wayPoints[uniqueName] = newWayPoint
                 print("fcuk29062018 \(wayPoints) \(uniqueName)")
                 listOfPoint2Seek.append(newWayPoint)
@@ -2248,33 +2209,34 @@ func getShare() {
     private func plotPin(pin2P: CKRecord) {
         let UUID = pin2P.object(forKey:  Constants.Attribute.UUID) as? String
         if UUID == nil {
-        DispatchQueue.main.async() {
-            let longitude = pin2P.object(forKey:  Constants.Attribute.longitude) as? Double
-            let latitude = pin2P.object(forKey:  Constants.Attribute.latitude) as? Double
-            let name = pin2P.object(forKey:  Constants.Attribute.name) as? String
-            let order = pin2P.object(forKey:  Constants.Attribute.order) as? Int
-            let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
-            let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
-            let hint2D = String(order!) + ":" + wp2FLat + wp2FLog
-//            let hint = pin2P.object(forKey:  Constants.Attribute.hint) as? String
-            let file : CKAsset? = pin2P.object(forKey: Constants.Attribute.imageData) as? CKAsset
-            let waypoint = MKPointAnnotation()
-            waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
-            waypoint.title = name
-            waypoint.subtitle = hint2D
-           
-            if let data = NSData(contentsOf: (file?.fileURL)!) {
-//                let image2D = UIImage(data: data as Data)
-                 self.mapView.addAnnotation(waypoint)
-                self.pinViewSelected = waypoint
-                self.mapView.selectAnnotation(self.pinViewSelected!, animated: true)
-//                self.didSetImage(name: self.pinViewSelected.title, image: image2D)
-//                self.updateWayname(waypoint2U: waypoint, image2U: image2D)
-                self.mapView.deselectAnnotation(waypoint, animated: false)
-            } else {
+            DispatchQueue.main.async() {
+                let longitude = pin2P.object(forKey:  Constants.Attribute.longitude) as? Double
+                let latitude = pin2P.object(forKey:  Constants.Attribute.latitude) as? Double
+                let name = pin2P.object(forKey:  Constants.Attribute.name) as? String
+                //            let order = pin2P.object(forKey:  Constants.Attribute.order) as? Int
+                //            let wp2FLat = self.getLocationDegreesFrom(latitude: latitude!)
+                //            let wp2FLog = self.getLocationDegreesFrom(longitude: longitude!)
+                //            let hint2D = String(order!) + ":" + wp2FLat + wp2FLog
+                let hint = pin2P.object(forKey:  Constants.Attribute.hint) as? String
+//                let file : CKAsset? = pin2P.object(forKey: Constants.Attribute.imageData) as? CKAsset
+                let waypoint = MKPointAnnotation()
+                waypoint.coordinate  = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
+                waypoint.title = name
+                waypoint.subtitle = hint
+                
+                //            if let data = NSData(contentsOf: (file?.fileURL)!) {
+                //                let image2D = UIImage(data: data as Data)
+                //                 self.mapView.addAnnotation(waypoint)
+                //                self.pinViewSelected = waypoint
+                //                self.mapView.selectAnnotation(self.pinViewSelected!, animated: true)
+                //                self.didSetImage(name: self.pinViewSelected.title, image: image2D)
+                ////                self.updateWayname(waypoint2U: waypoint, image2U: image2D)
+                //                self.mapView.deselectAnnotation(waypoint, animated: false)
+                //            } else {
+                //                self.mapView.addAnnotation(waypoint)
+                //            }
                 self.mapView.addAnnotation(waypoint)
             }
-        }
         }
     }
     
@@ -2287,10 +2249,6 @@ func getShare() {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-//        if !savedMap {
-//            save2Cloud(rex2S: listOfPoint2Seek, rex2D: nil, sharing: true, reordered: false)
-//        }
- 
          let center = NotificationCenter.default
         if pinObserver != nil {
             center.removeObserver(pinObserver)
