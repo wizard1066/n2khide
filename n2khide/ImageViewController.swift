@@ -48,14 +48,18 @@ class ImageViewController: UIViewController {
             let textField = alert?.textFields![0]
             if textField?.text != "" {
                 if textField?.text == self.challenge2A {
-                    listOfPoint2Search[self.index2U!].bon = true
+                    if listOfPoint2Search.count > 0 {
+                        listOfPoint2Search[self.index2U!].bon = true
+                    }
                 } else {
                     self.challenge()
                 }
             }
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default,handler: { [weak alert] (_) in
-            listOfPoint2Search[self.index2U!].bon = false
+             if listOfPoint2Search.count > 0 {
+                listOfPoint2Search[self.index2U!].bon = false
+            }
         }))
         self.present(alert, animated: true, completion: nil)
     }

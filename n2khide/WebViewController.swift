@@ -15,6 +15,8 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
     weak var secondViewController: HiddingViewController?
     weak var thirdViewController: HideTableViewController?
     var nameOfNode: String?
+    var challenge2A: String?
+    var index2U: Int?
 
     @IBOutlet weak var progressBar: UIProgressView!
     @IBAction func doneButton(_ sender: Any) {
@@ -76,6 +78,9 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         secondViewController?.didSetURL(name: nameOfNode, URL: webView.url?.absoluteString)
         let defaults:UserDefaults = UserDefaults.standard
         defaults.set(webView.url?.absoluteString, forKey: "URLUsed")
+        if challenge2A != nil {
+            challenge()
+        }
     }
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
@@ -105,6 +110,31 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
         }
         // Do any additional setup after loading the view.
     }
+    
+    // MARK: challenge code
+    
+    func challenge() {
+        let alert = UIAlertController(title: "Challenge", message: "", preferredStyle: .alert)
+        alert.addTextField { (textField) in
+            textField.placeholder = "Challenge"
+        }
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
+            let textField = alert?.textFields![0]
+            if textField?.text != "" {
+                if textField?.text == self.challenge2A {
+                    listOfPoint2Search[self.index2U!].bon = true
+                } else {
+                    self.challenge()
+                }
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default,handler: { [weak alert] (_) in
+            listOfPoint2Search[self.index2U!].bon = false
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    // MARK: Views Code
     
     override func viewDidDisappear(_ animated: Bool) {
         // do something

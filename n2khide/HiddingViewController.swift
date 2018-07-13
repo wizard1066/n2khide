@@ -739,15 +739,6 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
             }
         }
     }
-        
-//        if pinViewSelected != nil {
-//            updateURL(waypoint2U: pinViewSelected, URL: URL)
-//        } else {
-//            let wp2C = listOfPoint2Seek.popLast()
-//            let wp2S = wayPoint(recordID:wp2C?.recordID,UUID: wp2C?.UUID, major: wp2C?.major, minor: wp2C?.minor, proximity: nil, coordinates: nil, name: name, hint: wp2C?.hint, image: wp2C?.image, order: wayPoints.count, boxes: nil, challenge:wp2C?.challenge, URL: URL)
-//            listOfPoint2Seek.append(wp2S)
-//        }
-//    }
     
     func didSetChallenge(name: String?, challenge: String?) {
         if challenge != nil {
@@ -1897,6 +1888,7 @@ func getShare() {
 //            }
             ewvc?.setWayPoint = self
                 if let ppc = ewvc?.popoverPresentationController {
+                    
                     ppc.sourceRect = (annotationView?.frame)!
                     ppc.delegate = self
                 }
