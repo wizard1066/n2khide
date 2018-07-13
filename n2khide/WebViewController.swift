@@ -13,6 +13,7 @@ class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, U
     
     weak var firstViewController: EditWaypointController?
     weak var secondViewController: HiddingViewController?
+    weak var thirdViewController: HideTableViewController?
     var nameOfNode: String?
 
     @IBOutlet weak var progressBar: UIProgressView!

@@ -168,7 +168,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ADI-Ac-OBl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2800.78125" y="543.75"/>
+            <point key="canvasLocation" x="2831" y="-76"/>
         </scene>
         <!--Web View Controller-->
         <scene sceneID="7Wl-Ur-jxq">
@@ -256,7 +256,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Yeu-zT-2Ht" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4294.53125" y="463.47656249999994"/>
+            <point key="canvasLocation" x="4286" y="-262"/>
         </scene>
         <!--Image View Controller-->
         <scene sceneID="W0r-LP-Fxv">
@@ -708,35 +708,33 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gP6-6T-gD9">
-                                            <rect key="frame" x="75" y="9.5" width="17" height="25"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="17" id="2VN-mz-LwG"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="18"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hqg-Fp-RE1">
-                                            <rect key="frame" x="100" y="12.5" width="204" height="19.5"/>
+                                            <rect key="frame" x="123" y="12.5" width="181" height="19.5"/>
                                             <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="14"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="hfM-wS-C4d">
+                                            <rect key="frame" x="75" y="2" width="40" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="40" id="CHh-9z-srU"/>
+                                                <constraint firstAttribute="height" constant="40" id="uzX-XF-NvI"/>
+                                            </constraints>
+                                        </imageView>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="Hqg-Fp-RE1" firstAttribute="leading" secondItem="hfM-wS-C4d" secondAttribute="trailing" constant="8" id="2Wx-sf-7S8"/>
+                                        <constraint firstItem="hfM-wS-C4d" firstAttribute="leading" secondItem="5s6-CT-h4v" secondAttribute="trailing" constant="8" id="6Ve-JB-ACJ"/>
                                         <constraint firstAttribute="trailing" secondItem="Hqg-Fp-RE1" secondAttribute="trailing" constant="16" id="A3N-ly-RDg"/>
-                                        <constraint firstItem="gP6-6T-gD9" firstAttribute="centerY" secondItem="pU9-2e-8q3" secondAttribute="centerY" id="DUF-D3-WaT"/>
-                                        <constraint firstItem="Hqg-Fp-RE1" firstAttribute="leading" secondItem="gP6-6T-gD9" secondAttribute="trailing" constant="8" id="TXH-4p-AXB"/>
                                         <constraint firstItem="5s6-CT-h4v" firstAttribute="leading" secondItem="pU9-2e-8q3" secondAttribute="leadingMargin" id="TqF-QP-n5c"/>
                                         <constraint firstItem="5s6-CT-h4v" firstAttribute="centerY" secondItem="pU9-2e-8q3" secondAttribute="centerY" id="XRS-yv-2Sp"/>
-                                        <constraint firstItem="gP6-6T-gD9" firstAttribute="leading" secondItem="5s6-CT-h4v" secondAttribute="trailing" constant="8" id="hQd-Nd-ccQ"/>
+                                        <constraint firstItem="hfM-wS-C4d" firstAttribute="centerY" secondItem="pU9-2e-8q3" secondAttribute="centerY" id="XdJ-5g-Ogx"/>
                                         <constraint firstItem="Hqg-Fp-RE1" firstAttribute="centerY" secondItem="pU9-2e-8q3" secondAttribute="centerY" id="iXw-YM-fJj"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
+                                    <outlet property="challengeImage" destination="hfM-wS-C4d" id="kRx-Wj-ub3"/>
                                     <outlet property="nameLabel" destination="Hqg-Fp-RE1" id="WVI-dF-MYR"/>
-                                    <outlet property="orderLabel" destination="gP6-6T-gD9" id="NBF-Qy-Xpb"/>
                                     <outlet property="timeLabel" destination="5s6-CT-h4v" id="p9e-V9-cic"/>
                                 </connections>
                             </tableViewCell>
@@ -751,11 +749,12 @@
                         <segue destination="89x-Hb-n98" kind="popoverPresentation" identifier="Edit Waypoint" popoverAnchorView="Vli-Hw-GnB" id="hFW-Ay-RwD">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
+                        <segue destination="UWw-Ec-h7I" kind="presentation" identifier="Show Image" id="hBQ-qf-qN0"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WqC-w5-X9s" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3572.65625" y="-320.5078125"/>
+            <point key="canvasLocation" x="3820" y="561"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="UFo-ba-4Gn">
@@ -791,7 +790,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ASA-lh-Dip" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2801" y="-195"/>
+            <point key="canvasLocation" x="3130" y="639"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ytb-TA-NZm">
@@ -809,7 +808,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YdJ-Zf-PDM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2611" y="1269"/>
+            <point key="canvasLocation" x="2652" y="1335"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ru2-D4-r5C">
@@ -827,7 +826,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rNn-Gc-quq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3572.65625" y="494.53124999999994"/>
+            <point key="canvasLocation" x="3541" y="-158"/>
         </scene>
     </scenes>
     <resources>
@@ -842,6 +841,7 @@
         <image name="qr_code" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="RQi-Wn-jN8"/>
+        <segue reference="hBQ-qf-qN0"/>
+        <segue reference="hFW-Ay-RwD"/>
     </inferredMetricsTieBreakers>
 </document>

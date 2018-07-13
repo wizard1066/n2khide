@@ -580,7 +580,7 @@ class HiddingViewController: UIViewController, UIDropInteractionDelegate, MKMapV
     var currentLocation: CLLocation!
     
     func updatePoint2Search(name2S: String) {
-        let WP2F = wp2Search(name: name2S, find: timerLabel.text)
+        let WP2F = wp2Search(name: name2S, find: timerLabel.text, bon: nil)
         let zap = listOfPoint2Search.index(where: { (item) -> Bool in
             item.name == name2S
         })
@@ -1716,7 +1716,7 @@ func getShare() {
                 if spotDuplicateError![k2C] == nil {
                     let wp2S = wayPoint(recordID: record2U.recordID, UUID: nil, major:major, minor: minor, proximity: nil, coordinates: CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!), name: name, hint: hint, image: image2D, order: order, boxes: boxes, challenge: challenge, URL: url2U)
                      listOfPoint2Seek.append(wp2S)
-                    let wp2S2 = wp2Search(name: name, find: nil)
+                    let wp2S2 = wp2Search(name: name, find: nil, bon: nil)
                     listOfPoint2Search.append(wp2S2)
                     spotDuplicateError![k2C]  = true
                 }
@@ -1729,7 +1729,7 @@ func getShare() {
                    
                     beaconsInTheBag[k2U] = true
                     WP2M[k2U] = name
-                    let wp2S2 = wp2Search(name: name, find: nil)
+                    let wp2S2 = wp2Search(name: name, find: nil, bon: nil)
                     listOfPoint2Search.append(wp2S2)
                     spotDuplicateError![k2U]  = true
                 }
@@ -1946,6 +1946,7 @@ func getShare() {
             if nextWP2S.image != nil {
                 svc?.image2S = nextWP2S.image
                 svc?.challenge2A = nextWP2S.challenge
+                svc?.index2U = order2Search
             }
             svc?.callingViewController = self
         }

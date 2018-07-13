@@ -34,6 +34,7 @@ struct wayPoint {
 struct wp2Search {
     var name: String?
     var find: String?
+    var bon: Bool?
 }
 
 var wayPoints:[String:wayPoint] = [:]

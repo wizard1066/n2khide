@@ -12,7 +12,9 @@ class ImageViewController: UIViewController {
 
     var image2S: UIImage!
     var challenge2A: String?
+    var index2U: Int?
     weak var callingViewController: HiddingViewController?
+    weak var tableCallingController: HideTableViewController?
     
     @IBOutlet weak var imageArea: UIImageView!
     
@@ -46,13 +48,15 @@ class ImageViewController: UIViewController {
             let textField = alert?.textFields![0]
             if textField?.text != "" {
                 if textField?.text == self.challenge2A {
-                    // do nothing
+                    listOfPoint2Search[self.index2U!].bon = true
                 } else {
                     self.challenge()
                 }
             }
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default,handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default,handler: { [weak alert] (_) in
+            listOfPoint2Search[self.index2U!].bon = false
+        }))
         self.present(alert, animated: true, completion: nil)
     }
     

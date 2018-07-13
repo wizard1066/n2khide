@@ -11,8 +11,8 @@ import UIKit
 class SearchTableViewCell: UITableViewCell {
 
     @IBOutlet weak var timeLabel: UILabel!
-    @IBOutlet weak var orderLabel: UILabel!
     @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var challengeImage: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

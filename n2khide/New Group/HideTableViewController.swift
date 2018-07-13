@@ -8,6 +8,7 @@
 
 import UIKit
 import CloudKit
+import SafariServices
 
 protocol zap  {
     func wayPoint2G(wayPoint2G: String)
@@ -244,6 +245,8 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
+    
+    
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
@@ -267,6 +270,9 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
             let waypoint = listOfPoint2Seek[indexPath.row]
             cell?.nameLabel.text = waypoint.name
             cell?.countLabel.text = "\(String(describing: waypoint.order!))"
+            if waypoint.URL != nil {
+                cell?.imageLabel.image = UIImage(named: "noun_link_654795")
+            }
             if waypoint.image != nil {
                 cell?.imageLabel.image = waypoint.image
             }
@@ -276,8 +282,13 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
               let cell = tableView.dequeueReusableCell(withIdentifier: "searchViewCell", for: indexPath) as? SearchTableViewCell
             if windowView == .playing, listOfPoint2Search.count > 0 {
                 cell?.nameLabel.text = listOfPoint2Search[indexPath.row].name
-                cell?.orderLabel.text  = String(listOfPoint2Seek[indexPath.row].order!)
                 cell?.timeLabel.text = listOfPoint2Search[indexPath.row].find
+                if !listOfPoint2Search[indexPath.row].bon! {
+                    cell?.challengeImage.image = UIImage(named: "sad")
+                }
+                if listOfPoint2Search[indexPath.row].bon! {
+                    cell?.challengeImage.image = UIImage(named: "happy")
+                }
             }
             return cell!
         }
@@ -334,6 +345,23 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
     
     var classIndexPath: IndexPath!
     var rowView: UIView!
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if windowView == .points, usingMode == op.recording {
+            self.classIndexPath = indexPath
+            let URL2U  = listOfPoint2Seek[indexPath.row].URL
+            let image2U = listOfPoint2Seek[indexPath.row].image
+//            let order2U =  listOfPoint2Seek[indexPath.row].order
+            if URL2U != nil {
+                let url = URL(string: URL2U!)
+                let svc = SFSafariViewController(url: url!)
+                self.present(svc, animated: true, completion: nil)
+            } else if image2U != nil {
+                order2Search = indexPath.row
+                self.performSegue(withIdentifier: Constants.ShowImageSegue, sender: self.view)
+            }
+        }
+    }
 
     
     override func tableView(_ tableView: UITableView,
@@ -474,18 +502,20 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
                 ppc.delegate = self
             }
         }
-//        if segue.identifier == Constants.EditUserWaypoint, trigger == point.ibeacon {
-//            let ewvc = destination as? EditWaypointController
-//            let uniqueName = "UUID"
-//            ewvc?.nameText =  uniqueName
-//            ewvc?.hintText = "ibeacon"
-//            ewvc?.setWayPoint = self
-//            if let ppc = ewvc?.popoverPresentationController {
-//                ppc.sourceRect = tableView.frame
-//                ppc.delegate = self
+            if segue.identifier == Constants.ShowImageSegue {
+                let svc = destination as? ImageViewController
+                    svc?.image2S = listOfPoint2Seek[classIndexPath.row].image
+                    svc?.challenge2A = listOfPoint2Seek[classIndexPath.row].challenge
+                    svc?.index2U = order2Search
+                svc?.tableCallingController = self
+            }
+//            if segue.identifier == Constants.WebViewController {
+//                let svc = destination as? WebViewController
+//                svc?.thirdViewController = self
+//                svc?.nameOfNode =  listOfPoint2Seek[classIndexPath.row].name
 //            }
-//        }
     }
+    
     
     private struct Constants {
         static let LeftCalloutFrame = CGRect(x: 0, y: 0, width: 59, height: 59)
@@ -494,6 +524,7 @@ class HideTableViewController: UITableViewController, UIPopoverPresentationContr
         static let EditUserWaypoint = "Edit Waypoint"
         static let TableWaypoint = "Table Waypoint"
         static let ScannerViewController = "Scan VC"
+        static let WebViewController = "WebViewController"
         
         
         struct Entity {
