@@ -35,10 +35,9 @@
 		EF0C63A320D9472B00A65CC0 /* BeaconCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconCode.swift; sourceTree = "<group>"; };
 		EF0C63A620DA90B600A65CC0 /* Star Strella.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Star Strella.otf"; sourceTree = "<group>"; };
 		EF15FA3020F74C300065F16D /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
-		EF258B8A20C7D1CD0089EB4D /* n2khide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = n2khide.entitlements; sourceTree = "<group>"; };
 		EF258B8C20C7D1D10089EB4D /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		EF40AAB520C6F83100CF6B3E /* CustomItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomItem.swift; sourceTree = "<group>"; };
-		EF56461420BD9A4C00F500F6 /* n2khide.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = n2khide.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF56461420BD9A4C00F500F6 /* n2kmap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = n2kmap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF56461720BD9A4C00F500F6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EF56461C20BD9A4C00F500F6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EF56461E20BD9A4E00F500F6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -100,7 +99,7 @@
 		EF56460B20BD9A4C00F500F6 = {
 			isa = PBXGroup;
 			children = (
-				EF56461620BD9A4C00F500F6 /* n2khide */,
+				EF56461620BD9A4C00F500F6 /* n2kmap */,
 				EF56461520BD9A4C00F500F6 /* Products */,
 				EF258B8B20C7D1D10089EB4D /* Frameworks */,
 			);
@@ -109,15 +108,14 @@
 		EF56461520BD9A4C00F500F6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EF56461420BD9A4C00F500F6 /* n2khide.app */,
+				EF56461420BD9A4C00F500F6 /* n2kmap.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		EF56461620BD9A4C00F500F6 /* n2khide */ = {
+		EF56461620BD9A4C00F500F6 /* n2kmap */ = {
 			isa = PBXGroup;
 			children = (
-				EF258B8A20C7D1CD0089EB4D /* n2khide.entitlements */,
 				EF15FA3220F74C3A0065F16D /* New Group */,
 				EFF07FAF20C03B160018C8C7 /* Common.swift */,
 				EF56461720BD9A4C00F500F6 /* AppDelegate.swift */,
@@ -137,15 +135,15 @@
 				EF56462020BD9A4E00F500F6 /* LaunchScreen.storyboard */,
 				EF56462320BD9A4E00F500F6 /* Info.plist */,
 			);
-			path = n2khide;
+			path = n2kmap;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EF56461320BD9A4C00F500F6 /* n2khide */ = {
+		EF56461320BD9A4C00F500F6 /* n2kmap */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EF56462620BD9A4E00F500F6 /* Build configuration list for PBXNativeTarget "n2khide" */;
+			buildConfigurationList = EF56462620BD9A4E00F500F6 /* Build configuration list for PBXNativeTarget "n2kmap" */;
 			buildPhases = (
 				EF56461020BD9A4C00F500F6 /* Sources */,
 				EF56461120BD9A4C00F500F6 /* Frameworks */,
@@ -155,9 +153,9 @@
 			);
 			dependencies = (
 			);
-			name = n2khide;
+			name = n2kmap;
 			productName = n2khide;
-			productReference = EF56461420BD9A4C00F500F6 /* n2khide.app */;
+			productReference = EF56461420BD9A4C00F500F6 /* n2kmap.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -189,7 +187,7 @@
 					};
 				};
 			};
-			buildConfigurationList = EF56460F20BD9A4C00F500F6 /* Build configuration list for PBXProject "n2khide" */;
+			buildConfigurationList = EF56460F20BD9A4C00F500F6 /* Build configuration list for PBXProject "n2kmap" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -202,7 +200,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				EF56461320BD9A4C00F500F6 /* n2khide */,
+				EF56461320BD9A4C00F500F6 /* n2kmap */,
 			);
 		};
 /* End PBXProject section */
@@ -383,16 +381,15 @@
 		EF56462720BD9A4E00F500F6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = n2khide/n2khide.entitlements;
+				CODE_SIGN_ENTITLEMENTS = n2kmap/n2kmap.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CWGS87U262;
-				INFOPLIST_FILE = n2khide/Info.plist;
+				INFOPLIST_FILE = n2kmap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ch.cqd.n2khide;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.cqd.n2kmap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -402,16 +399,15 @@
 		EF56462820BD9A4E00F500F6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = n2khide/n2khide.entitlements;
+				CODE_SIGN_ENTITLEMENTS = n2kmap/n2kmap.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CWGS87U262;
-				INFOPLIST_FILE = n2khide/Info.plist;
+				INFOPLIST_FILE = n2kmap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ch.cqd.n2khide;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.cqd.n2kmap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -421,7 +417,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EF56460F20BD9A4C00F500F6 /* Build configuration list for PBXProject "n2khide" */ = {
+		EF56460F20BD9A4C00F500F6 /* Build configuration list for PBXProject "n2kmap" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EF56462420BD9A4E00F500F6 /* Debug */,
@@ -430,7 +426,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EF56462620BD9A4E00F500F6 /* Build configuration list for PBXNativeTarget "n2khide" */ = {
+		EF56462620BD9A4E00F500F6 /* Build configuration list for PBXNativeTarget "n2kmap" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EF56462720BD9A4E00F500F6 /* Debug */,
